@@ -40,7 +40,7 @@ public class CustomerController {
     @PutMapping("/update")
     @ApiOperation("Update an existing customer")
     public ResponseEntity<ResponseWrapper<Boolean>> updateCustomer(
-            @RequestPart(name = "body") CustomerDTO customerDTO, HttpServletRequest request) {
+            @RequestBody CustomerDTO customerDTO, HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
         return ResponseEntity.ok(customerService.updateCustomer(customerDTO, authorizationHeader));
@@ -49,7 +49,7 @@ public class CustomerController {
     @PostMapping("/auth/register")
     @ApiOperation("Add New Customer")
     public ResponseEntity<ResponseWrapper<Boolean>> addCustomer(
-            @RequestPart(name = "body") CustomerRegistrationRequest customerRegisterRequest
+            @RequestBody CustomerRegistrationRequest customerRegisterRequest
             , HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
