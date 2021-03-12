@@ -24,7 +24,6 @@ public class CustomerEntity {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserEntity user;
 
-
     @Column(name = "preferred_bank")
     private String preferredBank;
 
@@ -39,6 +38,6 @@ public class CustomerEntity {
     private boolean active;
 
     @OneToMany(mappedBy = "customer")
-    private List<CustomerEntity> addresses;
+    private List<AddressEntity> addresses;
 
 }
