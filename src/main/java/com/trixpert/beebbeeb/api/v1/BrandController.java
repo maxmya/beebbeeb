@@ -74,8 +74,11 @@ public class BrandController {
   
     @GetMapping("/get/{brandID}")
     @ApiOperation("Get Brand By ID")
-    public ResponseEntity<ResponseWrapper<BrandDTO>> getBrand(@PathVariable("brandID") long brandId) {
-        return ResponseEntity.ok(brandService.deleteBrand(brandId, authorizationHeader));
+    public ResponseEntity<ResponseWrapper<BrandDTO>> getBrand(@PathVariable("brandID") long brandId
+            , HttpServletRequest request) {
+
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(null);
     }
   
     @GetMapping("/list/active/{brandId}")

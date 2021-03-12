@@ -1,6 +1,5 @@
 package com.trixpert.beebbeeb.api.v1;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.trixpert.beebbeeb.data.request.CarRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.CarDTO;
