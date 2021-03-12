@@ -14,6 +14,9 @@ import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,6 +33,7 @@ public class SpringFoxConfig {
 
 
         return new Docket(DocumentationType.SWAGGER_2)
+                .ignoredParameterTypes(HttpSession.class, HttpServletRequest.class, HttpServletResponse.class)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.trixpert.beebbeeb"))
                 .paths(PathSelectors.any())
