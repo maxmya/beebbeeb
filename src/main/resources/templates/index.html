@@ -1,0 +1,186 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <style>
+        body {
+            font-family: Helvetica;
+            font-size: 1em;
+            width: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .button {
+            display: inline-block;
+            color: white;
+            background-color: darkblue;
+            padding: 10px;
+            border-radius: 5px;
+            text-shadow: 1px 1px 1px grey;
+        }
+
+        nav {
+            display: inline-block;
+        }
+
+        nav h1 {
+            display: inline-block;
+            position: relative;
+            left: 50px;
+        }
+
+        nav .button {
+            position: absolute;
+            right: 50px;
+            top: 0px;
+            vertical-align: middle;
+        }
+
+        header {
+            padding: 30px;
+            background: darkblue;
+            no-repeat;
+            max-width: 100%;
+            filter: grayscale(0%);
+            background-position: center center;
+        }
+
+        .left {
+            display: inline-block;
+            width: 50%;
+            margin-left: 50px;
+            vertical-align: middle;
+            color: white;
+        }
+
+        #left h2 {
+            font-size: 2.5em;
+            text-shadow: 1px 1px 2px grey;
+        }
+
+        header img {
+            vertical-align: middle;
+            display: inline-block;
+            margin-left: 10%;
+            width: 25%;
+        }
+
+        section {
+            text-align: center;
+            width: 30%;
+            margin: 0px auto 0px auto;
+        }
+
+        section h5 {
+            font-size: 1.5em;
+        }
+
+        article {
+            background-color: lightgrey;
+        }
+
+        article h5 {
+            text-align: center;
+            font-size: 1.5em;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+
+        article div {
+            display: inline-block;
+            width: 25%;
+            margin-left: 50px;
+            margin-right: 50px;
+            text-align: left;
+        }
+
+        div h6 {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        div p {
+            position: relative;
+            top: -10px;
+        }
+
+        aside h5 {
+            text-align: center;
+            font-size: 1.5em;
+            margin-bottom: 0px;
+        }
+
+        aside img {
+            border-radius: 100%;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+        }
+
+        footer {
+            text-align: center;
+        }
+
+        footer h4 {
+            padding-top: 10px;
+            font-size: 1.5em;
+            color: white;
+            text-shadow: 1px 1px 1px grey;
+            margin-bottom: 10px;
+        }
+
+        #links div {
+            display: inline-block;
+            vertical-align: top;
+            width: 20%;
+            color: white;
+            text-align: left;
+        }
+
+        ul {
+            padding-left: 0px;
+        }
+
+        ul li {
+            list-style-position: inside;
+            list-style-type: none;
+        }
+
+        footer p {
+            margin-top: 10px;
+            width: 100%;
+            color: white;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            background-color: black;
+        }
+    </style>
+    <title>Beebbeeb Backend</title>
+</head>
+
+<nav>
+    <h1>BeebBeeb Backend</h1>
+</nav>
+
+<header>
+    <div class="left">
+        <h1>Portal for backend environment of BeebBeeb</h1>
+    </div>
+</header>
+
+<div class="left">
+    <ul>
+        <li><h3 class="button"><a href="http://206.81.22.48:8090/">Jenkins</a></h3></li>
+        <li><h3 class="button"><a href="http://206.81.22.48:9990/">Wildfly</a></h3></li>
+        <li><h3 class="button"><a href="http://beebbeeb.info/swagger-ui.html">Swagger</a></h3></li>
+    </ul>
+</div>
+
+<footer style="position: absolute;bottom: 0;left: 0;right: 0;background: black">
+    <p>2021 - By Trixpert. All right reserved. Cairo, Egypt</p>
+</footer>
+</html>

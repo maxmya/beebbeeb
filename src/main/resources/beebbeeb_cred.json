@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "clear-spirit-305111",
+  "private_key_id": "beecb386ea3d66c74a7d03fb59743202f3b1bad5",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQD5Mx4Kza2DHgBl\npwiiqaT2+25L0jJVKOP7LrzTyBB+r4IFG4U7QVrV9fPOa8LYKFNJZpG54QI+0NDK\npCTw/RLfTGNar8SqPlik7p6qWigfsptHbsP64/XrEw7HbzfJou0oZTCNFPwwbnIK\n3GmoW0SYPhrXDPj0rOBK1Ffj9Jks7bu7M8spGffVrU3MM9/XhFUXFjvQf/X6X3Rw\nUJ/gaKUNA4tf25NJy/GsEI5/xro85j06qkbcYbMPLTOzjYEjauynIhfMWSEP5Mj4\nNzEl8mVVrxpAOxEd5nnIeNBMj2SN8KjpOEXk4wfNvFyaFaQHgfGARZcG8YcoJoXl\n4Rck0u2VAgMBAAECggEAK/Dbh0QlKE2N/F6royMOt442MKBrx6BiMtRW73EDl5MS\n9huYLo6jmb64stlFjh/uL68qWwBWCQWBC3pOGUBGp6Esk70SjIJZ1xtMVvV2xcAU\nqU/ats6jekPuAzSVPbTA5LKTEQ12OoP/D/M1nj4Zpk6tJOZgr6QcGJXAua1TpRwd\nPbYgt3vxhZhlCYPP7UrfY1wnbEIz9y7LTWjfQkUHdlJyjnYq2n9pMubzMwH+yKzb\nyGbHcWZ4xX5RqBZiy+PbcH72esvmYX2K0aaZky0qNSDHOSPEQDIvTJxMNnPUVD42\nLfri2ziFtBTnHE9hf5e6vCJO3+B1NJDqEfdbL9crsQKBgQD/ggNbfi0rjewpIa/A\niIAcAotCCBgantz8RLE95T2vpTyFoFp0lyNKjRcdfuhysEDsMtb6FLiQMb3z38AA\nR97lWYmHsyoJvXr/UI6OQYL8MR579wHnWpMVwvqX30Q92CZlo3EpGOeDW4S7VWH4\nqlWwrLxPlbz/nSbIqsY6FBBeJwKBgQD5rf5nvtkalEXTXdkRuf9sP55R8U7zse8N\neiEB2ywpK01ACNvrBboHCVmJ8tdT/An4NqT1lO6mAvAFd6U1qgrvjBpQQj9H8Gj7\nvRJHZ8k7i6SjB1GAKRZCdtYxoamMyh1TwAnoSrYdHHjHFC0HGZ+TD65AkhhTrqmj\neDcxnnyn4wKBgAPwCwEz9po/O65+mGjNMbw8xcykt0phvGIe5ORhTgwQ7dfZWsuF\nMMQLXJnVxNtPoBCD0BBWlWmTeqvxfNIESYkbUiVHO5Se2PBqW2gR1mTwlNmwOtVH\n7hBdyuLgS/rwA9d5J1tMyPSbSnZgoHvmlB9+6gAH/LurvldFWny2pnHtAoGAJIsK\nyTRtoi5BagY6VxXaBIXrLiMbYx+P1XEik5r4g64KyGyDg4p7B7yelkosqeYhr2qQ\nCkGaDEIxzxsL2ybgIt9mmoiXqnfNZcruefT+xvBRUGspypA46dFq2CjJIAoU8MUS\nriUBMpGQO9MAJCHj8SpCXsEDPnw55+sYaPLBW/ECgYEAn0RWGSho7kCFHn7+4LbA\nRAW9qJQlNFb0p2rf72r6xUsOIeOsrK/dDZf/pjWNfnTe5cy+3fP3YD36iZiFqkrL\nwptlepigeOskpRDsHvxDkXl2Kh4kKDUOKvS9/rR0yJTJ9JSV4hqdyQQAR4iEpXom\nB6t8qKQsKSCq8/iSXUzHOg8=\n-----END PRIVATE KEY-----\n",
+  "client_email": "beebbeeb-backend@clear-spirit-305111.iam.gserviceaccount.com",
+  "client_id": "104736736332320277012",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/beebbeeb-backend%40clear-spirit-305111.iam.gserviceaccount.com"
+}
