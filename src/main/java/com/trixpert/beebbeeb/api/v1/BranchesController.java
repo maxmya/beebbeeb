@@ -17,7 +17,7 @@ import java.util.List;
 @Api(tags = {"Branches API"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
 @RestController
-@RequestMapping("/branches")
+@RequestMapping("/api/v1/branches")
 public class BranchesController {
 
     private final BranchService branchService;

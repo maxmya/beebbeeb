@@ -16,7 +16,7 @@ import java.util.List;
 @Api(tags = {"Color API"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
 @RestController
-@RequestMapping("/colors")
+@RequestMapping("/api/v1/colors")
 public class ColorController {
 
     private final ColorService colorService;

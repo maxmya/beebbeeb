@@ -17,7 +17,7 @@ import java.util.List;
 @Api(tags = {"Type API"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
 @RestController
-@RequestMapping("/types")
+@RequestMapping("/api/v1/types")
 public class TypeController {
 
     private final TypeService typeService;

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "customer", schema = "public")
@@ -20,9 +21,9 @@ public class CustomerEntity {
     private Long id;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id",referencedColumnName = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserEntity user;
-    
+
 
     @Column(name = "preferred_bank")
     private String preferredBank;
@@ -36,4 +37,8 @@ public class CustomerEntity {
     private long income;
 
     private boolean active;
+
+    @OneToMany(mappedBy = "customer")
+    private List<CustomerEntity> addresses;
+
 }

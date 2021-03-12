@@ -11,7 +11,7 @@ import com.trixpert.beebbeeb.data.repositories.CustomerRepository;
 import com.trixpert.beebbeeb.data.repositories.RolesRepository;
 import com.trixpert.beebbeeb.data.repositories.UserRepository;
 import com.trixpert.beebbeeb.data.repositories.UserRolesRepository;
-import com.trixpert.beebbeeb.data.request.CustomerRegistraionRequest;
+import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.RegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
@@ -60,7 +60,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> registerCustomer(CustomerRegistraionRequest customerRegisterRequest, String authHeader) {
+    public ResponseWrapper<Boolean> registerCustomer(CustomerRegistrationRequest customerRegisterRequest, String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
         try {
 

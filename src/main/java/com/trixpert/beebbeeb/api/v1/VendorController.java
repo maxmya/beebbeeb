@@ -17,7 +17,7 @@ import java.util.List;
 @Api(tags = {"Vendors API"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
 @RestController
-@RequestMapping("/vendors")
+@RequestMapping("/api/v1/vendors")
 public class VendorController {
 
 

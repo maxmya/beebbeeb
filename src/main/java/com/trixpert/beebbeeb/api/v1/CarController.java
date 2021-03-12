@@ -15,7 +15,7 @@ import java.util.List;
 @Api(tags = {"Cars API"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
 @RestController
-@RequestMapping("/cars")
+@RequestMapping("/api/v1/cars")
 public class CarController {
 
     private final CarService carService;
