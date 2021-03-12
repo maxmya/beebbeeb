@@ -1,6 +1,6 @@
 package com.trixpert.beebbeeb.api.v1;
 
-import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
+import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.CustomerDTO;
 import com.trixpert.beebbeeb.services.CustomerService;
@@ -48,15 +48,11 @@ public class CustomerController {
 
     @PostMapping("/auth/register")
     @ApiOperation("Add New Customer")
-    public ResponseEntity<ResponseWrapper<Boolean>> addCustomer(
-            @RequestBody CustomerRegistrationRequest customerRegisterRequest
-            , HttpServletRequest request) {
-
-        String authorizationHeader = request.getHeader("Authorization");
-
-        return ResponseEntity.ok(customerService.registerCustomer(customerRegisterRequest
-                , authorizationHeader));
+    public ResponseEntity<ResponseWrapper<Boolean>> mobileRegisterCustomer(
+            @RequestBody CustomerMobileRegistrationRequest customerRegisterRequest) {
+        return ResponseEntity.ok(customerService.registerCustomer(customerRegisterRequest));
     }
+
 
     @PutMapping("/delete/{customerId}")
     @ApiOperation("Remove Customer By Id")

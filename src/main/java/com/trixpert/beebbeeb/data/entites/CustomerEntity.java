@@ -37,6 +37,8 @@ public class CustomerEntity {
 
     private boolean active;
 
+    private String horoscope;
+
     @OneToMany(mappedBy = "customer")
     private List<AddressEntity> addresses;
 
