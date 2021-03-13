@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 
 @Api(tags = {"ParentColor API"})
@@ -50,7 +51,7 @@ public class ParentColorController {
     @PostMapping("/add")
     @ApiOperation("Add New Parent Color")
     public ResponseEntity<ResponseWrapper<Boolean>> addParentColor(
-            @RequestPart(name = "body") ParentColorRegistrationRequest parentColorRegistrationRequest
+            @Valid @RequestBody ParentColorRegistrationRequest parentColorRegistrationRequest
             , HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
 
