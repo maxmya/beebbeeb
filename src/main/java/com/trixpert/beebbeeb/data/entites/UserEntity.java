@@ -20,10 +20,10 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, name = "name")
+    @Column(name = "name")
     private String name;
 
-    @Column(nullable = false)
+    @Column
     private String email;
 
     private String phone;

@@ -17,7 +17,7 @@ import java.util.List;
 @Api(tags = {"Banks API"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
 @RestController
-@RequestMapping("/banks")
+@RequestMapping("/api/v1/banks")
 public class BankController {
 
     private final BankService bankService;

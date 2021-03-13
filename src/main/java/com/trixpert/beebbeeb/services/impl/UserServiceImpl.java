@@ -99,6 +99,7 @@ public class UserServiceImpl implements UserService {
         }
 
         try {
+
             UserEntity userEntityRecord = UserEntity.builder()
                     .phone(registrationRequest.getPhone())
                     .name(registrationRequest.getName())

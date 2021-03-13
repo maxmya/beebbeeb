@@ -17,7 +17,7 @@ import java.util.List;
 @Api(tags = {"Admins API"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
 @RestController
-@RequestMapping("/admins")
+@RequestMapping("/api/v1/admins")
 public class AdminController {
 
     private final AdminService adminService;

@@ -17,7 +17,7 @@ import java.util.List;
 @Api(tags = {"Type API"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
 @RestController
-@RequestMapping("/types")
+@RequestMapping("/api/v1/types")
 public class TypeController {
 
     private final TypeService typeService;
@@ -46,19 +46,19 @@ public class TypeController {
             @RequestPart(name = "body") TypeDTO typeDTO, HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(typeService.updateType(typeDTO , authorizationHeader));
+        return ResponseEntity.ok(typeService.updateType(typeDTO, authorizationHeader));
     }
 
     @PostMapping("/add")
     @ApiOperation("Add New Type")
     public ResponseEntity<ResponseWrapper<Boolean>> addType(
             @RequestPart(name = "body") TypeRegistrationRequest typeRegistrationRequest,
-            @RequestPart(name = "file") MultipartFile logoFile ,
+            @RequestPart(name = "file") MultipartFile logoFile,
             HttpServletRequest request) throws IOException {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(typeService.addType(typeRegistrationRequest , logoFile , authorizationHeader));
+        return ResponseEntity.ok(typeService.addType(typeRegistrationRequest, logoFile, authorizationHeader));
     }
 
     @PutMapping("/delete/{typeId}")
@@ -68,6 +68,6 @@ public class TypeController {
             , HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(typeService.deleteType(typeId , authorizationHeader));
+        return ResponseEntity.ok(typeService.deleteType(typeId, authorizationHeader));
     }
 }

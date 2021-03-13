@@ -19,7 +19,7 @@ import java.util.List;
 @Api(tags = {"Models API"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
 @RestController
-@RequestMapping("/models")
+@RequestMapping("/api/v1/models")
 
 public class ModelController {
 

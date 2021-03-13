@@ -17,7 +17,7 @@ import java.util.List;
 @Api(tags = {"Brands API"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
 @RestController
-@RequestMapping("/brands")
+@RequestMapping("/api/v1/brands")
 public class BrandController {
 
     private final BrandService brandService;

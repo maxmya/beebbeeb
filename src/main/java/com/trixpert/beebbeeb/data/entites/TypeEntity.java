@@ -21,6 +21,7 @@ public class TypeEntity {
 
     private String name;
 
+    @Column(name = "logo_url")
     private String logoUrl;
 
     private String description;

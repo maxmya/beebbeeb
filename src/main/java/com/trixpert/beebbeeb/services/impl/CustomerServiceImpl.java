@@ -11,7 +11,7 @@ import com.trixpert.beebbeeb.data.repositories.CustomerRepository;
 import com.trixpert.beebbeeb.data.repositories.RolesRepository;
 import com.trixpert.beebbeeb.data.repositories.UserRepository;
 import com.trixpert.beebbeeb.data.repositories.UserRolesRepository;
-import com.trixpert.beebbeeb.data.request.CustomerRegistraionRequest;
+import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.RegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
@@ -60,8 +60,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> registerCustomer(CustomerRegistraionRequest customerRegisterRequest, String authHeader) {
-        String username = auditService.getUsernameForAudit(authHeader);
+    public ResponseWrapper<Boolean> registerCustomer(CustomerMobileRegistrationRequest customerRegisterRequest) {
         try {
 
             Optional<RolesEntity> customerRole = rolesRepository.findByName(Roles.ROLE_CUSTOMER);
@@ -69,36 +68,20 @@ public class CustomerServiceImpl implements CustomerService {
             if (!customerRole.isPresent()) {
                 throw new NotFoundException("Role customer Not Found");
             }
-            RegistrationRequest registrationRequest = new RegistrationRequest(
-                    customerRegisterRequest.getName(),
-                    customerRegisterRequest.getPhone(),
-                    customerRegisterRequest.getEmail(),
-                    customerRegisterRequest.isActive(),
-                    customerRegisterRequest.getPassword()
-            );
-            UserEntity userEntity = userService.registerUser(
-                    customerRegisterRequest.getEmail(),
-                    customerRole.get(),
-                    registrationRequest,
-                    false).getData();
+
+            RegistrationRequest registrationRequest = new RegistrationRequest();
+            registrationRequest.setName(customerRegisterRequest.getName());
+            registrationRequest.setPhone(customerRegisterRequest.getPhone());
+            registrationRequest.setPassword(customerRegisterRequest.getPassword());
+
+            UserEntity savedUser = userService.registerUser(customerRegisterRequest.getPhone(),
+                    customerRole.get(), registrationRequest, true).getData();
 
             CustomerEntity customerEntityRecord = CustomerEntity.builder()
-                    .preferredBank(customerRegisterRequest.getPreferredBank())
-                    .jobTitle(customerRegisterRequest.getJobTitle())
-                    .jobAddress(customerRegisterRequest.getJobAddress())
-                    .income(customerRegisterRequest.getIncome())
-                    .user(userEntity).build();
+                    .horoscope(customerRegisterRequest.getHoroscope())
+                    .user(savedUser).build();
+
             customerRepository.save(customerEntityRecord);
-
-            AuditDTO auditDTO =
-                    AuditDTO.builder()
-                            .user(userService.getUserByUsername(username))
-                            .action(AuditActions.INSERT)
-                            .description("Adding new customer " + customerEntityRecord.toString())
-                            .timestamp(LocalDateTime.now())
-                            .build();
-            auditService.logAudit(auditDTO);
-
             return reporterService.reportSuccess("A new customer  has been added ");
         } catch (Exception e) {
             return reporterService.reportError(e);
@@ -154,24 +137,24 @@ public class CustomerServiceImpl implements CustomerService {
                 customerEntityRecord.setJobAddress(customerDTO.getJobAddress());
             }
             if (customerDTO.getJobTitle() != null && customerDTO.getJobTitle().equals(
-                    customerEntityRecord.getJobTitle())){
+                    customerEntityRecord.getJobTitle())) {
                 customerEntityRecord.setJobTitle(customerDTO.getJobTitle());
             }
-            if(customerDTO.getPreferredBank() != null && customerDTO.getPreferredBank().equals(
-                    customerEntityRecord.getPreferredBank())){
+            if (customerDTO.getPreferredBank() != null && customerDTO.getPreferredBank().equals(
+                    customerEntityRecord.getPreferredBank())) {
                 customerEntityRecord.setPreferredBank(customerDTO.getPreferredBank());
             }
-            if(customerDTO.getUser() != null && customerDTO.getUser().equals(
-                    customerEntityRecord.getUser())){
+            if (customerDTO.getUser() != null && customerDTO.getUser().equals(
+                    customerEntityRecord.getUser())) {
                 userService.updateUser(customerDTO.getUser());
             }
-                AuditDTO auditDTO =
-                        AuditDTO.builder()
-                                .user(userService.getUserByUsername(username))
-                                .action(AuditActions.UPDATE)
-                                .description("Updating new customer " + customerDTO.getId())
-                                .timestamp(LocalDateTime.now())
-                                .build();
+            AuditDTO auditDTO =
+                    AuditDTO.builder()
+                            .user(userService.getUserByUsername(username))
+                            .action(AuditActions.UPDATE)
+                            .description("Updating new customer " + customerDTO.getId())
+                            .timestamp(LocalDateTime.now())
+                            .build();
             auditService.logAudit(auditDTO);
 
             return reporterService.reportSuccess("A new customer  has been added ");

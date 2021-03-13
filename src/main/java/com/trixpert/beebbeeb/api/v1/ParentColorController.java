@@ -16,7 +16,7 @@ import java.util.List;
 @Api(tags = {"ParentColor API"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
 @RestController
-@RequestMapping("/parentcolor")
+@RequestMapping("/api/v1/parentcolor")
 public class ParentColorController {
 
     private final ParentColorService parentColorService;

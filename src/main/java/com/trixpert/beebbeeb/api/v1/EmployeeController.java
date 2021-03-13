@@ -16,7 +16,7 @@ import java.util.List;
 @Api(tags = {"Employees API"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
 @RestController
-@RequestMapping("/employees")
+@RequestMapping("/api/v1/employees")
 public class EmployeeController {
 
     private final EmployeeService employeeService;
