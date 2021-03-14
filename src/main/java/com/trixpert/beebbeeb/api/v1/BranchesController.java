@@ -1,6 +1,7 @@
 package com.trixpert.beebbeeb.api.v1;
 
 
+import com.trixpert.beebbeeb.data.request.BranchRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.BranchDTO;
 import com.trixpert.beebbeeb.data.to.CarDTO;
@@ -29,13 +30,13 @@ public class BranchesController {
     @PostMapping("/{vendorID}/register")
     @ApiOperation("Add Branches List For Specific Vendor")
     public ResponseEntity<ResponseWrapper<Boolean>> registerBranchForVendor(
-            @Valid @RequestBody BranchDTO branchDTO,
+            @Valid @RequestBody BranchRegistrationRequest branchRegistrationRequest,
             @PathVariable("vendorID") Long vendorID ,
             HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(branchService.registerBranchForVendor(branchDTO, vendorID , authorizationHeader));
+        return ResponseEntity.ok(branchService.registerBranchForVendor(branchRegistrationRequest, vendorID , authorizationHeader));
     }
 
 
@@ -50,11 +51,13 @@ public class BranchesController {
     @PutMapping("/update")
     @ApiOperation("Updating an existing branch for specific vendor")
     public ResponseEntity<ResponseWrapper<Boolean>> updateBranchForVendor(
-            @Valid @RequestBody BranchDTO branchDTO , HttpServletRequest request) {
+            @Valid @RequestBody BranchRegistrationRequest branchRegistrationRequest,
+            long branchId, HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(branchService.updateBranchForVendor(branchDTO , authorizationHeader));
+        return ResponseEntity.ok(branchService.updateBranchForVendor(branchRegistrationRequest,
+                branchId , authorizationHeader));
     }
 
     @PutMapping("/delete/{branchID}")
