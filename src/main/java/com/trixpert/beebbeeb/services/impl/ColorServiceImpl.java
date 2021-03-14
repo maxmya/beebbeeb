@@ -2,10 +2,11 @@ package com.trixpert.beebbeeb.services.impl;
 
 import com.trixpert.beebbeeb.data.constants.AuditActions;
 import com.trixpert.beebbeeb.data.entites.ColorEntity;
+import com.trixpert.beebbeeb.data.entites.ParentColorEntity;
 import com.trixpert.beebbeeb.data.mappers.CarMapper;
 import com.trixpert.beebbeeb.data.mappers.ColorMapper;
-import com.trixpert.beebbeeb.data.mappers.ParentColorMapper;
 import com.trixpert.beebbeeb.data.repositories.ColorRepository;
+import com.trixpert.beebbeeb.data.repositories.ParentColorRepository;
 import com.trixpert.beebbeeb.data.request.ColorRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
@@ -25,9 +26,9 @@ import java.util.Optional;
 @Service
 public class ColorServiceImpl implements ColorService {
     private final ColorRepository colorRepository;
+    private final ParentColorRepository parentColorRepository;
 
     private final ColorMapper colorMapper;
-    private final ParentColorMapper parentColorMapper;
     private final CarMapper carMapper;
 
     private final ReporterService reporterService;
@@ -37,15 +38,16 @@ public class ColorServiceImpl implements ColorService {
 
 
     public ColorServiceImpl(ColorRepository colorRepository,
+                            ParentColorRepository parentColorRepository,
                             ColorMapper colorMapper,
-                            ParentColorMapper parentColorMapper,
-                            CarMapper carMapper, ReporterService reporterService,
+                            CarMapper carMapper,
+                            ReporterService reporterService,
                             UserService userService,
                             AuditService auditService) {
       
         this.colorRepository = colorRepository;
+        this.parentColorRepository = parentColorRepository;
         this.colorMapper = colorMapper;
-        this.parentColorMapper = parentColorMapper;
         this.carMapper = carMapper;
         this.reporterService = reporterService;
         this.userService = userService;
@@ -59,11 +61,17 @@ public class ColorServiceImpl implements ColorService {
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
+            Optional<ParentColorEntity> optionalParentColorEntity = parentColorRepository.findById(colorRegistrationRequest.getParentColorId());
+            if(!optionalParentColorEntity.isPresent()){
+                throw new NotFoundException("Parent Color entity not found");
+            }
+            ParentColorEntity parentColorRecord = optionalParentColorEntity.get() ;
+
             ColorEntity colorEntityRecord = ColorEntity.builder()
                     .name(colorRegistrationRequest.getName())
                     .code(colorRegistrationRequest.getCode())
                     .active(colorRegistrationRequest.isActive())
-                    .parentColor(parentColorMapper.convertToEntity(colorRegistrationRequest.getParentColor()))
+                    .parentColor(parentColorRecord)
                     .build();
             colorRepository.save(colorEntityRecord);
 
@@ -114,21 +122,33 @@ public class ColorServiceImpl implements ColorService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> updateColor(ColorDTO colorDTO , String authHeader) {
+    public ResponseWrapper<Boolean> updateColor(ColorRegistrationRequest colorRegistrationRequest,
+                                                long colorId, String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
-            Optional<ColorEntity> optionalColorEntity = colorRepository.findById(colorDTO.getId());
+            Optional<ColorEntity> optionalColorEntity = colorRepository.findById(colorId);
             if (!optionalColorEntity.isPresent()) {
                 throw new NotFoundException("This Color Was Not Found");
             }
             ColorEntity colorEntityRecord = optionalColorEntity.get();
-            if (colorDTO.getName() != null && !colorDTO.getName().equals(colorEntityRecord.getName())) {
-                colorEntityRecord.setName(colorDTO.getName());
+
+            if (colorRegistrationRequest.getName() != null
+                    && !colorRegistrationRequest.getName().equals(colorEntityRecord.getName())) {
+                colorEntityRecord.setName(colorRegistrationRequest.getName());
             }
-            if (colorDTO.getCode() != null && !colorDTO.getCode().equals(colorEntityRecord.getCode())) {
-                colorEntityRecord.setCode(colorDTO.getCode());
+            if (colorRegistrationRequest.getCode() != null
+                    && !colorRegistrationRequest.getCode().equals(colorEntityRecord.getCode())) {
+                colorEntityRecord.setCode(colorRegistrationRequest.getCode());
+            }
+            if(colorRegistrationRequest.getParentColorId() != -1
+                    && colorRegistrationRequest.getParentColorId() != colorEntityRecord.getParentColor().getId()){
+                Optional<ParentColorEntity> optionalParentColorEntity = parentColorRepository.findById(colorRegistrationRequest.getParentColorId());
+                if(!optionalParentColorEntity.isPresent()){
+                    throw new NotFoundException("Parent Color entity not found");
+                }
+                colorEntityRecord.setParentColor(optionalParentColorEntity.get());
             }
 
             colorRepository.save(colorEntityRecord);

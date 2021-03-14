@@ -16,7 +16,8 @@ public interface ColorService {
 
     ResponseWrapper<Boolean> deleteColor(long colorId , String authHeader);
 
-    ResponseWrapper<Boolean> updateColor(ColorDTO colorDTO , String authHeader);
+    ResponseWrapper<Boolean> updateColor(ColorRegistrationRequest colorRegistrationRequest,
+                                         long colorId, String authHeader);
 
     ResponseWrapper<List<ColorDTO>> getAllColors(boolean active);
 
