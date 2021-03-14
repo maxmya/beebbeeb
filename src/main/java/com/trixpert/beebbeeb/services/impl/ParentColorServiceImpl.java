@@ -47,7 +47,6 @@ public class ParentColorServiceImpl implements ParentColorService {
 
         try {
             ParentColorEntity parentColorEntityRecord = ParentColorEntity.builder()
-                    .id(parentColorRegistrationRequest.getId())
                     .name(parentColorRegistrationRequest.getName())
                     .active(true)
                     .build();
