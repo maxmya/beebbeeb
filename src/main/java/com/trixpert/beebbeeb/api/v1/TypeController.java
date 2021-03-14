@@ -1,6 +1,5 @@
 package com.trixpert.beebbeeb.api.v1;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trixpert.beebbeeb.data.request.TypeRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.TypeDTO;
@@ -54,11 +53,9 @@ public class TypeController {
     @PostMapping(value = "/add")
     @ResponseBody
     public ResponseEntity<ResponseWrapper<Boolean>> addType(
-            @RequestParam(name = "file") MultipartFile logoFile,
-            @RequestParam(name = "body") String typeRegistrationRequest,
+            @RequestPart(name = "file") MultipartFile logoFile,
+            @RequestPart(name = "body") TypeRegistrationRequest regRequest,
             HttpServletRequest request) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        TypeRegistrationRequest regRequest = mapper.readValue(typeRegistrationRequest, TypeRegistrationRequest.class);
         String authorizationHeader = request.getHeader("Authorization");
         return ResponseEntity.ok(typeService.addType(regRequest, logoFile, authorizationHeader));
     }
