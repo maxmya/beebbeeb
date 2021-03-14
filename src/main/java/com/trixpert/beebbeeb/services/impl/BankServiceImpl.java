@@ -68,11 +68,11 @@ public class BankServiceImpl implements BankService {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
-        File convFile = new File(logoFile.getName());
-        logoFile.transferTo(convFile);
+        File bankLogoFile = new File(logoFile.getName());
+        logoFile.transferTo(bankLogoFile);
 
-        String logoUrlRecord = cloudStorageService
-                .uploadFile(convFile.getPath(), convFile.getName(), convFile.getAbsoluteFile());
+        String logoUrlRecord = cloudStorageService.uploadFile(bankLogoFile);
+
         try {
             RegistrationRequest registrationRequest = new RegistrationRequest(
                     bankRegistrationRequest.getName(),
@@ -138,7 +138,7 @@ public class BankServiceImpl implements BankService {
             if (bankDTO.getLogoUrl() != null) {
                 File convFile = new File(logoFile.getName());
                 logoFile.transferTo(convFile);
-                String logoUrlRecord = cloudStorageService.uploadFile(convFile.getPath(), convFile.getName(), convFile.getAbsoluteFile());
+                String logoUrlRecord = cloudStorageService.uploadFile(convFile);
                 bankEntityRecord.setLogoUrl(logoUrlRecord);
             }
             bankRepository.save(bankEntityRecord);

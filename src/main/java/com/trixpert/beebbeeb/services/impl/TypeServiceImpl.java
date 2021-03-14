@@ -13,7 +13,6 @@ import com.trixpert.beebbeeb.services.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,7 +31,6 @@ public class TypeServiceImpl implements TypeService {
     private final CloudStorageService cloudStorageService;
 
 
-
     public TypeServiceImpl(TypeRepository typeRepository,
                            TypeMapper typeMapper,
                            ReporterService reporterService,
@@ -49,12 +47,11 @@ public class TypeServiceImpl implements TypeService {
     @Override
     public ResponseWrapper<Boolean> addType(
             TypeRegistrationRequest typeRegistrationRequest
-      , MultipartFile logoFile , String authHeader) throws IOException {
+            , MultipartFile logoFile, String authHeader) throws IOException {
 
         String username = auditService.getUsernameForAudit(authHeader);
-        File convFile = new File(logoFile.getName());
-        logoFile.transferTo(convFile);
-        String logoUrlRecord = cloudStorageService.uploadFile(convFile.getPath(), convFile.getName(), convFile.getAbsoluteFile());
+
+        String logoUrlRecord = cloudStorageService.uploadFile(cloudStorageService.convertToFile(logoFile));
 
         try {
             TypeEntity typeEntityRecord = TypeEntity.builder()
@@ -82,7 +79,7 @@ public class TypeServiceImpl implements TypeService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> deleteType(long typeId , String authHeader) {
+    public ResponseWrapper<Boolean> deleteType(long typeId, String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
@@ -114,7 +111,7 @@ public class TypeServiceImpl implements TypeService {
 
 
     @Override
-    public ResponseWrapper<Boolean> updateType(TypeDTO typeDTO , String authHeader) {
+    public ResponseWrapper<Boolean> updateType(TypeDTO typeDTO, String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {

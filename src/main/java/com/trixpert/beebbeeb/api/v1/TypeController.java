@@ -1,5 +1,6 @@
 package com.trixpert.beebbeeb.api.v1;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trixpert.beebbeeb.data.request.TypeRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.TypeDTO;
@@ -49,16 +50,17 @@ public class TypeController {
         return ResponseEntity.ok(typeService.updateType(typeDTO, authorizationHeader));
     }
 
-    @PostMapping("/add")
     @ApiOperation("Add New Type")
+    @PostMapping(value = "/add")
+    @ResponseBody
     public ResponseEntity<ResponseWrapper<Boolean>> addType(
-            @RequestPart(name = "body") TypeRegistrationRequest typeRegistrationRequest,
-            @RequestPart(name = "file") MultipartFile logoFile,
+            @RequestParam(name = "file") MultipartFile logoFile,
+            @RequestParam(name = "body") String typeRegistrationRequest,
             HttpServletRequest request) throws IOException {
-
+        ObjectMapper mapper = new ObjectMapper();
+        TypeRegistrationRequest regRequest = mapper.readValue(typeRegistrationRequest, TypeRegistrationRequest.class);
         String authorizationHeader = request.getHeader("Authorization");
-
-        return ResponseEntity.ok(typeService.addType(typeRegistrationRequest, logoFile, authorizationHeader));
+        return ResponseEntity.ok(typeService.addType(regRequest, logoFile, authorizationHeader));
     }
 
     @PutMapping("/delete/{typeId}")

@@ -6,18 +6,23 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TypeMapper {
-    public TypeEntity convertToEntity(TypeDTO typeDTO){
+
+    public TypeEntity convertToEntity(TypeDTO typeDTO) {
         return TypeEntity.builder()
                 .id(typeDTO.getId())
                 .name(typeDTO.getName())
+                .description(typeDTO.getDescription())
+                .logoUrl(typeDTO.getLogoUrl())
                 .active(typeDTO.isActive())
                 .build();
     }
 
-    public TypeDTO convertToDTO(TypeEntity typeEntity){
+    public TypeDTO convertToDTO(TypeEntity typeEntity) {
         return TypeDTO.builder()
                 .id(typeEntity.getId())
                 .name(typeEntity.getName())
+                .description(typeEntity.getDescription())
+                .logoUrl(typeEntity.getLogoUrl())
                 .active(typeEntity.isActive())
                 .build();
     }

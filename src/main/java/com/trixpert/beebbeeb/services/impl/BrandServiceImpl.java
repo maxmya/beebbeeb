@@ -56,7 +56,7 @@ public class BrandServiceImpl implements BrandService {
 
         File convFile = new File(logoFile.getName());
         logoFile.transferTo(convFile);
-        String logoUrlRecord = cloudStorageService.uploadFile(convFile.getPath(), convFile.getName(), convFile.getAbsoluteFile());
+        String logoUrlRecord = cloudStorageService.uploadFile(convFile);
         try {
             BrandEntity brandEntityRecord = BrandEntity.builder()
                     .name(brandRegisterRequest.getName())
@@ -136,7 +136,7 @@ public class BrandServiceImpl implements BrandService {
             if (logoFile != null) {
                 File convFile = new File(logoFile.getName());
                 logoFile.transferTo(convFile);
-                String logoUrlRecord = cloudStorageService.uploadFile(convFile.getPath(), convFile.getName(), convFile.getAbsoluteFile());
+                String logoUrlRecord = cloudStorageService.uploadFile(convFile);
                 brandEntityRecord.setLogoUrl(logoUrlRecord);
             }
             brandRepository.save(brandEntityRecord);
@@ -170,12 +170,12 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
- 
-    public ResponseWrapper<BrandDTO> getBrand(boolean isActive ,long brandId) {
+
+    public ResponseWrapper<BrandDTO> getBrand(boolean isActive, long brandId) {
         try {
             Optional<BrandEntity> optionalBrandEntity = brandRepository.findByActiveAndId(isActive, brandId);
 
-           if (!optionalBrandEntity.isPresent()) {
+            if (!optionalBrandEntity.isPresent()) {
                 throw new NotFoundException("This Brand does not exist");
             }
             BrandEntity brandEntityRecord = optionalBrandEntity.get();
