@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface BranchRepository extends JpaRepository<BranchEntity, Long> {
-    List<BranchEntity> findAllByVendor(VendorEntity vendorEntity);
+    List<BranchEntity> findAllByVendorAndActive(VendorEntity vendorEntity, boolean active);
 }
