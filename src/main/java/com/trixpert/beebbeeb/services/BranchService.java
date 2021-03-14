@@ -12,7 +12,7 @@ public interface BranchService {
                                                      Long vendorId,
                                                      String authHeader);
 
-    ResponseWrapper<List<BranchDTO>> getAllBranchesForVendor(Long vendorId );
+    ResponseWrapper<List<BranchDTO>> getAllBranchesForVendor(Long vendorId, boolean active);
 
     ResponseWrapper<Boolean> updateBranchForVendor(BranchRegistrationRequest branchRegistrationRequest,
                                                    long branchId,

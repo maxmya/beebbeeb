@@ -115,10 +115,10 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Override
-    public ResponseWrapper<List<BranchDTO>> getAllBranchesForVendor(Long vendorId) {
+    public ResponseWrapper<List<BranchDTO>> getAllBranchesForVendor(Long vendorId, boolean active) {
         try {
             List<BranchDTO> branchesList = new ArrayList<>();
-            branchRepository.findAllByVendor(vendorRepository.getOne(vendorId)).forEach(branch -> {
+            branchRepository.findAllByVendorAndActive(vendorRepository.getOne(vendorId), active).forEach(branch -> {
                 BranchDTO branchDTO = branchMapper.convertToDTO(branch);
                 branchesList.add(branchDTO);
             });
