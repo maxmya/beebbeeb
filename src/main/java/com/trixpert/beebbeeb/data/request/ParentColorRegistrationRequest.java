@@ -14,7 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ParentColorRegistrationRequest {
-    private Long id;
 
     private String name;
 
