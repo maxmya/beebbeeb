@@ -1,18 +1,23 @@
 package com.trixpert.beebbeeb.services.impl;
 
 import com.trixpert.beebbeeb.data.constants.AuditActions;
+import com.trixpert.beebbeeb.data.constants.Roles;
 import com.trixpert.beebbeeb.data.entites.BranchEntity;
+import com.trixpert.beebbeeb.data.entites.RolesEntity;
 import com.trixpert.beebbeeb.data.entites.UserEntity;
 import com.trixpert.beebbeeb.data.entites.VendorEntity;
 import com.trixpert.beebbeeb.data.mappers.BranchMapper;
 import com.trixpert.beebbeeb.data.mappers.CarMapper;
 import com.trixpert.beebbeeb.data.repositories.BranchRepository;
-import com.trixpert.beebbeeb.data.repositories.UserRepository;
+import com.trixpert.beebbeeb.data.repositories.RolesRepository;
 import com.trixpert.beebbeeb.data.repositories.VendorRepository;
+import com.trixpert.beebbeeb.data.request.BranchRegistrationRequest;
+import com.trixpert.beebbeeb.data.request.RegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
 import com.trixpert.beebbeeb.data.to.BranchDTO;
 import com.trixpert.beebbeeb.data.to.CarDTO;
+import com.trixpert.beebbeeb.data.to.UserDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
 import org.springframework.stereotype.Service;
@@ -28,10 +33,9 @@ public class BranchServiceImpl implements BranchService {
 
     private final VendorRepository vendorRepository;
     private final BranchRepository branchRepository;
-    private final UserRepository userRepository;
+    private final RolesRepository rolesRepository;
 
     private final UserService userService;
-    private final VendorService vendorService;
     private final ReporterService reporterService;
     private final AuditService auditService;
 
@@ -40,9 +44,8 @@ public class BranchServiceImpl implements BranchService {
 
     public BranchServiceImpl(VendorRepository vendorRepository,
                              BranchRepository branchRepository,
-                             UserRepository userRepository,
+                             RolesRepository rolesRepository,
                              UserService userService,
-                             VendorService vendorService,
                              ReporterService reporterService,
                              AuditService auditService,
                              BranchMapper branchMapper,
@@ -50,9 +53,8 @@ public class BranchServiceImpl implements BranchService {
 
         this.vendorRepository = vendorRepository;
         this.branchRepository = branchRepository;
-        this.userRepository = userRepository;
+        this.rolesRepository = rolesRepository;
         this.userService = userService;
-        this.vendorService = vendorService;
         this.reporterService = reporterService;
         this.auditService = auditService;
         this.branchMapper = branchMapper;
@@ -60,26 +62,47 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> registerBranchForVendor(BranchDTO branchDTO, Long vendorId ,
+    public ResponseWrapper<Boolean> registerBranchForVendor(BranchRegistrationRequest branchRegistrationRequest,
+                                                            Long vendorId ,
                                                             String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
+            Optional<RolesEntity> branchRole = rolesRepository.findByName(Roles.ROLE_BRANCH);
+            RegistrationRequest registrationRequest = new RegistrationRequest(
+                    branchRegistrationRequest.getName(),
+                    branchRegistrationRequest.getPhone(),
+                    branchRegistrationRequest.getEmail(),
+                    branchRegistrationRequest.isActive(),
+                    branchRegistrationRequest.getPassword()
+            );
+            UserEntity userEntityRecord = userService.registerUser(
+                    branchRegistrationRequest.getEmail(),
+                    branchRole.get(),
+                    registrationRequest,
+                    false
+            ).getData();
             Optional<VendorEntity> optionalVendorEntity = vendorRepository.findById(vendorId);
             if (!optionalVendorEntity.isPresent()) {
                 throw new NotFoundException("Vendor Not Found");
             }
-            VendorEntity vendorEntity = optionalVendorEntity.get();
-            BranchEntity branchEntityRecord = branchMapper.convertToEntity(branchDTO);
-            branchEntityRecord.setVendor(vendorEntity);
-            branchRepository.save(branchEntityRecord);
+            VendorEntity vendorEntityRecord = optionalVendorEntity.get();
+
+            BranchEntity branchEntity = BranchEntity.builder()
+                    .name(branchRegistrationRequest.getBranchName())
+                    .address(branchRegistrationRequest.getAddress())
+                    .user(userEntityRecord)
+                    .vendor(vendorEntityRecord)
+                    .active(branchRegistrationRequest.isActive())
+                    .build();
+            branchRepository.save(branchEntity);
 
             AuditDTO auditDTO =
                     AuditDTO.builder()
                             .user(userService.getUserByUsername(username))
                             .action(AuditActions.INSERT)
-                            .description("adding new branch entity " + branchEntityRecord.toString())
+                            .description("adding new branch entity " + branchEntity.toString())
                             .timestamp(LocalDateTime.now())
                             .build();
 
@@ -106,31 +129,40 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> updateBranchForVendor(BranchDTO branchDTO , String authHeader) {
+    public ResponseWrapper<Boolean> updateBranchForVendor(BranchRegistrationRequest branchRegistrationRequest,
+                                                          long branchId,
+                                                          String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
-            Optional<BranchEntity> optionalBranchRecord = branchRepository.findById(branchDTO.getId());
+            Optional<BranchEntity> optionalBranchRecord = branchRepository.findById(branchId);
             if (!optionalBranchRecord.isPresent()) {
                 throw new NotFoundException(" Branch Entity not found");
             }
             BranchEntity branchRecord = optionalBranchRecord.get();
-            if (branchDTO.getName() != null) {
-                branchRecord.setName(branchDTO.getName());
+            if (branchRegistrationRequest.getName() != null) {
+                branchRecord.setName(branchRegistrationRequest.getName());
             }
-            if (branchDTO.getAddress() != null) {
-                branchRecord.setAddress(branchDTO.getAddress());
+            if (branchRegistrationRequest.getAddress() != null) {
+                branchRecord.setAddress(branchRegistrationRequest.getAddress());
             }
-            if (branchDTO.getBranchManager() != null) {
-                Optional<UserEntity> optionalUserRecord = userRepository.findById(branchDTO.getBranchManager().getId());
-                if (!optionalUserRecord.isPresent()) {
-                    throw new NotFoundException(" User Entity not found");
+            if (branchRegistrationRequest.getName() != null || branchRegistrationRequest.getEmail() != null
+                    || branchRegistrationRequest.getPhone() != null) {
+                UserDTO branchManagerDTO = UserDTO.builder()
+                        .id(branchRecord.getUser().getId())
+                        .name(branchRegistrationRequest.getName())
+                        .email(branchRegistrationRequest.getEmail())
+                        .phone(branchRegistrationRequest.getPhone())
+                        .build();
+                userService.updateUser(branchManagerDTO);
+            }
+            if (branchRegistrationRequest.getVendorId() != -1 && branchRegistrationRequest.getVendorId()!=branchRecord.getVendor().getId()) {
+                Optional<VendorEntity> optionalVendorRecord = vendorRepository.findById(branchRegistrationRequest.getVendorId());
+                if (!optionalVendorRecord.isPresent()) {
+                    throw new NotFoundException(" Vendor Entity not found");
                 }
-                userService.updateUser(branchDTO.getBranchManager());
-            }
-            if (branchDTO.getVendor() != null) {
-                vendorService.updateVendor(branchDTO.getVendor() , authHeader);
+                branchRecord.setVendor(optionalVendorRecord.get());
             }
             branchRepository.save(branchRecord);
 
