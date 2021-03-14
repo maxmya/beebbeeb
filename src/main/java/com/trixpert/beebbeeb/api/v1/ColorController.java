@@ -38,14 +38,14 @@ public class ColorController {
         return ResponseEntity.ok(colorService.getAllColors(false));
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/{colorId}")
     @ApiOperation("Update an existing color with new data")
-    public ResponseEntity<ResponseWrapper<Boolean>> updateColor(@RequestBody ColorDTO ColorDTO,
-                                                                HttpServletRequest request) {
+    public ResponseEntity<ResponseWrapper<Boolean>> updateColor(@RequestPart(name = "body") ColorRegistrationRequest colorRegistrationRequest,
+                                @PathVariable("colorId") long colorId, HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(colorService.updateColor(ColorDTO, authorizationHeader));
+        return ResponseEntity.ok(colorService.updateColor(colorRegistrationRequest, colorId,authorizationHeader));
     }
 
     @PostMapping("/add")
