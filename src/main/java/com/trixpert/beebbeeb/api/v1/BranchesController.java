@@ -40,12 +40,20 @@ public class BranchesController {
     }
 
 
-    @GetMapping("/{vendorID}/list")
-    @ApiOperation("Get List Of All Branches For Specific Vendor")
-    public ResponseEntity<ResponseWrapper<List<BranchDTO>>> getBranchesForVendor(
-            @PathVariable("vendorID") Long vendorID ) {
+    @GetMapping("/{vendorId}/list/active")
+    @ApiOperation("Get List Of All Active Branches For Specific Vendor")
+    public ResponseEntity<ResponseWrapper<List<BranchDTO>>> getActiveBranchesForVendor(
+            @PathVariable("vendorId") Long vendorId ) {
 
-        return ResponseEntity.ok(branchService.getAllBranchesForVendor(vendorID));
+        return ResponseEntity.ok(branchService.getAllBranchesForVendor(vendorId, true));
+    }
+
+    @GetMapping("/{vendorId}/list/inactive")
+    @ApiOperation("Get List Of All Inactive Branches For Specific Vendor")
+    public ResponseEntity<ResponseWrapper<List<BranchDTO>>> getInactiveBranchesForVendor(
+            @PathVariable("vendorId") Long vendorId ) {
+
+        return ResponseEntity.ok(branchService.getAllBranchesForVendor(vendorId, false));
     }
 
     @PutMapping("/update")
