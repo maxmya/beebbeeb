@@ -9,6 +9,7 @@ import com.trixpert.beebbeeb.security.service.AuthenticationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,7 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/login/email")
+    @PostMapping(value = "/login/email", consumes = {MediaType.APPLICATION_JSON_VALUE})
     @ApiOperation("Login User With Email & Password")
     public ResponseEntity<ResponseWrapper<AuthResponse>> authenticateUserByEmail(@Valid @RequestBody EmailLoginRequest emailLoginRequest) {
         return ResponseEntity.ok(authService.loginUserWithEmail(emailLoginRequest));
