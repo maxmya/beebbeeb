@@ -50,6 +50,7 @@ public class TypeController {
         return ResponseEntity.ok(typeService.updateType(typeDTO, authorizationHeader));
     }
 
+    @CrossOrigin(origins = {"*"})
     @ApiOperation("Add New Type")
     @PostMapping(value = "/add", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseBody
