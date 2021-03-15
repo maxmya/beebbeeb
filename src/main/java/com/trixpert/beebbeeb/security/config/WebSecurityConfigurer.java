@@ -5,6 +5,7 @@ import com.trixpert.beebbeeb.security.jwt.JwtAuthTokenFilter;
 import com.trixpert.beebbeeb.security.service.impl.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -73,6 +74,8 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf()
                 .disable()
+                .authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
+                .and()
                 .authorizeRequests()
                 .antMatchers("/api/v1/auth/**").permitAll()
                 .antMatchers("/api/v1/customer/auth/**").permitAll()
