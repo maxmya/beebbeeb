@@ -56,11 +56,11 @@ public class BranchesController {
         return ResponseEntity.ok(branchService.getAllBranchesForVendor(vendorId, false));
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/{branchId}")
     @ApiOperation("Updating an existing branch for specific vendor")
     public ResponseEntity<ResponseWrapper<Boolean>> updateBranchForVendor(
             @Valid @RequestBody BranchRegistrationRequest branchRegistrationRequest,
-            long branchId, HttpServletRequest request) {
+            @PathVariable("branchId") long branchId, HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
