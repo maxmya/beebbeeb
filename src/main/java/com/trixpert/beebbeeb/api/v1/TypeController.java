@@ -6,6 +6,7 @@ import com.trixpert.beebbeeb.data.to.TypeDTO;
 import com.trixpert.beebbeeb.services.TypeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,7 +51,7 @@ public class TypeController {
     }
 
     @ApiOperation("Add New Type")
-    @PostMapping(value = "/add")
+    @PostMapping(value = "/add", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseBody
     public ResponseEntity<ResponseWrapper<Boolean>> addType(
             @RequestPart(name = "file") MultipartFile logoFile,
