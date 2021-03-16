@@ -6,7 +6,7 @@
         </Property>
     </Properties>
     <Appenders>
-        <RollingFile name="FileAppender" fileName="/home/beebbeeb/logs/beeebbeeb-logs.log"
+        <RollingFile name="FileAppender" fileName="logs/beeebbeeb-logs.log"
                      filePattern="logs/dcg-logs-%d{yyyy-MM-dd-HH-mm-ss}-%i.log">
             <PatternLayout>
                 <Pattern>${LOG_PATTERN}</Pattern>
