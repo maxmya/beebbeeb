@@ -56,12 +56,14 @@ public class TypeController {
     @PostMapping(value = "/add", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseBody
     public ResponseEntity<ResponseWrapper<Boolean>> addType(
-            @RequestParam(name = "file") MultipartFile logoFile,
-            @RequestParam(name = "body") String regRequest,
+            @RequestPart(name = "file") MultipartFile logoFile,
+            @RequestPart(name = "body") TypeRegistrationRequest regRequest,
             HttpServletRequest request) throws IOException {
         String authorizationHeader = request.getHeader("Authorization");
         ObjectMapper objectMapper = new ObjectMapper();
-        return ResponseEntity.ok(typeService.addType(objectMapper.readValue(regRequest, TypeRegistrationRequest.class), logoFile, authorizationHeader));
+        return ResponseEntity.ok(typeService.addType(regRequest, logoFile, authorizationHeader));
+
+//        return ResponseEntity.ok(typeService.addType(objectMapper.readValue(regRequest, TypeRegistrationRequest.class), logoFile, authorizationHeader));
     }
 
     @PutMapping("/delete/{typeId}")
