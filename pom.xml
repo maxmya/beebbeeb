@@ -16,7 +16,7 @@
     <properties>
         <java.version>1.8</java.version>
     </properties>
-<!--    <packaging>war</packaging>-->
+    <packaging>war</packaging>
 
     <dependencyManagement>
         <dependencies>
@@ -43,22 +43,22 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-logging</artifactId>
                 </exclusion>
-                <!--                <exclusion>-->
-                <!--                    <artifactId>tomcat-embed-el</artifactId>-->
-                <!--                    <groupId>org.apache.tomcat.embed</groupId>-->
-                <!--                </exclusion>-->
-                <!--                <exclusion>-->
-                <!--                    <artifactId>tomcat-embed-core</artifactId>-->
-                <!--                    <groupId>org.apache.tomcat.embed</groupId>-->
-                <!--                </exclusion>-->
-                <!--                <exclusion>-->
-                <!--                    <artifactId>tomcat-embed-websocket</artifactId>-->
-                <!--                    <groupId>org.apache.tomcat.embed</groupId>-->
-                <!--                </exclusion>-->
-                <!--                <exclusion>-->
-                <!--                    <groupId>org.springframework.boot</groupId>-->
-                <!--                    <artifactId>spring-boot-starter-logging</artifactId>-->
-                <!--                </exclusion>-->
+                <exclusion>
+                    <artifactId>tomcat-embed-el</artifactId>
+                    <groupId>org.apache.tomcat.embed</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>tomcat-embed-core</artifactId>
+                    <groupId>org.apache.tomcat.embed</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>tomcat-embed-websocket</artifactId>
+                    <groupId>org.apache.tomcat.embed</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
