@@ -22,6 +22,7 @@ import java.util.List;
 @RequestMapping("/api/v1/types")
 public class TypeController {
 
+
     private final TypeService typeService;
 
     public TypeController(TypeService typeService) {
@@ -56,14 +57,15 @@ public class TypeController {
     @PostMapping(value = "/add", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseBody
     public ResponseEntity<ResponseWrapper<Boolean>> addType(
-            @RequestPart(name = "file") MultipartFile logoFile,
-            @RequestPart(name = "body") TypeRegistrationRequest regRequest,
+            @RequestParam(name = "file") MultipartFile logoFile,
+            @RequestParam(name = "body") String regRequest,
             HttpServletRequest request) throws IOException {
+
+        System.out.println(logoFile);
+        System.out.println(regRequest);
         String authorizationHeader = request.getHeader("Authorization");
         ObjectMapper objectMapper = new ObjectMapper();
-        return ResponseEntity.ok(typeService.addType(regRequest, logoFile, authorizationHeader));
-
-//        return ResponseEntity.ok(typeService.addType(objectMapper.readValue(regRequest, TypeRegistrationRequest.class), logoFile, authorizationHeader));
+        return ResponseEntity.ok(typeService.addType(objectMapper.readValue(regRequest, TypeRegistrationRequest.class), logoFile, authorizationHeader));
     }
 
     @PutMapping("/delete/{typeId}")
