@@ -51,7 +51,7 @@ public class TypeServiceImpl implements TypeService {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
-        String logoUrlRecord = cloudStorageService.uploadFile(cloudStorageService.convertToFile(logoFile));
+        String logoUrlRecord = cloudStorageService.uploadFile(logoFile);
 
         try {
             TypeEntity typeEntityRecord = TypeEntity.builder()

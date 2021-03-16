@@ -68,10 +68,7 @@ public class BankServiceImpl implements BankService {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
-        File bankLogoFile = new File(logoFile.getName());
-        logoFile.transferTo(bankLogoFile);
-
-        String logoUrlRecord = cloudStorageService.uploadFile(bankLogoFile);
+        String logoUrlRecord = cloudStorageService.uploadFile(logoFile);
 
         try {
             RegistrationRequest registrationRequest = new RegistrationRequest(
@@ -135,10 +132,8 @@ public class BankServiceImpl implements BankService {
                 }
                 userService.updateUser(bankDTO.getUser());
             }
-            if (bankDTO.getLogoUrl() != null) {
-                File convFile = new File(logoFile.getName());
-                logoFile.transferTo(convFile);
-                String logoUrlRecord = cloudStorageService.uploadFile(convFile);
+            if (logoFile != null) {
+                String logoUrlRecord = cloudStorageService.uploadFile(logoFile);
                 bankEntityRecord.setLogoUrl(logoUrlRecord);
             }
             bankRepository.save(bankEntityRecord);

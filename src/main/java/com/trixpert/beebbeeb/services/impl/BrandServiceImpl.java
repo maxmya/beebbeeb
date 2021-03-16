@@ -54,9 +54,7 @@ public class BrandServiceImpl implements BrandService {
     ) throws IOException {
         String username = auditService.getUsernameForAudit(authHeader);
 
-        File convFile = new File(logoFile.getName());
-        logoFile.transferTo(convFile);
-        String logoUrlRecord = cloudStorageService.uploadFile(convFile);
+        String logoUrlRecord = cloudStorageService.uploadFile(logoFile);
         try {
             BrandEntity brandEntityRecord = BrandEntity.builder()
                     .name(brandRegisterRequest.getName())
@@ -134,9 +132,7 @@ public class BrandServiceImpl implements BrandService {
                 brandEntityRecord.setOrigin(brandDTO.getOrigin());
             }
             if (logoFile != null) {
-                File convFile = new File(logoFile.getName());
-                logoFile.transferTo(convFile);
-                String logoUrlRecord = cloudStorageService.uploadFile(convFile);
+                String logoUrlRecord = cloudStorageService.uploadFile(logoFile);
                 brandEntityRecord.setLogoUrl(logoUrlRecord);
             }
             brandRepository.save(brandEntityRecord);
