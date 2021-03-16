@@ -13,14 +13,14 @@ public class LoggingConfiguration {
 
     @Bean
     public String setupOutputFile() throws FileNotFoundException {
-        PrintStream out = new PrintStream(new FileOutputStream("logs/output.txt", true), true);
+        PrintStream out = new PrintStream(new FileOutputStream("/home/beebbeeb/logs/output.txt", true), true);
         System.setOut(out);
         return "DONE";
     }
 
     @Bean
     public String setupTraceFile() throws FileNotFoundException {
-        PrintStream out = new PrintStream(new FileOutputStream("logs/trace.txt", true), true);
+        PrintStream out = new PrintStream(new FileOutputStream("/home/beebbeeb/logs/trace.txt", true), true);
         System.setErr(out);
         return "DONE";
     }
