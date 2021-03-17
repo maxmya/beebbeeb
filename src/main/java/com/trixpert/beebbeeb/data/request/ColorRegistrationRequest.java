@@ -14,7 +14,7 @@ public class ColorRegistrationRequest {
 
     private String name;
 
-    private ParentColorDTO parentColor;
+    private long parentColorId;
 
     private boolean active;
 
