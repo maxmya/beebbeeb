@@ -52,11 +52,13 @@ public class EmployeeController {
     @PutMapping("/update")
     @ApiOperation("Update an existing employee")
     public ResponseEntity<ResponseWrapper<Boolean>> updateEmployeeForBranch(
-            @Valid @RequestBody EmployeeDTO employeeDTO , HttpServletRequest request){
+            @Valid @RequestBody EmployeeRegistrationRequest employeeRegistrationRequest,
+            long employeeId, HttpServletRequest request){
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(employeeService.updateEmployeeForBranch(employeeDTO , authorizationHeader));
+        return ResponseEntity.ok(employeeService.updateEmployeeForBranch(employeeRegistrationRequest,
+                employeeId, authorizationHeader));
     }
 
     @PutMapping("/delete/{employeeId}")

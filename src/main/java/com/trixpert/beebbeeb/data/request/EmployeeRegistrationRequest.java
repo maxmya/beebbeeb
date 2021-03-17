@@ -1,7 +1,6 @@
 package com.trixpert.beebbeeb.data.request;
 
-import com.trixpert.beebbeeb.data.to.BranchDTO;
-import com.trixpert.beebbeeb.data.to.UserDTO;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,10 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeeRegistrationRequest {
+public class EmployeeRegistrationRequest extends RegistrationRequest {
     private String title;
-    private UserDTO user;
-    private BranchDTO branch;
-    private boolean active;
-    private String password;
+    private long branchId;
+
 }
