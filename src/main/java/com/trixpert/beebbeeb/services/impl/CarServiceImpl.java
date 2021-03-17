@@ -79,7 +79,6 @@ public class CarServiceImpl implements CarService {
             ColorEntity colorRecord = optionalColorEntity.get();
 
             CarEntity carEntityRecord = CarEntity.builder()
-                    .condition(carRegistrationRequest.getCondition())
                     .additionDate(carRegistrationRequest.getAdditionDate())
                     .model(modelRecord)
                     .branch(branchRecord)
@@ -104,10 +103,7 @@ public class CarServiceImpl implements CarService {
                 throw new NotFoundException("Car entity not found");
             }
             CarEntity  carEntityRecord = optionalCarEntity.get();
-            if(carRegistrationRequest.getCondition() != null &&
-                    !carRegistrationRequest.getCondition().equals(carEntityRecord.getCondition())){
-                carEntityRecord.setCondition(carRegistrationRequest.getCondition());
-            }
+
             if(carRegistrationRequest.getAdditionDate() != null &&
                     !carRegistrationRequest.getAdditionDate().equals(carEntityRecord.getAdditionDate())){
                 carEntityRecord.setAdditionDate(carRegistrationRequest.getAdditionDate());
