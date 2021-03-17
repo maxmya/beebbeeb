@@ -5,8 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -16,6 +18,13 @@ import static org.springframework.http.HttpStatus.*;
 @ControllerAdvice
 public class GenericExceptionHandler extends ResponseEntityExceptionHandler {
 
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public void handle(HttpMessageNotReadableException e) {
+        log.warn("Returning HTTP 400 Bad Request", e);
+        throw e;
+    }
 
     @ExceptionHandler({BadRequestException.class})
     public ResponseEntity<Object> handleBadRequestException(BadRequestException e, WebRequest request) {
