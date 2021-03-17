@@ -1,6 +1,8 @@
 package com.trixpert.beebbeeb.api.v1;
 
 import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
+import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
+import com.trixpert.beebbeeb.data.request.EmployeeRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.CustomerDTO;
 import com.trixpert.beebbeeb.services.CustomerService;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 
 @Api(tags = {"Customer API"})
@@ -37,13 +40,16 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.getAllCustomers(false));
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/{customerId}")
     @ApiOperation("Update an existing customer")
     public ResponseEntity<ResponseWrapper<Boolean>> updateCustomer(
-            @RequestBody CustomerDTO customerDTO, HttpServletRequest request) {
+            @Valid @RequestBody CustomerRegistrationRequest customerRegistrationRequest,
+
+            @PathVariable long customerId, HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
-        return ResponseEntity.ok(customerService.updateCustomer(customerDTO, authorizationHeader));
+        return ResponseEntity.ok(customerService.updateCustomer(customerRegistrationRequest ,
+                customerId, authorizationHeader));
     }
 
     @PostMapping("/auth/register")
