@@ -195,4 +195,19 @@ public class BankServiceImpl implements BankService {
             return reporterService.reportError(e);
         }
     }
+
+    @Override
+    public ResponseWrapper<BankDTO> getBank(boolean active, long bankId) {
+        try {
+            Optional<BankEntity> optionalBankEntity = bankRepository.findById(bankId);
+            if (!optionalBankEntity.isPresent()) {
+                throw new NotFoundException("This bank doesn't exist");
+            }
+            BankEntity bankEntityRecord = optionalBankEntity.get();
+            return reporterService.reportSuccess(bankMapper.convertToDTO(bankEntityRecord));
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
 }

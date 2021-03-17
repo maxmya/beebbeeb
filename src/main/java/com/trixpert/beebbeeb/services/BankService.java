@@ -3,6 +3,7 @@ package com.trixpert.beebbeeb.services;
 import com.trixpert.beebbeeb.data.request.BankRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.BankDTO;
+import com.trixpert.beebbeeb.data.to.BrandDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -20,4 +21,7 @@ public interface BankService {
     ResponseWrapper<Boolean> deleteBank(Long bankId , String authHeader);
 
     ResponseWrapper<List<BankDTO>> getAllBanks(boolean active );
+
+    ResponseWrapper<BankDTO> getBank(boolean active , long bankId);
+
 }
