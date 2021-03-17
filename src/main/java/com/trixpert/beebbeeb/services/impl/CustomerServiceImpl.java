@@ -12,10 +12,13 @@ import com.trixpert.beebbeeb.data.repositories.RolesRepository;
 import com.trixpert.beebbeeb.data.repositories.UserRepository;
 import com.trixpert.beebbeeb.data.repositories.UserRolesRepository;
 import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
+import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
+import com.trixpert.beebbeeb.data.request.EmployeeRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.RegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
 import com.trixpert.beebbeeb.data.to.CustomerDTO;
+import com.trixpert.beebbeeb.data.to.UserDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.AuditService;
 import com.trixpert.beebbeeb.services.CustomerService;
@@ -117,42 +120,49 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> updateCustomer(CustomerDTO customerDTO, String authHeader) {
+    public ResponseWrapper<Boolean> updateCustomer(CustomerRegistrationRequest customerRegistrationRequest ,
+                                                   long customerId, String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
         try {
 
             Optional<CustomerEntity> optionalCustomerEntity = customerRepository.findById(
-                    customerDTO.getId());
+                    customerId);
 
             if (!optionalCustomerEntity.isPresent()) {
                 throw new NotFoundException("customer Not Found");
             }
             CustomerEntity customerEntityRecord = optionalCustomerEntity.get();
 
-            if (customerDTO.getIncome() != -1 && customerDTO.getIncome() != customerEntityRecord.getIncome()) {
-                customerEntityRecord.setIncome(customerDTO.getIncome());
+            if (customerRegistrationRequest.getIncome() != -1 && customerRegistrationRequest.getIncome() != customerEntityRecord.getIncome()) {
+                customerEntityRecord.setIncome(customerRegistrationRequest.getIncome());
             }
-            if (customerDTO.getJobAddress() != null && customerDTO.getJobAddress()
+            if (customerRegistrationRequest.getJobAddress() != null && customerRegistrationRequest.getJobAddress()
                     .equals(customerEntityRecord.getJobAddress())) {
-                customerEntityRecord.setJobAddress(customerDTO.getJobAddress());
+                customerEntityRecord.setJobAddress(customerRegistrationRequest.getJobAddress());
             }
-            if (customerDTO.getJobTitle() != null && customerDTO.getJobTitle().equals(
+            if (customerRegistrationRequest.getJobTitle() != null && customerRegistrationRequest.getJobTitle().equals(
                     customerEntityRecord.getJobTitle())) {
-                customerEntityRecord.setJobTitle(customerDTO.getJobTitle());
+                customerEntityRecord.setJobTitle(customerRegistrationRequest.getJobTitle());
             }
-            if (customerDTO.getPreferredBank() != null && customerDTO.getPreferredBank().equals(
+            if (customerRegistrationRequest.getPreferredBank() != null && customerRegistrationRequest.getPreferredBank().equals(
                     customerEntityRecord.getPreferredBank())) {
-                customerEntityRecord.setPreferredBank(customerDTO.getPreferredBank());
+                customerEntityRecord.setPreferredBank(customerRegistrationRequest.getPreferredBank());
             }
-            if (customerDTO.getUser() != null && customerDTO.getUser().equals(
-                    customerEntityRecord.getUser())) {
-                userService.updateUser(customerDTO.getUser());
-            }
-            AuditDTO auditDTO =
+            if (customerRegistrationRequest.getName() != null ||
+                    customerRegistrationRequest.getEmail() != null
+                    || customerRegistrationRequest.getPhone() != null) {
+                UserDTO employeeDTO = UserDTO.builder()
+                        .id(customerEntityRecord.getUser().getId())
+                        .name(customerRegistrationRequest.getName())
+                        .email(customerRegistrationRequest.getEmail())
+                        .phone(customerRegistrationRequest.getPhone())
+                        .build();
+                userService.updateUser(employeeDTO);
+            }            AuditDTO auditDTO =
                     AuditDTO.builder()
                             .user(userService.getUserByUsername(username))
                             .action(AuditActions.UPDATE)
-                            .description("Updating new customer " + customerDTO.getId())
+                            .description("Updating new customer " + customerId)
                             .timestamp(LocalDateTime.now())
                             .build();
             auditService.logAudit(auditDTO);
