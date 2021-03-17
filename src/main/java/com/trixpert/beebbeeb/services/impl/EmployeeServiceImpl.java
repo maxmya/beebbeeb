@@ -212,7 +212,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public ResponseWrapper<List<EmployeeDTO>> getAllEmployeesForVendor(boolean active, Long vendorId) {
         try {
             List<EmployeeDTO> employeesList = new ArrayList<>();
-            branchRepository.findAllByVendor(vendorRepository.getOne(vendorId)).forEach(branch ->
+            branchRepository.findAllByVendorAndActive(vendorRepository.getOne(vendorId), true).forEach(branch ->
                     employeeRepository.findAllByBranchAndActive(branch, active).forEach(employee ->
                             employeesList.add(employeeMapper.convertToDTO(employee))
                     )
