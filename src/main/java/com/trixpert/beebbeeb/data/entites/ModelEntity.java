@@ -33,4 +33,13 @@ public class ModelEntity {
     @OneToMany(mappedBy = "model")
     private List<CarEntity> cars;
 
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    }, fetch = FetchType.EAGER)
+    @JoinTable(name = "model_photos",
+            joinColumns = @JoinColumn(name = "model_id"),
+            inverseJoinColumns = @JoinColumn(name = "photo_id")
+    )
+    private List<PhotoEntity> photos;
 }

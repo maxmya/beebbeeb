@@ -33,8 +33,8 @@ public class ModelController {
     @PostMapping("/register")
     @ApiOperation("Register New Model")
     public ResponseEntity<ResponseWrapper<Boolean>> registerModel(
-            @Valid @RequestBody ModelRegisterRequest modelRegisterRequest
-            , HttpServletRequest request) {
+            @Valid @RequestBody ModelRegisterRequest modelRegisterRequest,
+            HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 

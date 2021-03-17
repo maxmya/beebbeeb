@@ -6,9 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
-@Table(name = "photo",schema = "public")
+@Table(name = "photo", schema = "public")
 @Data
 @Builder
 @AllArgsConstructor
@@ -27,5 +28,15 @@ public class PhotoEntity {
     private String caption;
 
     private String description;
+
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    }, fetch = FetchType.EAGER)
+    @JoinTable(name = "model_photos",
+            joinColumns = @JoinColumn(name = "photo_id"),
+            inverseJoinColumns = @JoinColumn(name = "model_id")
+    )
+    private List<ModelEntity> models;
 
 }

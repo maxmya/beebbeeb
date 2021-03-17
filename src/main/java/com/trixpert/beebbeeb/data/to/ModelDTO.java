@@ -11,16 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ModelDTO {
-
     private Long id ;
-
     private BrandDTO brand ;
-
     private String name ;
-
     private String year ;
-
     private boolean active ;
-
-
 }
