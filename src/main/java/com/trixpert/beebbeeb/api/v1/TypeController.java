@@ -60,12 +60,10 @@ public class TypeController {
             @RequestParam(name = "file") MultipartFile logoFile,
             @RequestParam(name = "body") String regRequest,
             HttpServletRequest request) throws IOException {
-
-        System.out.println(logoFile);
-        System.out.println(regRequest);
         String authorizationHeader = request.getHeader("Authorization");
         ObjectMapper objectMapper = new ObjectMapper();
-        return ResponseEntity.ok(typeService.addType(objectMapper.readValue(regRequest, TypeRegistrationRequest.class), logoFile, authorizationHeader));
+        TypeRegistrationRequest typeRegistrationRequest = objectMapper.readValue(regRequest, TypeRegistrationRequest.class);
+        return ResponseEntity.ok(typeService.addType(typeRegistrationRequest, logoFile, authorizationHeader));
     }
 
     @PutMapping("/delete/{typeId}")
