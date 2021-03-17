@@ -90,6 +90,7 @@ public class ModelServiceImpl implements ModelService {
             PhotoEntity interiorImage = photoRepository
                     .save(PhotoEntity.builder()
                             .photoUrl(interiorImagePath)
+                            .interior(true)
                             .caption(modelRegisterRequest.getName())
                             .build());
             modelPhotos.add(interiorImage);
@@ -119,6 +120,7 @@ public class ModelServiceImpl implements ModelService {
                     .name(modelRegisterRequest.getName())
                     .year(modelRegisterRequest.getYear())
                     .active(true)
+                    .photos(modelPhotos)
                     .brand(optionalBrandEntity.get())
                     .build();
             modelRepository.save(modelEntityRecord);
@@ -152,13 +154,13 @@ public class ModelServiceImpl implements ModelService {
                 throw new NotFoundException("This Model is not Exits !");
             }
             ModelEntity modelEntityRecord = optionalModelEntity.get();
-            if (!modelDTO.getName().equals(null) && !modelDTO.getName().equals(modelEntityRecord.getName())) {
+            if (modelDTO.getName() != null && !modelDTO.getName().equals(modelEntityRecord.getName())) {
                 modelEntityRecord.setName(modelDTO.getName());
             }
-            if (!modelDTO.getYear().equals(null) && !modelDTO.getYear().equals(modelEntityRecord.getYear())) {
+            if (modelDTO.getYear() != null && !modelDTO.getYear().equals(modelEntityRecord.getYear())) {
                 modelEntityRecord.setYear(modelDTO.getYear());
             }
-            if (!modelDTO.getBrand().equals(null) &&
+            if (modelDTO.getBrand() != null &&
                     !modelDTO.getBrand().equals(brandMapper.convertToDTO(modelEntityRecord.getBrand()))) {
                 modelEntityRecord.setBrand(brandMapper.convertToEntity(modelDTO.getBrand()));
             }
