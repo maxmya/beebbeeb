@@ -2,6 +2,8 @@ package com.trixpert.beebbeeb.exception.handler;
 
 import com.trixpert.beebbeeb.exception.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,17 +14,19 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+
 import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @ControllerAdvice
 public class GenericExceptionHandler extends ResponseEntityExceptionHandler {
 
+    Logger logger = LogManager.getLogger(GenericExceptionHandler.class);
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public void handle(HttpMessageNotReadableException e) {
-        logger.warn("Returning HTTP 400 Bad Request", e);
+        logger.debug("Returning HTTP 400 Bad Request", e);
     }
 
 
