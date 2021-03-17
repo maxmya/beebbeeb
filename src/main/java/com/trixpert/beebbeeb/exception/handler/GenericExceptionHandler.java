@@ -19,12 +19,12 @@ import static org.springframework.http.HttpStatus.*;
 public class GenericExceptionHandler extends ResponseEntityExceptionHandler {
 
 
-    @ExceptionHandler
+    @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public void handle(HttpMessageNotReadableException e) {
-        log.warn("Returning HTTP 400 Bad Request", e);
-        throw e;
+        logger.warn("Returning HTTP 400 Bad Request", e);
     }
+
 
     @ExceptionHandler({BadRequestException.class})
     public ResponseEntity<Object> handleBadRequestException(BadRequestException e, WebRequest request) {
