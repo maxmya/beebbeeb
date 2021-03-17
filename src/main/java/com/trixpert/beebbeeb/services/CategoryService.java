@@ -15,7 +15,8 @@ public interface CategoryService {
 
     ResponseWrapper<Boolean> deleteCategory(long categoryId , String authHeader);
 
-    ResponseWrapper<Boolean> updateCategory(CategoryDTO categoryDTO , String authHeader);
+    ResponseWrapper<Boolean> updateCategory(CategoryRegistrationRequest categoryRegistrationRequest,
+                                            long categoryId , String authHeader);
 
     ResponseWrapper<List<CategoryDTO>> getAllCategories(boolean active);
 

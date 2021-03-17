@@ -38,15 +38,17 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.getAllCategories(false));
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/{categoryId}")
     @ApiOperation("Update an existing Category with new data")
     public ResponseEntity<ResponseWrapper<Boolean>> updateCategory(
-            @Valid @RequestBody CategoryDTO categoryDTO
+            @Valid @RequestBody CategoryRegistrationRequest categoryRegistrationRequest,
+            @PathVariable("categoryId") long categoryId
             , HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(categoryService.updateCategory(categoryDTO , authorizationHeader));
+        return ResponseEntity.ok(categoryService.updateCategory(categoryRegistrationRequest ,
+                categoryId, authorizationHeader));
     }
 
     @PostMapping("/add")
