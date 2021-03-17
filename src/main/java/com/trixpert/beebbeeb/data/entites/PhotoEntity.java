@@ -29,6 +29,9 @@ public class PhotoEntity {
 
     private String description;
 
+    @Column(name = "main_photo")
+    private boolean mainPhoto;
+
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE

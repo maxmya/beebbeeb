@@ -1,6 +1,8 @@
 package com.trixpert.beebbeeb.api.v1;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trixpert.beebbeeb.data.request.ModelRegisterRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.BrandDTO;
@@ -11,9 +13,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @Api(tags = {"Models API"})
@@ -33,12 +37,15 @@ public class ModelController {
     @PostMapping("/register")
     @ApiOperation("Register New Model")
     public ResponseEntity<ResponseWrapper<Boolean>> registerModel(
-            @Valid @RequestBody ModelRegisterRequest modelRegisterRequest,
-            HttpServletRequest request) {
+            @RequestParam("file") MultipartFile[] images,
+            @RequestParam("body") String modelRegisterRequest
+            , HttpServletRequest request) throws IOException {
 
+        ObjectMapper objectMapper = new ObjectMapper();
+        ModelRegisterRequest registerRequest = objectMapper.readValue(modelRegisterRequest, ModelRegisterRequest.class);
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(modelService.registerModel(modelRegisterRequest , authorizationHeader));
+        return ResponseEntity.ok(modelService.registerModel(images, registerRequest, authorizationHeader));
     }
 
 
@@ -49,7 +56,7 @@ public class ModelController {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(modelService.updateModel(modelDTO , authorizationHeader));
+        return ResponseEntity.ok(modelService.updateModel(modelDTO, authorizationHeader));
     }
 
 
@@ -60,7 +67,7 @@ public class ModelController {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(modelService.deleteModel(modelId , authorizationHeader));
+        return ResponseEntity.ok(modelService.deleteModel(modelId, authorizationHeader));
     }
 
 
@@ -80,25 +87,25 @@ public class ModelController {
     @ApiOperation("Get Model List For brand")
     public ResponseEntity<ResponseWrapper<List<ModelDTO>>> getActiveModelsForBrand(
             @PathVariable("brandId") long brandId) {
-        return ResponseEntity.ok(modelService.listModelsForBrand(true ,brandId));
+        return ResponseEntity.ok(modelService.listModelsForBrand(true, brandId));
     }
 
     @GetMapping("/list/inactive/{brandId}")
     @ApiOperation("Get InActive Model List for brand")
     public ResponseEntity<ResponseWrapper<List<ModelDTO>>> getInactiveModelsForBrand(
-            @PathVariable("brandId")long brandId) {
-        return ResponseEntity.ok(modelService.listModelsForBrand(false ,brandId));
+            @PathVariable("brandId") long brandId) {
+        return ResponseEntity.ok(modelService.listModelsForBrand(false, brandId));
     }
 
     @GetMapping("/cars/list/active/{modelId}")
     @ApiOperation("Get list of active cars for specific model")
-    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getActiveCarsForModel(@PathVariable("modelId") long modelId){
+    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getActiveCarsForModel(@PathVariable("modelId") long modelId) {
         return ResponseEntity.ok(modelService.listCarsForModel(true, modelId));
     }
 
     @GetMapping("/cars/list/inactive/{modelId}")
     @ApiOperation("Get list of inactive cars for specific model")
-    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getInactiveCarsForModel(@PathVariable("modelId") long modelId){
+    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getInactiveCarsForModel(@PathVariable("modelId") long modelId) {
         return ResponseEntity.ok(modelService.listCarsForModel(false, modelId));
     }
 }

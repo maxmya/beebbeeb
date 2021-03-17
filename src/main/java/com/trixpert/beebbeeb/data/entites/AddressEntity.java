@@ -34,5 +34,4 @@ public class AddressEntity {
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private CustomerEntity customer;
 
-
 }

@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ModelRegisterRequest {
-    private long brandId ;
-    private String name ;
-    private String year ;
+    private long brandId;
+    private String name;
+    private String year;
+    private int sizeOfInteriors;
 }
