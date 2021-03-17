@@ -39,10 +39,6 @@ public class ReporterServiceImpl implements ReporterService {
 
         String errorMessage = exception.getMessage() != null ? exception.getMessage() : "ERROR";
 
-        if (exception instanceof DataIntegrityViolationException) {
-            errorMessage = "Cannot modify this entity as it's used in other relations!";
-        }
-
         AuditEntity auditEntity =
                 AuditEntity.builder()
                         .user(userRepository.getOne(0l))
