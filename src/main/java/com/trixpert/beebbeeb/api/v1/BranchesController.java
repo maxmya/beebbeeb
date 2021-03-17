@@ -1,6 +1,7 @@
 package com.trixpert.beebbeeb.api.v1;
 
 
+import com.trixpert.beebbeeb.data.request.BranchRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.BranchDTO;
 import com.trixpert.beebbeeb.data.to.CarDTO;
@@ -29,32 +30,42 @@ public class BranchesController {
     @PostMapping("/{vendorID}/register")
     @ApiOperation("Add Branches List For Specific Vendor")
     public ResponseEntity<ResponseWrapper<Boolean>> registerBranchForVendor(
-            @Valid @RequestBody BranchDTO branchDTO,
+            @Valid @RequestBody BranchRegistrationRequest branchRegistrationRequest,
             @PathVariable("vendorID") Long vendorID ,
             HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(branchService.registerBranchForVendor(branchDTO, vendorID , authorizationHeader));
+        return ResponseEntity.ok(branchService.registerBranchForVendor(branchRegistrationRequest, vendorID , authorizationHeader));
     }
 
 
-    @GetMapping("/{vendorID}/list")
-    @ApiOperation("Get List Of All Branches For Specific Vendor")
-    public ResponseEntity<ResponseWrapper<List<BranchDTO>>> getBranchesForVendor(
-            @PathVariable("vendorID") Long vendorID ) {
+    @GetMapping("/{vendorId}/list/active")
+    @ApiOperation("Get List Of All Active Branches For Specific Vendor")
+    public ResponseEntity<ResponseWrapper<List<BranchDTO>>> getActiveBranchesForVendor(
+            @PathVariable("vendorId") Long vendorId ) {
 
-        return ResponseEntity.ok(branchService.getAllBranchesForVendor(vendorID));
+        return ResponseEntity.ok(branchService.getAllBranchesForVendor(vendorId, true));
     }
 
-    @PutMapping("/update")
+    @GetMapping("/{vendorId}/list/inactive")
+    @ApiOperation("Get List Of All Inactive Branches For Specific Vendor")
+    public ResponseEntity<ResponseWrapper<List<BranchDTO>>> getInactiveBranchesForVendor(
+            @PathVariable("vendorId") Long vendorId ) {
+
+        return ResponseEntity.ok(branchService.getAllBranchesForVendor(vendorId, false));
+    }
+
+    @PutMapping("/update/{branchId}")
     @ApiOperation("Updating an existing branch for specific vendor")
     public ResponseEntity<ResponseWrapper<Boolean>> updateBranchForVendor(
-            @Valid @RequestBody BranchDTO branchDTO , HttpServletRequest request) {
+            @Valid @RequestBody BranchRegistrationRequest branchRegistrationRequest,
+            @PathVariable("branchId") long branchId, HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(branchService.updateBranchForVendor(branchDTO , authorizationHeader));
+        return ResponseEntity.ok(branchService.updateBranchForVendor(branchRegistrationRequest,
+                branchId , authorizationHeader));
     }
 
     @PutMapping("/delete/{branchID}")
