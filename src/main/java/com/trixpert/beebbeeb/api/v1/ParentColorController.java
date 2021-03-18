@@ -38,15 +38,16 @@ public class ParentColorController {
         return ResponseEntity.ok(parentColorService.getAllParentColors(false));
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/{parentColorId}")
     @ApiOperation("Update an existing color with new data")
     public ResponseEntity<ResponseWrapper<Boolean>> updateParentColor(
-            @RequestPart(name = "body")ParentColorDTO parentColorDTO
+            @RequestBody ParentColorRegistrationRequest parentColorRegistrationRequest
+            , @PathVariable("parentColorId") long parentColorId
             , HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
 
         return ResponseEntity.ok(parentColorService.updateParentColor(
-                parentColorDTO , authorizationHeader));
+                parentColorRegistrationRequest , parentColorId , authorizationHeader));
     }
 
     @PostMapping("/add")

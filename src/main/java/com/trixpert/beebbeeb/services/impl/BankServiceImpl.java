@@ -113,24 +113,19 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> updateBank(MultipartFile logoFile, BankDTO bankDTO, String authHeader) {
+    public ResponseWrapper<Boolean> updateBank(
+            MultipartFile logoFile, BankRegistrationRequest bankRegistrationRequest , long bankId ,
+            String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
-            Optional<BankEntity> optionalBankRecord = bankRepository.findById(bankDTO.getId());
+            Optional<BankEntity> optionalBankRecord = bankRepository.findById(bankId);
             if (!optionalBankRecord.isPresent()) {
                 throw new NotFoundException("Bank entity not found");
             }
             BankEntity bankEntityRecord = optionalBankRecord.get();
-            if (bankDTO.getName() != null) {
-                bankEntityRecord.setName(bankDTO.getName());
-            }
-            if (bankDTO.getUser() != null) {
-                Optional<UserEntity> optionalUserRecord = userRepository.findById(bankDTO.getUser().getId());
-                if (!optionalUserRecord.isPresent()) {
-                    throw new NotFoundException(" User Entity not found");
-                }
-                userService.updateUser(bankDTO.getUser());
+            if (bankRegistrationRequest.getName() != null) {
+                bankEntityRecord.setName(bankRegistrationRequest.getName());
             }
             if (logoFile != null) {
                 String logoUrlRecord = cloudStorageService.uploadFile(logoFile);

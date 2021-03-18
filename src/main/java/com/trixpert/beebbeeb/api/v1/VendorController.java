@@ -49,15 +49,17 @@ public class VendorController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping("/update")
+    @PutMapping("/update/{vendorId}")
     @ApiOperation("Updating an existing vendor with new data")
     public ResponseEntity<ResponseWrapper<Boolean>> updateVendor(
-            @Valid @RequestBody VendorDTO vendorDTO,
+            @Valid @RequestBody VendorRegistrationRequest vendorRegistrationRequest,
+            @PathVariable("vendorId") long vendorId ,
             HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(vendorService.updateVendor(vendorDTO, authorizationHeader));
+        return ResponseEntity.ok(vendorService.updateVendor(vendorRegistrationRequest
+                , vendorId, authorizationHeader));
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")

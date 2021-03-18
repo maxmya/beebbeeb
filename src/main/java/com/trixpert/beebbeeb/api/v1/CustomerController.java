@@ -45,7 +45,6 @@ public class CustomerController {
     @ApiOperation("Update an existing customer")
     public ResponseEntity<ResponseWrapper<Boolean>> updateCustomer(
             @Valid @RequestBody CustomerRegistrationRequest customerRegistrationRequest,
-
             @PathVariable long customerId, HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");

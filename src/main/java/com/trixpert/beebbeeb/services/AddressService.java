@@ -16,9 +16,9 @@ public interface AddressService {
 
 
     ResponseWrapper<Boolean> updateAddress(AddressRegistrationRequest addressRegistrationRequest,
-                                                     Long addressId, String authHeader);
+                                                     long addressId, String authHeader);
 
-    ResponseWrapper<Boolean> deleteAddress(Long addressId , String authHeader);
+    ResponseWrapper<Boolean> deleteAddress(long addressId , String authHeader);
 
     ResponseWrapper<AddressDTO> getAddress(long addressId);
 

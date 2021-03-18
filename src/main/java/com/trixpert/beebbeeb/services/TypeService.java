@@ -17,7 +17,8 @@ public interface TypeService {
 
     ResponseWrapper<Boolean> deleteType(long typeId, String authHeader);
 
-    ResponseWrapper<Boolean> updateType(TypeDTO typeDTO, String authHeader);
+    ResponseWrapper<Boolean> updateType(TypeRegistrationRequest typeRegistrationRequest,
+            long typeId, String authHeader);
 
     ResponseWrapper<List<TypeDTO>> listAllTypes(boolean active);
 

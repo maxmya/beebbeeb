@@ -15,7 +15,8 @@ public interface BankService {
                                           BankRegistrationRequest bankRegistrationRequest,
                                           String authHeader) throws IOException;
 
-    ResponseWrapper<Boolean> updateBank(MultipartFile logoFile, BankDTO bankDTO ,
+    ResponseWrapper<Boolean> updateBank(MultipartFile logoFile,
+                                        BankRegistrationRequest bankRegistrationRequest , long bankId ,
                                         String authHeader);
 
     ResponseWrapper<Boolean> deleteBank(Long bankId , String authHeader);

@@ -93,8 +93,9 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> updateAddress(AddressRegistrationRequest addressRegistrationRequest
-            , Long addressId, String authHeader) {
+    public ResponseWrapper<Boolean> updateAddress(
+            AddressRegistrationRequest addressRegistrationRequest
+            , long addressId, String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
@@ -136,7 +137,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> deleteAddress(Long addressId, String authHeader) {
+    public ResponseWrapper<Boolean> deleteAddress(long addressId, String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {

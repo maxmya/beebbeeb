@@ -178,38 +178,38 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> updateVendor(VendorDTO vendorDTO, String authHeader) {
+    public ResponseWrapper<Boolean> updateVendor(VendorRegistrationRequest vendorRegistrationRequest
+            ,long vendorId, String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
-            Optional<VendorEntity> optionalVendorRecord = vendorRepository.findById(vendorDTO.getId());
+            Optional<VendorEntity> optionalVendorRecord = vendorRepository.findById(vendorId);
             if (!optionalVendorRecord.isPresent()) {
                 throw new NotFoundException(" Vendor Entity not found");
             }
 
             VendorEntity vendorRecord = optionalVendorRecord.get();
 
-            if (vendorDTO.getVendorName() != null) {
-                vendorRecord.setName(vendorDTO.getVendorName());
+            if (vendorRegistrationRequest.getVendorName() != null) {
+                vendorRecord.setName(vendorRegistrationRequest.getVendorName());
             }
-            if (vendorDTO.getManager() != null) {
+
+            if (vendorRegistrationRequest.getMainAddress() != null) {
+                vendorRecord.setMainAddress(vendorRegistrationRequest.getMainAddress());
+            }
+
+            if (vendorRegistrationRequest.getGmName() != null) {
                 userService.updateUser(userMapper.convertToDTO(vendorRecord.getManager()));
             }
-            if (vendorDTO.getMainAddress() != null) {
-                vendorRecord.setMainAddress(vendorDTO.getMainAddress());
+            if (vendorRegistrationRequest.getGmPhone() != null) {
+                vendorRecord.setGeneralManagerPhone(vendorRegistrationRequest.getGmPhone());
             }
-            if (vendorDTO.getGeneralManagerName() != null) {
-                vendorRecord.setGeneralManagerName(vendorDTO.getGeneralManagerName());
+            if (vendorRegistrationRequest.getAccManagerName() != null) {
+                vendorRecord.setAccountManagerName(vendorRegistrationRequest.getAccManagerName());
             }
-            if (vendorDTO.getGeneralManagerPhone() != null) {
-                vendorRecord.setGeneralManagerPhone(vendorDTO.getGeneralManagerPhone());
-            }
-            if (vendorDTO.getGeneralManagerName() != null) {
-                vendorRecord.setAccountManagerName(vendorDTO.getAccountManagerName());
-            }
-            if (vendorDTO.getAccountManagerPhone() != null) {
-                vendorRecord.setAccountManagerPhone(vendorDTO.getAccountManagerPhone());
+            if (vendorRegistrationRequest.getAccManagerPhone() != null) {
+                vendorRecord.setAccountManagerPhone(vendorRegistrationRequest.getAccManagerPhone());
             }
             vendorRepository.save(vendorRecord);
             AuditDTO auditDTO =
