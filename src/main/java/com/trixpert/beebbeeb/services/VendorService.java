@@ -14,8 +14,10 @@ public interface VendorService {
 
     ResponseWrapper<List<VendorDTO>> getAllVendors();
 
-    ResponseWrapper<Boolean> deleteVendor(Long vendorId , String authHeader);
+    ResponseWrapper<Boolean> deleteVendor(long vendorId , String authHeader);
 
     ResponseWrapper<Boolean> updateVendor(VendorDTO vendorDTO , String authHeader);
+
+    ResponseWrapper<VendorDTO> getVendor(long vendorId);
 
 }

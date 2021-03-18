@@ -33,11 +33,12 @@ public class VendorController {
     @ApiOperation("Register Vendor With Email & Password")
     public ResponseEntity<ResponseWrapper<Boolean>> registerVendor(
             @Valid @RequestBody VendorRegistrationRequest vendorRegistrationRequest
-                , HttpServletRequest request) {
+            , HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(vendorService.registerVendor(vendorRegistrationRequest, authorizationHeader));
+        return ResponseEntity.ok(vendorService.registerVendor(
+                vendorRegistrationRequest, authorizationHeader));
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -51,24 +52,30 @@ public class VendorController {
     @PutMapping("/update")
     @ApiOperation("Updating an existing vendor with new data")
     public ResponseEntity<ResponseWrapper<Boolean>> updateVendor(
-            @Valid @RequestBody VendorDTO vendorDTO ,
+            @Valid @RequestBody VendorDTO vendorDTO,
             HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(vendorService.updateVendor(vendorDTO , authorizationHeader));
+        return ResponseEntity.ok(vendorService.updateVendor(vendorDTO, authorizationHeader));
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{vendorId}")
     @ApiOperation("Deleting a vendor with vendor Id")
     public ResponseEntity<ResponseWrapper<Boolean>> deleteVendor(
-            @PathVariable("vendorId") Long vendorId ,
+            @PathVariable("vendorId") Long vendorId,
             HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(vendorService.deleteVendor(vendorId , authorizationHeader));
-    
+        return ResponseEntity.ok(vendorService.deleteVendor(vendorId, authorizationHeader));
+
+    }
+
+    @GetMapping("/get/{vendorId}")
+    @ApiOperation("Get vendor by Id")
+    public ResponseEntity<ResponseWrapper<VendorDTO>> getVendor(@PathVariable("vendorId") long vendorId) {
+        return ResponseEntity.ok(vendorService.getVendor(vendorId));
     }
 }

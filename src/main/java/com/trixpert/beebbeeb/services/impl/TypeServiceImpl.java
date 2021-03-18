@@ -156,4 +156,19 @@ public class TypeServiceImpl implements TypeService {
             return reporterService.reportError(e);
         }
     }
+
+    @Override
+    public ResponseWrapper<TypeDTO> getType(long typeId) {
+        try{
+            Optional<TypeEntity> optionalTypeEntity = typeRepository.findById(typeId);
+            if(!optionalTypeEntity.isPresent()){
+                throw new NotFoundException("This Type doesn't exist ");
+            }
+            TypeEntity typeEntityRecord = optionalTypeEntity.get();
+            return reporterService.reportSuccess(typeMapper.convertToDTO(typeEntityRecord));
+
+        }catch (Exception e){
+            return reporterService.reportError(e);
+        }
+    }
 }

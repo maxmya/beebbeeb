@@ -22,4 +22,6 @@ public interface CategoryService {
 
     ResponseWrapper<List<CarDTO>> listCarsForCategory(boolean active, long categoryId);
 
+    ResponseWrapper<CategoryDTO> getCategory(long categoryId);
+
 }

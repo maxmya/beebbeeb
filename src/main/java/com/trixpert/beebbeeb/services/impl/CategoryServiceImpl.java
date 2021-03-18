@@ -189,4 +189,19 @@ public class CategoryServiceImpl implements CategoryService {
             return reporterService.reportError(e);
         }
     }
+
+    @Override
+    public ResponseWrapper<CategoryDTO> getCategory(long categoryId) {
+        try{
+            Optional<CategoryEntity> optionalCategoryEntity = categoryRepository.findById(categoryId);
+            if(!optionalCategoryEntity.isPresent()){
+                throw new NotFoundException("Category entity not found");
+            }
+            CategoryEntity categoryEntityRecord = optionalCategoryEntity.get();
+
+            return reporterService.reportSuccess(categoryMapper.convertToDTO(categoryEntityRecord));
+        }catch (Exception e){
+            return reporterService.reportError(e);
+        }
+    }
 }

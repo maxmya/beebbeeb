@@ -84,7 +84,7 @@ public class BrandController {
     public ResponseEntity<ResponseWrapper<BrandDTO>> getBrand(
             @PathVariable("brandID") long brandId,
             @RequestParam boolean active ) {
-        return ResponseEntity.ok(brandService.getBrand(active , brandId));
+        return ResponseEntity.ok(brandService.getBrand(brandId));
     }
 
     @GetMapping("/list/active/{brandId}")
@@ -92,7 +92,7 @@ public class BrandController {
     public ResponseEntity<ResponseWrapper<BrandDTO>> getActiveBrand(
             @PathVariable("brandId ") Long brandId) {
 
-        return ResponseEntity.ok(brandService.getBrand(true, brandId));
+        return ResponseEntity.ok(brandService.getBrand(brandId));
     }
 
     @GetMapping("/list/inactive/{brandId}")
@@ -100,6 +100,6 @@ public class BrandController {
     public ResponseEntity<ResponseWrapper<BrandDTO>> getInactiveBrand(
             @PathVariable("brandId ") Long brandId) {
 
-        return ResponseEntity.ok(brandService.getBrand(false, brandId));
+        return ResponseEntity.ok(brandService.getBrand(brandId));
     }
 }

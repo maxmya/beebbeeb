@@ -2,6 +2,7 @@ package com.trixpert.beebbeeb.services.impl;
 
 import com.trixpert.beebbeeb.data.constants.AuditActions;
 import com.trixpert.beebbeeb.data.entites.BrandEntity;
+import com.trixpert.beebbeeb.data.entites.EmployeeEntity;
 import com.trixpert.beebbeeb.data.entites.ModelEntity;
 import com.trixpert.beebbeeb.data.entites.PhotoEntity;
 import com.trixpert.beebbeeb.data.mappers.BrandMapper;
@@ -17,6 +18,7 @@ import com.trixpert.beebbeeb.data.to.CarDTO;
 import com.trixpert.beebbeeb.data.to.ModelDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
+import org.checkerframework.checker.nullness.Opt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -243,6 +245,20 @@ public class ModelServiceImpl implements ModelService {
                     carList.add(carMapper.convertToDTO(car))
             );
             return reporterService.reportSuccess(carList);
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<ModelDTO> getModel(long modelId) {
+        try {
+            Optional<ModelEntity> optionalModelEntity = modelRepository.findById(modelId);
+            if (!optionalModelEntity.isPresent()) {
+                throw new Exception("this Model does not exist");
+            }
+            ModelEntity modelEntity = optionalModelEntity.get();
+            return reporterService.reportSuccess(modelMapper.convertToDTO(modelEntity));
         } catch (Exception e) {
             return reporterService.reportError(e);
         }

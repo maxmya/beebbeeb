@@ -36,7 +36,8 @@ public class BranchesController {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(branchService.registerBranchForVendor(branchRegistrationRequest, vendorID , authorizationHeader));
+        return ResponseEntity.ok(branchService.registerBranchForVendor(
+                branchRegistrationRequest, vendorID , authorizationHeader));
     }
 
 
@@ -80,8 +81,19 @@ public class BranchesController {
 
     @GetMapping("/cars/list/{branchId}")
     @ApiOperation("Getting list of cars for specific branch")
-    public ResponseEntity<ResponseWrapper<List<CarDTO>>> listCarsForBranch(@PathVariable("branchId") long branchId){
+    public ResponseEntity<ResponseWrapper<List<CarDTO>>> listCarsForBranch(
+            @PathVariable("branchId") long branchId){
         return ResponseEntity.ok(branchService.listCarsForBranch(branchId));
     }
+
+    @GetMapping("/{vendorId}/get/{branchId}")
+    @ApiOperation("Get Branch For Specific Vendor")
+    public ResponseEntity<ResponseWrapper<BranchDTO>> getBranchForVendor(
+            @PathVariable("vendorId") long vendorId ,
+            @PathVariable("branchId") long branchId ) {
+
+        return ResponseEntity.ok(branchService.getBranchForVendor(vendorId , branchId));
+    }
+
 
 }

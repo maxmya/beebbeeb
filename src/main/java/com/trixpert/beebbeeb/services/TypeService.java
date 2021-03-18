@@ -20,4 +20,6 @@ public interface TypeService {
     ResponseWrapper<Boolean> updateType(TypeDTO typeDTO, String authHeader);
 
     ResponseWrapper<List<TypeDTO>> listAllTypes(boolean active);
+
+    ResponseWrapper<TypeDTO> getType(long typeId);
 }

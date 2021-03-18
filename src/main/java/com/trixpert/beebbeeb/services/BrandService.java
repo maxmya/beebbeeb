@@ -18,6 +18,6 @@ public interface BrandService {
 
     ResponseWrapper<List<BrandDTO>> getAllBrands(boolean active);
  
-    ResponseWrapper<BrandDTO> getBrand(boolean active ,long brandId);
+    ResponseWrapper<BrandDTO> getBrand(long brandId);
  
 }

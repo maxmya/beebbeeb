@@ -39,7 +39,7 @@ public class TypeController {
     @GetMapping("/list/inactive")
     @ApiOperation("Get all non-active Types List")
     public ResponseEntity<ResponseWrapper<List<TypeDTO>>> getInActiveTypes() {
-        return ResponseEntity.ok(typeService.listAllTypes(true));
+        return ResponseEntity.ok(typeService.listAllTypes(false));
     }
 
 
@@ -74,5 +74,11 @@ public class TypeController {
         String authorizationHeader = request.getHeader("Authorization");
 
         return ResponseEntity.ok(typeService.deleteType(typeId, authorizationHeader));
+    }
+
+    @GetMapping("/get/{typeId}")
+    @ApiOperation("Get type by Id")
+    public ResponseEntity<ResponseWrapper<TypeDTO>> getType(@PathVariable("typeId")long typeId){
+        return ResponseEntity.ok(typeService.getType(typeId));
     }
 }

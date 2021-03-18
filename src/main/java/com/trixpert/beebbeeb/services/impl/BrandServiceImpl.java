@@ -167,9 +167,9 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
 
-    public ResponseWrapper<BrandDTO> getBrand(boolean isActive, long brandId) {
+    public ResponseWrapper<BrandDTO> getBrand(long brandId) {
         try {
-            Optional<BrandEntity> optionalBrandEntity = brandRepository.findByActiveAndId(isActive, brandId);
+            Optional<BrandEntity> optionalBrandEntity = brandRepository.findById(brandId);
 
             if (!optionalBrandEntity.isPresent()) {
                 throw new NotFoundException("This Brand does not exist");

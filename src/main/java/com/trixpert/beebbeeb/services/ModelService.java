@@ -27,4 +27,6 @@ public interface ModelService {
 
     ResponseWrapper<List<CarDTO>> listCarsForModel(boolean active, long modelId);
 
+    ResponseWrapper<ModelDTO> getModel(long modelId);
+
 }

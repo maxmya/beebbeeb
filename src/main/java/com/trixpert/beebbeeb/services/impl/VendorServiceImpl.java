@@ -147,7 +147,7 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> deleteVendor(Long vendorId , String authHeader) {
+    public ResponseWrapper<Boolean> deleteVendor(long vendorId, String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
@@ -178,7 +178,7 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> updateVendor(VendorDTO vendorDTO , String authHeader) {
+    public ResponseWrapper<Boolean> updateVendor(VendorDTO vendorDTO, String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
@@ -225,6 +225,21 @@ public class VendorServiceImpl implements VendorService {
             return reporterService.reportSuccess("Vendor updated successfully");
         } catch (Exception e) {
             return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<VendorDTO> getVendor(long vendorId) {
+        try {
+            Optional<VendorEntity> optionalVendorEntity = vendorRepository.findById(vendorId);
+            if(!optionalVendorEntity.isPresent()){
+                throw new NotFoundException("Vendor doesn't exist");
+            }
+            VendorEntity vendorEntityRecord = optionalVendorEntity.get();
+            return reporterService.reportSuccess(vendorMapper.convertToDTO(vendorEntityRecord));
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+
         }
     }
 }

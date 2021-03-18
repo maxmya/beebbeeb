@@ -197,7 +197,7 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public ResponseWrapper<BankDTO> getBank(boolean active, long bankId) {
+    public ResponseWrapper<BankDTO> getBank(long bankId) {
         try {
             Optional<BankEntity> optionalBankEntity = bankRepository.findById(bankId);
             if (!optionalBankEntity.isPresent()) {

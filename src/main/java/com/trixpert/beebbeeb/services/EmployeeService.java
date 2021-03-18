@@ -18,4 +18,6 @@ public interface EmployeeService {
                                                      long employeeId, String authHeader);
 
     ResponseWrapper<Boolean> deleteEmployeeForBranch(Long employeeId , String authHeader);
+
+    ResponseWrapper<EmployeeDTO> getEmployee(long employeeId);
 }

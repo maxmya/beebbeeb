@@ -18,4 +18,5 @@ public interface ParentColorService {
 
     ResponseWrapper<List<ParentColorDTO>> getAllParentColors(boolean active);
 
+    ResponseWrapper<ParentColorDTO> getParentColor(long parentColorId);
 }

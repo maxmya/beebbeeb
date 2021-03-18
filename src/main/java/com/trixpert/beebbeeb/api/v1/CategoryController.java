@@ -87,4 +87,10 @@ public class CategoryController {
             @PathVariable("categoryId") long categoryId){
         return ResponseEntity.ok(categoryService.listCarsForCategory(false, categoryId));
     }
+    @GetMapping("/get/{categoryId}")
+    @ApiOperation("Get category by Id ")
+    public ResponseEntity<ResponseWrapper<CategoryDTO>> getCategory(@PathVariable("categoryId")
+                                                                    long categoryId){
+        return ResponseEntity.ok(categoryService.getCategory(categoryId));
+    }
 }
