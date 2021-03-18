@@ -9,7 +9,9 @@ import com.trixpert.beebbeeb.data.to.ModelDTO;
 import com.trixpert.beebbeeb.services.ModelService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -106,4 +108,10 @@ public class ModelController {
     public ResponseEntity<ResponseWrapper<List<CarDTO>>> getInactiveCarsForModel(@PathVariable("modelId") long modelId) {
         return ResponseEntity.ok(modelService.listCarsForModel(false, modelId));
     }
+    @GetMapping("/Get/{modelId}")
+    @ApiOperation("Get model by Id")
+    public ResponseEntity<ResponseWrapper<ModelDTO>> getModel(@PathVariable("modelId")long modelId){
+        return ResponseEntity.ok(modelService.getModel(modelId));
+    }
 }
+

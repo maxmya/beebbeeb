@@ -76,10 +76,9 @@ public class AddressController {
     @GetMapping("/get/{addressId}")
     @ApiOperation("Get address By Id")
     public ResponseEntity<ResponseWrapper<AddressDTO>> getAddress(
-            @PathVariable("addressId") Long addressId,
-            @RequestBody boolean active) {
+            @PathVariable("addressId") Long addressId) {
 
-        return ResponseEntity.ok(addressService.getAddress(active , addressId));
+        return ResponseEntity.ok(addressService.getAddress(addressId));
     }
 
     }

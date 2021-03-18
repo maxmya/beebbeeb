@@ -83,4 +83,11 @@ public class EmployeeController {
     public ResponseEntity<ResponseWrapper<List<EmployeeDTO>>> getAllInactiveEmployeesForVendor(@PathVariable("vendorId") Long vendorId){
         return ResponseEntity.ok(employeeService.getAllEmployeesForVendor(false, vendorId));
     }
+
+    @GetMapping("Get/{employeeId}")
+    @ApiOperation("Get employee by Id")
+    public ResponseEntity<ResponseWrapper<EmployeeDTO>> getEmployee(@PathVariable("employeeId")
+                                                                    long employeeId){
+        return ResponseEntity.ok(employeeService.getEmployee(employeeId));
+    }
 }

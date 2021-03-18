@@ -23,4 +23,5 @@ public interface ColorService {
 
     ResponseWrapper<List<CarDTO>> listCarsForColor(boolean active, long colorId);
 
+    ResponseWrapper<ColorDTO> getColor(long colorId);
 }

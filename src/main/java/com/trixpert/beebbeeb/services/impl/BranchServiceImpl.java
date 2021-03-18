@@ -185,12 +185,12 @@ public class BranchServiceImpl implements BranchService {
 
 
     @Override
-    public ResponseWrapper<Boolean> deleteBranchForVendor(Long branchID , String authHeader) {
+    public ResponseWrapper<Boolean> deleteBranchForVendor(Long branchId  , String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
-            Optional<BranchEntity> optionalBranchRecord = branchRepository.findById(branchID);
+            Optional<BranchEntity> optionalBranchRecord = branchRepository.findById(branchId);
             if (!optionalBranchRecord.isPresent()) {
                 throw new NotFoundException(" Branch Entity not found");
             } else {
@@ -229,6 +229,26 @@ public class BranchServiceImpl implements BranchService {
             return reporterService.reportSuccess(listCars);
         }
         catch(Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<BranchDTO> getBranchForVendor(long vendorId, long branchId) {
+        try{
+            Optional<VendorEntity> optionalVendorRecord = vendorRepository.findById(vendorId);
+            if (!optionalVendorRecord.isPresent()) {
+                throw new NotFoundException(" Vendor Entity not found");
+            }
+            Optional<BranchEntity> optionalBranchRecord = branchRepository.findById(branchId);
+            if (!optionalBranchRecord.isPresent()) {
+                throw new NotFoundException(" Branch Entity not found");
+            }
+
+            BranchEntity branchEntityrecord = optionalBranchRecord.get();
+
+                return reporterService.reportSuccess(branchMapper.convertToDTO(branchEntityrecord));
+        }catch (Exception e ){
             return reporterService.reportError(e);
         }
     }

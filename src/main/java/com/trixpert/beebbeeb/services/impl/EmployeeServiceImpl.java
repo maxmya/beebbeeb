@@ -209,6 +209,21 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public ResponseWrapper<EmployeeDTO> getEmployee(long employeeId) {
+        try {
+            Optional<EmployeeEntity> optionalEmployeeEntity = employeeRepository.findById(employeeId);
+            if (!optionalEmployeeEntity.isPresent()) {
+                throw new Exception("this employee does not exist");
+            }
+            EmployeeEntity employeeEntity = optionalEmployeeEntity.get();
+            return reporterService.reportSuccess(employeeMapper.convertToDTO(employeeEntity));
+
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
     public ResponseWrapper<List<EmployeeDTO>> getAllEmployeesForVendor(boolean active, Long vendorId) {
         try {
             List<EmployeeDTO> employeesList = new ArrayList<>();

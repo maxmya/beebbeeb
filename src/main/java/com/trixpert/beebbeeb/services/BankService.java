@@ -22,6 +22,6 @@ public interface BankService {
 
     ResponseWrapper<List<BankDTO>> getAllBanks(boolean active );
 
-    ResponseWrapper<BankDTO> getBank(boolean active , long bankId);
+    ResponseWrapper<BankDTO> getBank(long bankId);
 
 }

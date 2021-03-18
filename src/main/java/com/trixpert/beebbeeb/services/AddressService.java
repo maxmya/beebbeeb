@@ -20,6 +20,6 @@ public interface AddressService {
 
     ResponseWrapper<Boolean> deleteAddress(Long addressId , String authHeader);
 
-    ResponseWrapper<AddressDTO> getAddress(boolean active , long addressId);
+    ResponseWrapper<AddressDTO> getAddress(long addressId);
 
 }

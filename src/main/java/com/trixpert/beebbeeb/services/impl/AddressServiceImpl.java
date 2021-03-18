@@ -167,7 +167,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public ResponseWrapper<AddressDTO> getAddress(boolean active, long addressId) {
+    public ResponseWrapper<AddressDTO> getAddress(long addressId) {
         try {
             Optional<AddressEntity> optionalAddressEntity = addressRepository.findById(addressId);
 

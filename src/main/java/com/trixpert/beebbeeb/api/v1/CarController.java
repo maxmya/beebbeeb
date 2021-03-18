@@ -53,4 +53,11 @@ public class CarController {
     public ResponseEntity<ResponseWrapper<List<CarDTO>>> getAllInactiveCars(){
         return ResponseEntity.ok(carService.getAllCars(false));
     }
+
+    @GetMapping("/get/{carId}")
+    @ApiOperation("Get car by id ")
+    public ResponseEntity<ResponseWrapper<CarDTO>> getCar(@PathVariable("carId") long carId){
+        return ResponseEntity.ok(carService.getCar(carId));
+    }
 }
+

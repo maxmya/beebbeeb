@@ -69,4 +69,11 @@ public class ParentColorController {
 
         return ResponseEntity.ok(parentColorService.deleteParentColor(parentcolorId, authorizationHeader));
     }
+
+    @GetMapping("get/{parentColorId}")
+    @ApiOperation("Get parent color by Id")
+    public ResponseEntity<ResponseWrapper<ParentColorDTO>> getParentColor(
+            @PathVariable("parentColorId")long parentColorId ){
+        return ResponseEntity.ok(parentColorService.getParentColor(parentColorId));
+    }
 }

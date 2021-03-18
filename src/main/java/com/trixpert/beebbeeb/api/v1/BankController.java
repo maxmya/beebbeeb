@@ -76,9 +76,8 @@ public class BankController {
     @GetMapping("/get/{bankId}")
     @ApiOperation("Get bank by Id")
     public ResponseEntity<ResponseWrapper<BankDTO>> getBank(
-            @PathVariable("bankId") Long bankId,
-            @RequestParam boolean active){
-    return ResponseEntity.ok(bankService.getBank(active , bankId));
+            @PathVariable("bankId") Long bankId){
+    return ResponseEntity.ok(bankService.getBank(bankId));
 
     }
 

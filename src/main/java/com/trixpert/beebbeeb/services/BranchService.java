@@ -21,4 +21,6 @@ public interface BranchService {
     ResponseWrapper<Boolean> deleteBranchForVendor(Long branchID , String authHeader);
 
     ResponseWrapper<List<CarDTO>> listCarsForBranch(long branchId);
+
+    ResponseWrapper<BranchDTO> getBranchForVendor(long vendorId , long branchId);
 }
