@@ -10,7 +10,6 @@ import java.sql.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CarRegistrationRequest {
-    private String condition;
     private Date additionDate;
     private long modelId;
     private long branchId;

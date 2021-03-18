@@ -30,9 +30,10 @@ public class AddressEntity {
     @Column(name = "lat")
     private double latitude;
 
+    private boolean active;
+
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private CustomerEntity customer;
-
 
 }
