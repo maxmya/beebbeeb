@@ -60,6 +60,7 @@ public class TypeController {
             @RequestParam(name = "file") MultipartFile logoFile,
             @RequestParam(name = "body") String regRequest,
             HttpServletRequest request) throws IOException {
+
         String authorizationHeader = request.getHeader("Authorization");
         ObjectMapper objectMapper = new ObjectMapper();
         TypeRegistrationRequest typeRegistrationRequest = objectMapper.readValue(regRequest, TypeRegistrationRequest.class);

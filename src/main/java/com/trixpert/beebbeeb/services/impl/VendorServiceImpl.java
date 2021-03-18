@@ -16,15 +16,14 @@ import com.trixpert.beebbeeb.data.to.AuditDTO;
 import com.trixpert.beebbeeb.data.to.UserDTO;
 import com.trixpert.beebbeeb.data.to.VendorDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
-import com.trixpert.beebbeeb.services.AuditService;
-import com.trixpert.beebbeeb.services.ReporterService;
-import com.trixpert.beebbeeb.services.UserService;
-import com.trixpert.beebbeeb.services.VendorService;
+import com.trixpert.beebbeeb.services.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +45,7 @@ public class VendorServiceImpl implements VendorService {
     private final VendorMapper vendorMapper;
 
     private final AuditService auditService;
+    private final CloudStorageService cloudStorageService;
 
 
     public VendorServiceImpl(UserRepository userRepository,
@@ -54,7 +54,7 @@ public class VendorServiceImpl implements VendorService {
                              ReporterService reporterService,
                              UserService userService,
                              UserMapper userMapper,
-                             VendorMapper vendorMapper, AuditService auditService) {
+                             VendorMapper vendorMapper, AuditService auditService, CloudStorageService cloudStorageService) {
         this.userRepository = userRepository;
         this.vendorRepository = vendorRepository;
         this.rolesRepository = rolesRepository;
@@ -63,14 +63,18 @@ public class VendorServiceImpl implements VendorService {
         this.userMapper = userMapper;
         this.vendorMapper = vendorMapper;
         this.auditService = auditService;
+        this.cloudStorageService = cloudStorageService;
     }
 
     @Override
     public ResponseWrapper<Boolean> registerVendor(
             VendorRegistrationRequest vendorRegistrationRequest
-            , String authHeader) {
+            ,MultipartFile logoFile, String authHeader) throws IOException {
 
         String username = auditService.getUsernameForAudit(authHeader);
+
+        String logoUrlRecord = cloudStorageService.uploadFile(logoFile);
+
 
         if (userRepository.existsByEmail(vendorRegistrationRequest.getEmail())) {
             logger.error("attempt to register existed email ".concat(vendorRegistrationRequest.getEmail()));
@@ -90,6 +94,7 @@ public class VendorServiceImpl implements VendorService {
                     vendorRegistrationRequest.getEmail(),
                     vendorRole.get(),
                     vendorRegistrationRequest,
+                    logoUrlRecord,
                     false
             ).getData();
 

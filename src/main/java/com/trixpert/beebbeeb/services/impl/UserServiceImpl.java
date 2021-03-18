@@ -88,6 +88,7 @@ public class UserServiceImpl implements UserService {
     public ResponseWrapper<UserEntity> registerUser(String username,
                                                     RolesEntity role,
                                                     RegistrationRequest registrationRequest,
+                                                    String logoUrl,
                                                     boolean isPhone) {
 
         if (isPhone && userRepository.existsByPhone(username)) {
@@ -106,6 +107,7 @@ public class UserServiceImpl implements UserService {
                     .email(registrationRequest.getEmail())
                     .roles(Collections.singletonList(role))
                     .phoneFlag(isPhone)
+                    .picUrl(logoUrl)
                     .password(passwordEncoder.encode(registrationRequest.getPassword()))
                     .active(registrationRequest.isActive())
                     .build();
