@@ -3,6 +3,7 @@ package com.trixpert.beebbeeb.api.v1;
 import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.EmployeeRegistrationRequest;
+import com.trixpert.beebbeeb.data.response.CustomerResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.CustomerDTO;
 import com.trixpert.beebbeeb.services.CustomerService;
@@ -30,13 +31,13 @@ public class CustomerController {
 
     @GetMapping("/list/active")
     @ApiOperation("Get Active Customer List")
-    public ResponseEntity<ResponseWrapper<List<CustomerDTO>>> getActiveCustomers() {
+    public ResponseEntity<ResponseWrapper<List<CustomerResponse>>> getActiveCustomers() {
         return ResponseEntity.ok(customerService.getAllCustomers(true));
     }
 
     @GetMapping("/list/inactive")
     @ApiOperation("Get InActive Customer List")
-    public ResponseEntity<ResponseWrapper<List<CustomerDTO>>> getInActiveCustomers() {
+    public ResponseEntity<ResponseWrapper<List<CustomerResponse>>> getInActiveCustomers() {
         return ResponseEntity.ok(customerService.getAllCustomers(false));
     }
 
@@ -72,7 +73,7 @@ public class CustomerController {
 
     @GetMapping("/get/{customerId}")
     @ApiOperation("Get Customer By ID")
-    public ResponseEntity<ResponseWrapper<CustomerDTO>> getCustomer(
+    public ResponseEntity<ResponseWrapper<CustomerResponse>> getCustomer(
             @PathVariable("customerId") long customerId) {
 
         return ResponseEntity.ok(customerService.getCustomer(customerId));
