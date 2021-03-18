@@ -14,6 +14,7 @@ import com.trixpert.beebbeeb.data.repositories.UserRolesRepository;
 import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.RegistrationRequest;
+import com.trixpert.beebbeeb.data.response.CustomerResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
 import com.trixpert.beebbeeb.data.to.CustomerDTO;
@@ -173,11 +174,23 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseWrapper<List<CustomerDTO>> getAllCustomers(boolean active) {
+    public ResponseWrapper<List<CustomerResponse>> getAllCustomers(boolean active) {
         try {
-            List<CustomerDTO> customerList = new ArrayList<>();
-            customerRepository.findAllByActive(active).forEach(customer ->
-                    customerList.add(customerMapper.convertToDTO(customer)));
+            List<CustomerResponse> customerList = new ArrayList<>();
+            customerRepository.findAllByActive(active).forEach(customer ->{
+                CustomerResponse customerResponse = CustomerResponse.builder()
+                        .id(customer.getId())
+                        .name(customer.getUser().getName())
+                        .email(customer.getUser().getEmail())
+                        .phone(customer.getUser().getPhone())
+                        .active(customer.isActive())
+                        .preferredBank(customer.getPreferredBank())
+                        .jobTitle(customer.getJobTitle())
+                        .jobAddress(customer.getJobAddress())
+                        .income(customer.getIncome())
+                        .build();
+                    customerList.add(customerResponse);
+            });
             return reporterService.reportSuccess(customerList);
         } catch (Exception e) {
             return reporterService.reportError(e);
@@ -186,7 +199,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseWrapper<CustomerDTO> getCustomer(long customerId) {
+    public ResponseWrapper<CustomerResponse> getCustomer(long customerId) {
         try {
             Optional<CustomerEntity> optionalCustomerEntity = customerRepository.findById(customerId);
 
@@ -194,7 +207,18 @@ public class CustomerServiceImpl implements CustomerService {
                 throw new NotFoundException("customer Not Found");
             }
             CustomerEntity customerEntityRecord = optionalCustomerEntity.get();
-            return reporterService.reportSuccess(customerMapper.convertToDTO(customerEntityRecord));
+            CustomerResponse customerResponse = CustomerResponse.builder()
+                    .id(customerEntityRecord.getId())
+                    .name(customerEntityRecord.getUser().getName())
+                    .email(customerEntityRecord.getUser().getEmail())
+                    .phone(customerEntityRecord.getUser().getPhone())
+                    .active(customerEntityRecord.isActive())
+                    .preferredBank(customerEntityRecord.getPreferredBank())
+                    .jobTitle(customerEntityRecord.getJobTitle())
+                    .jobAddress(customerEntityRecord.getJobAddress())
+                    .income(customerEntityRecord.getIncome())
+                    .build();
+            return reporterService.reportSuccess(customerResponse);
         } catch (Exception e) {
             return reporterService.reportError(e);
         }
