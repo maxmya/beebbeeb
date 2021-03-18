@@ -73,7 +73,8 @@ public class VendorServiceImpl implements VendorService {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
-        String logoUrlRecord = cloudStorageService.uploadFile(logoFile);
+        String logoUrlRecord ="";
+        logoUrlRecord = cloudStorageService.uploadFile(logoFile);
 
 
         if (userRepository.existsByEmail(vendorRegistrationRequest.getEmail())) {
