@@ -30,13 +30,15 @@ public class AuthController {
 
     @PostMapping(value = "/login/email", consumes = {MediaType.APPLICATION_JSON_VALUE})
     @ApiOperation("Login User With Email & Password")
-    public ResponseEntity<ResponseWrapper<AuthResponse>> authenticateUserByEmail(@Valid @RequestBody EmailLoginRequest emailLoginRequest) {
+    public ResponseEntity<ResponseWrapper<AuthResponse>> authenticateUserByEmail(
+            @Valid @RequestBody EmailLoginRequest emailLoginRequest) {
         return ResponseEntity.ok(authService.loginUserWithEmail(emailLoginRequest));
     }
 
     @PostMapping("/login/phone")
     @ApiOperation("Login User With Phone & Password")
-    public ResponseEntity<ResponseWrapper<AuthResponse>> authenticateUserByPhone(@Valid @RequestBody PhoneLoginRequest phoneLoginRequest) {
+    public ResponseEntity<ResponseWrapper<AuthResponse>> authenticateUserByPhone(
+            @Valid @RequestBody PhoneLoginRequest phoneLoginRequest) {
         return ResponseEntity.ok(authService.loginUserWithPhone(phoneLoginRequest));
     }
 
@@ -57,13 +59,15 @@ public class AuthController {
 
     @GetMapping("/phone/otp/{phoneNumber}")
     @ApiOperation("Verify user phone with OTP")
-    public ResponseEntity<ResponseWrapper<String>> verifyPhoneByOTP(@PathVariable("phoneNumber") String phoneNumber) {
+    public ResponseEntity<ResponseWrapper<String>> verifyPhoneByOTP(
+            @PathVariable("phoneNumber") String phoneNumber) {
         return null;
     }
 
     @PostMapping("/register/super-admin")
     @ApiOperation("Register Admin With Email & Password")
-    public ResponseEntity<ResponseWrapper<Boolean>> registerAdmin(@Valid @RequestBody RegistrationRequest registrationRequest) {
+    public ResponseEntity<ResponseWrapper<Boolean>> registerAdmin(
+            @Valid @RequestBody RegistrationRequest registrationRequest) {
         return ResponseEntity.ok(authService.registerAdmin(registrationRequest));
     }
 

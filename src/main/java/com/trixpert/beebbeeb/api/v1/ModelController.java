@@ -38,7 +38,7 @@ public class ModelController {
     @ApiOperation("Register New Model")
     public ResponseEntity<ResponseWrapper<Boolean>> registerModel(
             @RequestParam("file") MultipartFile images,
-            @RequestParam("body") String modelRegisterRequest
+            @Valid @RequestParam("body") String modelRegisterRequest
             , HttpServletRequest request) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -51,7 +51,8 @@ public class ModelController {
 
     @PutMapping("/update")
     @ApiOperation("Update Model")
-    public ResponseEntity<ResponseWrapper<Boolean>> updateModel(@Valid @RequestBody ModelDTO modelDTO
+    public ResponseEntity<ResponseWrapper<Boolean>> updateModel(
+            @Valid @RequestBody ModelDTO modelDTO
             , HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
@@ -99,13 +100,15 @@ public class ModelController {
 
     @GetMapping("/cars/list/active/{modelId}")
     @ApiOperation("Get list of active cars for specific model")
-    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getActiveCarsForModel(@PathVariable("modelId") long modelId) {
+    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getActiveCarsForModel(
+            @PathVariable("modelId") long modelId) {
         return ResponseEntity.ok(modelService.listCarsForModel(true, modelId));
     }
 
     @GetMapping("/cars/list/inactive/{modelId}")
     @ApiOperation("Get list of inactive cars for specific model")
-    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getInactiveCarsForModel(@PathVariable("modelId") long modelId) {
+    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getInactiveCarsForModel(
+            @PathVariable("modelId") long modelId) {
         return ResponseEntity.ok(modelService.listCarsForModel(false, modelId));
     }
     @GetMapping("/Get/{modelId}")

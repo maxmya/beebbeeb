@@ -29,7 +29,8 @@ public class AdminController {
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @PostMapping("/register")
     @ApiOperation("register a new admin")
-    public ResponseEntity<ResponseWrapper<Boolean>> registerAdmin(@Valid @RequestBody AdminRegistrationRequest adminRegistrationRequest) {
+    public ResponseEntity<ResponseWrapper<Boolean>> registerAdmin(
+            @Valid @RequestBody AdminRegistrationRequest adminRegistrationRequest) {
         return ResponseEntity.ok(adminService.registerAdmin(adminRegistrationRequest));
     }
 

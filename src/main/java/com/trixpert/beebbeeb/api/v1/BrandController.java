@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
@@ -60,7 +61,7 @@ public class BrandController {
     @ResponseBody
     public ResponseEntity<ResponseWrapper<Boolean>> addBrand(
             @RequestParam(name = "file") MultipartFile logoFile,
-            @RequestParam(name = "body") String regRequest,
+            @Valid @RequestParam(name = "body") String regRequest,
             HttpServletRequest request) throws IOException {
 
         String authorizationHeader = request.getHeader("Authorization");

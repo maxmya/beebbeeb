@@ -56,7 +56,7 @@ public class CustomerController {
     @PostMapping("/auth/register")
     @ApiOperation("Add New Customer")
     public ResponseEntity<ResponseWrapper<Boolean>> mobileRegisterCustomer(
-            @RequestBody CustomerMobileRegistrationRequest customerRegisterRequest) {
+            @Valid @RequestBody CustomerMobileRegistrationRequest customerRegisterRequest) {
         return ResponseEntity.ok(customerService.registerCustomer(customerRegisterRequest));
     }
 

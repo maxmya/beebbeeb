@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class BankController {
     @ApiOperation("Adding a new bank")
     public ResponseEntity<ResponseWrapper<Boolean>> registerBank(
             @RequestPart(name = "file") MultipartFile logoFile,
-            @RequestPart(name = "body") BankRegistrationRequest bankRegisterRequest,
+            @Valid @RequestPart(name = "body") BankRegistrationRequest bankRegisterRequest,
             HttpServletRequest request) throws IOException {
 
         String authorizationHeader = request.getHeader("Authorization");
