@@ -5,12 +5,13 @@ import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.EmployeeRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.CustomerDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface CustomerService {
 
-    ResponseWrapper<Boolean> registerCustomer(CustomerMobileRegistrationRequest registrationRequest);
+    ResponseWrapper<Boolean> registerCustomer(CustomerMobileRegistrationRequest registrationRequest , MultipartFile photoFile);
 
     ResponseWrapper<Boolean> deleteCustomer(long customerId, String authHeader);
 
