@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 
 @Api(tags = {"Address API"})
@@ -45,18 +46,19 @@ public class AddressController {
     @PutMapping("/update/{addressId}")
     @ApiOperation("Update an existing address with new data")
     public ResponseEntity<ResponseWrapper<Boolean>> updateAddress(
-            @RequestPart(name = "body")AddressRegistrationRequest addressRegistrationRequest,
+           @Valid @RequestBody AddressRegistrationRequest addressRegistrationRequest,
             @PathVariable("addressId") long addressId, HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(addressService.updateAddress(addressRegistrationRequest , addressId , authorizationHeader));
+        return ResponseEntity.ok(addressService.updateAddress(addressRegistrationRequest ,
+                addressId , authorizationHeader));
     }
 
     @PostMapping("/add")
     @ApiOperation("Add New  Address")
     public ResponseEntity<ResponseWrapper<Boolean>> addAddress(
-            @RequestBody AddressRegistrationRequest addressRegistrationRequest,
+           @Valid @RequestBody AddressRegistrationRequest addressRegistrationRequest,
             HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
