@@ -35,14 +35,16 @@ public class BankController {
             HttpServletRequest request) throws IOException {
 
         String authorizationHeader = request.getHeader("Authorization");
-        return ResponseEntity.ok(bankService.registerBank(logoFile, bankRegisterRequest,authorizationHeader));
+        return ResponseEntity.ok(bankService.registerBank(logoFile,
+                bankRegisterRequest,authorizationHeader));
     }
 
     @PutMapping("/update")
     @ApiOperation("Updating a bank")
-    public ResponseEntity<ResponseWrapper<Boolean>> updateBank(@RequestPart(name = "file") MultipartFile logoFile
-                                                               , HttpServletRequest request,
-                                                               @RequestBody BankDTO bankDTO) {
+    public ResponseEntity<ResponseWrapper<Boolean>> updateBank(
+            @RequestPart(name = "file") MultipartFile logoFile
+            , HttpServletRequest request,
+            @RequestBody BankDTO bankDTO) {
         String authorizationHeader = request.getHeader("Authorization");
 
         return ResponseEntity.ok(bankService.updateBank(logoFile, bankDTO , authorizationHeader ));
@@ -50,8 +52,9 @@ public class BankController {
 
     @PutMapping("/delete/{bankId}")
     @ApiOperation("Api for deleting a bank")
-    public ResponseEntity<ResponseWrapper<Boolean>> deleteBank(@PathVariable("bankId") Long bankId ,
-                                                               HttpServletRequest request) {
+    public ResponseEntity<ResponseWrapper<Boolean>> deleteBank(
+            @PathVariable("bankId") Long bankId ,
+            HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
 
         return ResponseEntity.ok(bankService.deleteBank(bankId , authorizationHeader));
@@ -69,6 +72,14 @@ public class BankController {
     public ResponseEntity<ResponseWrapper<List<BankDTO>>> getInactiveBanks() {
 
         return ResponseEntity.ok(bankService.getAllBanks(false ));
+    }
+    @GetMapping("/get/{bankId}")
+    @ApiOperation("Get bank by Id")
+    public ResponseEntity<ResponseWrapper<BankDTO>> getBank(
+            @PathVariable("bankId") Long bankId,
+            @RequestParam boolean active){
+    return ResponseEntity.ok(bankService.getBank(active , bankId));
+
     }
 
 }
