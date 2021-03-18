@@ -1,20 +1,17 @@
-package com.trixpert.beebbeeb.data.to;
+package com.trixpert.beebbeeb.data.request;
+
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class AddressDTO {
-    private Long id;
+public class AddressRegistrationRequest {
     private String title;
     private String fullAddress;
     private double longitude;
     private double latitude;
-    private boolean active;
-
+    private long customerId;
 }

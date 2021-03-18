@@ -133,18 +133,22 @@ public class CustomerServiceImpl implements CustomerService {
             }
             CustomerEntity customerEntityRecord = optionalCustomerEntity.get();
 
-            if (customerRegistrationRequest.getIncome() != -1 && customerRegistrationRequest.getIncome() != customerEntityRecord.getIncome()) {
+            if (customerRegistrationRequest.getIncome() != -1 &&
+                    customerRegistrationRequest.getIncome() != customerEntityRecord.getIncome()) {
                 customerEntityRecord.setIncome(customerRegistrationRequest.getIncome());
             }
-            if (customerRegistrationRequest.getJobAddress() != null && customerRegistrationRequest.getJobAddress()
+            if (customerRegistrationRequest.getJobAddress() != null &&
+                    customerRegistrationRequest.getJobAddress()
                     .equals(customerEntityRecord.getJobAddress())) {
                 customerEntityRecord.setJobAddress(customerRegistrationRequest.getJobAddress());
             }
-            if (customerRegistrationRequest.getJobTitle() != null && customerRegistrationRequest.getJobTitle().equals(
+            if (customerRegistrationRequest.getJobTitle() != null &&
+                    customerRegistrationRequest.getJobTitle().equals(
                     customerEntityRecord.getJobTitle())) {
                 customerEntityRecord.setJobTitle(customerRegistrationRequest.getJobTitle());
             }
-            if (customerRegistrationRequest.getPreferredBank() != null && customerRegistrationRequest.getPreferredBank().equals(
+            if (customerRegistrationRequest.getPreferredBank() != null &&
+                    customerRegistrationRequest.getPreferredBank().equals(
                     customerEntityRecord.getPreferredBank())) {
                 customerEntityRecord.setPreferredBank(customerRegistrationRequest.getPreferredBank());
             }
