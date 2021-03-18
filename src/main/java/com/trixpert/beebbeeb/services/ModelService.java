@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface ModelService {
 
-    ResponseWrapper<Boolean> registerModel(MultipartFile[] multipartFiles,
+    ResponseWrapper<Boolean> registerModel(MultipartFile img,
                                            ModelRegisterRequest modelRegisterRequest,
                                            String authHeader) throws IOException;
 

@@ -1,11 +1,9 @@
 package com.trixpert.beebbeeb.api.v1;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trixpert.beebbeeb.data.request.ModelRegisterRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
-import com.trixpert.beebbeeb.data.to.BrandDTO;
 import com.trixpert.beebbeeb.data.to.CarDTO;
 import com.trixpert.beebbeeb.data.to.ModelDTO;
 import com.trixpert.beebbeeb.services.ModelService;
@@ -37,7 +35,7 @@ public class ModelController {
     @PostMapping("/register")
     @ApiOperation("Register New Model")
     public ResponseEntity<ResponseWrapper<Boolean>> registerModel(
-            @RequestParam("file") MultipartFile[] images,
+            @RequestParam("file") MultipartFile images,
             @RequestParam("body") String modelRegisterRequest
             , HttpServletRequest request) throws IOException {
 
