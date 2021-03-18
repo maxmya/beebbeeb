@@ -28,7 +28,7 @@ public class EmployeeController {
     @PostMapping("/vendor/branch/add")
     @ApiOperation("Adding a new employee to a specific branch")
     public ResponseEntity<ResponseWrapper<Boolean>> addEmployeeForBranch(
-            EmployeeRegistrationRequest employeeRegistrationRequest ,
+            @Valid @RequestBody EmployeeRegistrationRequest employeeRegistrationRequest ,
             HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
@@ -39,13 +39,15 @@ public class EmployeeController {
 
     @GetMapping("{branchId}/list/active")
     @ApiOperation("Get list of active employees for a specific branch")
-    public ResponseEntity<ResponseWrapper<List<EmployeeDTO>>> getAllActiveEmployeesForBranch(@PathVariable("branchId") Long branchId) {
+    public ResponseEntity<ResponseWrapper<List<EmployeeDTO>>> getAllActiveEmployeesForBranch(
+            @PathVariable("branchId") Long branchId) {
         return ResponseEntity.ok(employeeService.getAllEmployeesForBranch(true, branchId));
     }
 
     @GetMapping("{branchId}/list/inactive")
     @ApiOperation("Get list of inactive employees for a specific branch")
-    public ResponseEntity<ResponseWrapper<List<EmployeeDTO>>> getAllInactiveEmployeesForBranch(@PathVariable("branchId") Long branchId) {
+    public ResponseEntity<ResponseWrapper<List<EmployeeDTO>>> getAllInactiveEmployeesForBranch
+            (@PathVariable("branchId") Long branchId) {
         return ResponseEntity.ok(employeeService.getAllEmployeesForBranch(false, branchId));
     }
 
@@ -74,13 +76,15 @@ public class EmployeeController {
 
     @GetMapping("{vendorId}/list/active")
     @ApiOperation("Get list of all active employees for a specific vendor")
-    public ResponseEntity<ResponseWrapper<List<EmployeeDTO>>> getAllActiveEmployeesForVendor(@PathVariable("vendorId") Long vendorId){
+    public ResponseEntity<ResponseWrapper<List<EmployeeDTO>>> getAllActiveEmployeesForVendor(
+            @PathVariable("vendorId") Long vendorId){
         return ResponseEntity.ok(employeeService.getAllEmployeesForVendor(true, vendorId));
     }
 
     @GetMapping("{vendorId}/list/inactive")
     @ApiOperation("Get list of all active employees for a specific vendor")
-    public ResponseEntity<ResponseWrapper<List<EmployeeDTO>>> getAllInactiveEmployeesForVendor(@PathVariable("vendorId") Long vendorId){
+    public ResponseEntity<ResponseWrapper<List<EmployeeDTO>>> getAllInactiveEmployeesForVendor(
+            @PathVariable("vendorId") Long vendorId){
         return ResponseEntity.ok(employeeService.getAllEmployeesForVendor(false, vendorId));
     }
 

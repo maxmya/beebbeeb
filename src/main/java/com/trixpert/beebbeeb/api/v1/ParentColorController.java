@@ -45,7 +45,8 @@ public class ParentColorController {
             , HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(parentColorService.updateParentColor(parentColorDTO , authorizationHeader));
+        return ResponseEntity.ok(parentColorService.updateParentColor(
+                parentColorDTO , authorizationHeader));
     }
 
     @PostMapping("/add")

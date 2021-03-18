@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
@@ -54,16 +55,19 @@ public class TypeController {
 
     @CrossOrigin(origins = {"*"})
     @ApiOperation("Add New Type")
-    @PostMapping(value = "/add", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/add", consumes = {
+            MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseBody
     public ResponseEntity<ResponseWrapper<Boolean>> addType(
             @RequestParam(name = "file") MultipartFile logoFile,
-            @RequestParam(name = "body") String regRequest,
+            @Valid @RequestParam(name = "body") String regRequest,
             HttpServletRequest request) throws IOException {
         String authorizationHeader = request.getHeader("Authorization");
         ObjectMapper objectMapper = new ObjectMapper();
-        TypeRegistrationRequest typeRegistrationRequest = objectMapper.readValue(regRequest, TypeRegistrationRequest.class);
-        return ResponseEntity.ok(typeService.addType(typeRegistrationRequest, logoFile, authorizationHeader));
+        TypeRegistrationRequest typeRegistrationRequest = objectMapper.readValue(
+                regRequest, TypeRegistrationRequest.class);
+        return ResponseEntity.ok(typeService.addType(
+                typeRegistrationRequest, logoFile, authorizationHeader));
     }
 
     @PutMapping("/delete/{typeId}")

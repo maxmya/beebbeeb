@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 
 @Api(tags = {"Color API"})
@@ -50,8 +51,9 @@ public class ColorController {
 
     @PostMapping("/add")
     @ApiOperation("Add New  Color")
-    public ResponseEntity<ResponseWrapper<Boolean>> addColor(@RequestBody ColorRegistrationRequest ColorRegistrationRequest,
-                                                             HttpServletRequest request) {
+    public ResponseEntity<ResponseWrapper<Boolean>> addColor(
+            @Valid @RequestBody ColorRegistrationRequest ColorRegistrationRequest,
+            HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 

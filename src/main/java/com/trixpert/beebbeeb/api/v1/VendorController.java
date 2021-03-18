@@ -75,7 +75,8 @@ public class VendorController {
 
     @GetMapping("/get/{vendorId}")
     @ApiOperation("Get vendor by Id")
-    public ResponseEntity<ResponseWrapper<VendorDTO>> getVendor(@PathVariable("vendorId") long vendorId) {
+    public ResponseEntity<ResponseWrapper<VendorDTO>> getVendor(
+            @PathVariable("vendorId") long vendorId) {
         return ResponseEntity.ok(vendorService.getVendor(vendorId));
     }
 }

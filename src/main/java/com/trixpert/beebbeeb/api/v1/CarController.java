@@ -26,13 +26,16 @@ public class CarController {
 
     @PostMapping("/add")
     @ApiOperation("Adding a new car")
-    public ResponseEntity<ResponseWrapper<Boolean>> registerCar(@Valid @RequestBody CarRegistrationRequest carRegistrationRequest){
+    public ResponseEntity<ResponseWrapper<Boolean>> registerCar(
+            @Valid @RequestBody CarRegistrationRequest carRegistrationRequest){
         return ResponseEntity.ok(carService.registerCar(carRegistrationRequest));
     }
 
     @PutMapping("/update/{carId}")
     @ApiOperation("updating a Car")
-    public ResponseEntity<ResponseWrapper<Boolean>> updateCar(@PathVariable("carId") long carId, @Valid @RequestBody CarRegistrationRequest carRegistrationRequest){
+    public ResponseEntity<ResponseWrapper<Boolean>> updateCar(
+            @PathVariable("carId") long carId,
+            @Valid @RequestBody CarRegistrationRequest carRegistrationRequest){
         return ResponseEntity.ok(carService.updateCar(carId, carRegistrationRequest));
     }
 
