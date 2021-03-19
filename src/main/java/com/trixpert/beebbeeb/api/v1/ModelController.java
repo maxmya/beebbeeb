@@ -29,7 +29,6 @@ public class ModelController {
 
     private final ModelService modelService;
 
-
     public ModelController(ModelService modelService) {
         this.modelService = modelService;
     }
@@ -49,6 +48,23 @@ public class ModelController {
         return ResponseEntity.ok(modelService.registerModel(images, registerRequest, authorizationHeader));
     }
 
+    @PostMapping("/{modelId}/interior/")
+    @ApiOperation("Add Interior Photo For Model")
+    public ResponseEntity<ResponseWrapper<Boolean>> uploadInterior(
+            @PathVariable("modelId") long modelId,
+            @RequestParam("file") MultipartFile image,
+            HttpServletRequest request) {
+        return ResponseEntity.ok(modelService.uploadInterior(modelId, image));
+    }
+
+    @PostMapping("/{modelId}/exterior/")
+    @ApiOperation("Add Interior Photo For Model")
+    public ResponseEntity<ResponseWrapper<Boolean>> uploadExterior(
+            @PathVariable("modelId") long modelId,
+            @RequestParam("file") MultipartFile image,
+            HttpServletRequest request) {
+        return ResponseEntity.ok(modelService.uploadExterior(modelId, image));
+    }
 
     @PutMapping("/update")
     @ApiOperation("Update Model")
@@ -112,9 +128,10 @@ public class ModelController {
             @PathVariable("modelId") long modelId) {
         return ResponseEntity.ok(modelService.listCarsForModel(false, modelId));
     }
+
     @GetMapping("/Get/{modelId}")
     @ApiOperation("Get model by Id")
-    public ResponseEntity<ResponseWrapper<ModelDTO>> getModel(@PathVariable("modelId")long modelId){
+    public ResponseEntity<ResponseWrapper<ModelDTO>> getModel(@PathVariable("modelId") long modelId) {
         return ResponseEntity.ok(modelService.getModel(modelId));
     }
 }

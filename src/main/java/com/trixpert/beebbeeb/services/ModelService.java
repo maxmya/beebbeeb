@@ -17,6 +17,10 @@ public interface ModelService {
                                            ModelRegisterRequest modelRegisterRequest,
                                            String authHeader) throws IOException;
 
+    ResponseWrapper<Boolean> uploadInterior(long modelId, MultipartFile file);
+
+    ResponseWrapper<Boolean> uploadExterior(long modelId, MultipartFile file);
+
     ResponseWrapper<Boolean> updateModel(ModelDTO modelDTO, String authHeader);
 
     ResponseWrapper<Boolean> deleteModel(Long modelID, String authHeader);

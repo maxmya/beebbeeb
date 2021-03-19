@@ -124,6 +124,58 @@ public class ModelServiceImpl implements ModelService {
 
     @Transactional
     @Override
+    public ResponseWrapper<Boolean> uploadInterior(long modelId, MultipartFile file) {
+        try {
+            boolean success = uploadImage(true, modelId, file);
+            if (!success) return reporterService.reportError(new IllegalArgumentException(""));
+            return reporterService.reportSuccess();
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    private boolean uploadImage(boolean interior, long modelId, MultipartFile file) {
+        try {
+            Optional<ModelEntity> modelOptional = modelRepository.findById(modelId);
+
+            if (!modelOptional.isPresent()) {
+                throw new NotFoundException("model not found !");
+            }
+
+            ModelEntity model = modelOptional.get();
+
+            String mainImage = cloudStorageService.uploadFile(file);
+
+            PhotoEntity interiorPhoto = photoRepository
+                    .save(PhotoEntity.builder()
+                            .photoUrl(mainImage)
+                            .caption(model.getName())
+                            .interior(interior)
+                            .build());
+
+            List<PhotoEntity> modelPhotos = model.getPhotos();
+            modelPhotos.add(interiorPhoto);
+            model.setPhotos(modelPhotos);
+            modelRepository.save(model);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public ResponseWrapper<Boolean> uploadExterior(long modelId, MultipartFile file) {
+        try {
+            boolean success = uploadImage(false, modelId, file);
+            if (!success) return reporterService.reportError(new IllegalArgumentException(""));
+            return reporterService.reportSuccess();
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Transactional
+    @Override
     public ResponseWrapper<Boolean> updateModel(ModelDTO modelDTO, String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
@@ -165,6 +217,7 @@ public class ModelServiceImpl implements ModelService {
         }
 
     }
+
     @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteModel(Long modelId, String authHeader) {
