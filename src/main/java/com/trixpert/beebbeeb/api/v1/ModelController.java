@@ -48,7 +48,7 @@ public class ModelController {
         return ResponseEntity.ok(modelService.registerModel(images, registerRequest, authorizationHeader));
     }
 
-    @PostMapping("/{modelId}/interior/")
+    @PutMapping("/{modelId}/interior/")
     @ApiOperation("Add Interior Photo For Model")
     public ResponseEntity<ResponseWrapper<Boolean>> uploadInterior(
             @PathVariable("modelId") long modelId,
@@ -57,7 +57,7 @@ public class ModelController {
         return ResponseEntity.ok(modelService.uploadInterior(modelId, image));
     }
 
-    @PostMapping("/{modelId}/exterior/")
+    @PutMapping("/{modelId}/exterior/")
     @ApiOperation("Add Interior Photo For Model")
     public ResponseEntity<ResponseWrapper<Boolean>> uploadExterior(
             @PathVariable("modelId") long modelId,

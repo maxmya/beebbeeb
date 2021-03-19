@@ -163,6 +163,7 @@ public class ModelServiceImpl implements ModelService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> uploadExterior(long modelId, MultipartFile file) {
         try {
