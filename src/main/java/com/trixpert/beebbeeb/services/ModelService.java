@@ -2,6 +2,7 @@ package com.trixpert.beebbeeb.services;
 
 
 import com.trixpert.beebbeeb.data.request.ModelRegisterRequest;
+import com.trixpert.beebbeeb.data.response.FileUploadResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.CarDTO;
 import com.trixpert.beebbeeb.data.to.ModelDTO;
@@ -16,6 +17,10 @@ public interface ModelService {
     ResponseWrapper<Boolean> registerModel(MultipartFile img,
                                            ModelRegisterRequest modelRegisterRequest,
                                            String authHeader) throws IOException;
+
+    ResponseWrapper<FileUploadResponse> uploadInterior(long modelId, MultipartFile file);
+
+    ResponseWrapper<FileUploadResponse> uploadExterior(long modelId, MultipartFile file);
 
     ResponseWrapper<Boolean> updateModel(ModelDTO modelDTO, String authHeader);
 

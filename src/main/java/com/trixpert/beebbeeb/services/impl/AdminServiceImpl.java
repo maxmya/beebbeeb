@@ -64,6 +64,7 @@ public class AdminServiceImpl implements AdminService {
                     registrationRequest.getEmail(),
                     adminRole.get(),
                     registrationRequest,
+                    "",
                     false);
 
             return reporterService.reportSuccess();

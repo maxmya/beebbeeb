@@ -1,5 +1,6 @@
 package com.trixpert.beebbeeb.api.v1;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trixpert.beebbeeb.data.request.TypeRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
@@ -44,17 +45,23 @@ public class TypeController {
         return ResponseEntity.ok(typeService.listAllTypes(false));
     }
 
-
-    @PutMapping("/update/{typeId}")
+    @CrossOrigin(origins = {"*"})
+    @PutMapping(value = "/update/{typeId}", consumes = {
+            MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation("Update an existing type with new data")
-    public ResponseEntity<ResponseWrapper<Boolean>> updateType(
-            @RequestBody TypeRegistrationRequest typeRegistrationRequest,
+    @ResponseBody
+    public  ResponseEntity<ResponseWrapper<Boolean>> updateType(
+            @RequestParam(name = "file") MultipartFile logoFile,
+            @Valid @RequestParam(name = "body") String regRequest,
             @PathVariable("typeId") long typeId
-            , HttpServletRequest request) {
+            , HttpServletRequest request) throws IOException {
         String authorizationHeader = request.getHeader("Authorization");
+        ObjectMapper objectMapper = new ObjectMapper();
+        TypeRegistrationRequest typeRegistrationRequest = objectMapper.readValue(
+                regRequest, TypeRegistrationRequest.class);
 
         return ResponseEntity.ok(typeService.updateType(typeRegistrationRequest ,
-                typeId, authorizationHeader));
+                typeId, logoFile , authorizationHeader));
     }
 
     @CrossOrigin(origins = {"*"})
@@ -66,6 +73,7 @@ public class TypeController {
             @RequestParam(name = "file") MultipartFile logoFile,
             @Valid @RequestParam(name = "body") String regRequest,
             HttpServletRequest request) throws IOException {
+
         String authorizationHeader = request.getHeader("Authorization");
         ObjectMapper objectMapper = new ObjectMapper();
         TypeRegistrationRequest typeRegistrationRequest = objectMapper.readValue(

@@ -34,7 +34,8 @@ public class ModelMapper {
         List<PhotoDTO> photoDTOS = new ArrayList<>();
 
         modelEntity.getPhotos().forEach(photoEntity -> {
-            photoDTOS.add(photoMapper.convertToDTO(photoEntity));
+            if (photoEntity.isActive())
+                photoDTOS.add(photoMapper.convertToDTO(photoEntity));
         });
 
         return ModelDTO.builder()

@@ -15,6 +15,7 @@ public interface UserService {
     ResponseWrapper<UserEntity> registerUser(String username,
                                              RolesEntity role,
                                              RegistrationRequest registrationRequest,
+                                             String logoUrl,
                                              boolean isPhone);
 
 

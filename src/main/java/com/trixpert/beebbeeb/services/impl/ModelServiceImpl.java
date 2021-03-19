@@ -2,23 +2,24 @@ package com.trixpert.beebbeeb.services.impl;
 
 import com.trixpert.beebbeeb.data.constants.AuditActions;
 import com.trixpert.beebbeeb.data.entites.BrandEntity;
-import com.trixpert.beebbeeb.data.entites.EmployeeEntity;
 import com.trixpert.beebbeeb.data.entites.ModelEntity;
 import com.trixpert.beebbeeb.data.entites.PhotoEntity;
 import com.trixpert.beebbeeb.data.mappers.BrandMapper;
 import com.trixpert.beebbeeb.data.mappers.CarMapper;
 import com.trixpert.beebbeeb.data.mappers.ModelMapper;
+import com.trixpert.beebbeeb.data.mappers.PhotoMapper;
 import com.trixpert.beebbeeb.data.repositories.BrandRepository;
 import com.trixpert.beebbeeb.data.repositories.ModelRepository;
 import com.trixpert.beebbeeb.data.repositories.PhotoRepository;
 import com.trixpert.beebbeeb.data.request.ModelRegisterRequest;
+import com.trixpert.beebbeeb.data.response.FileUploadResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
 import com.trixpert.beebbeeb.data.to.CarDTO;
 import com.trixpert.beebbeeb.data.to.ModelDTO;
+import com.trixpert.beebbeeb.data.to.PhotoDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
-import org.checkerframework.checker.nullness.Opt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,6 +42,7 @@ public class ModelServiceImpl implements ModelService {
     private final ModelMapper modelMapper;
     private final BrandMapper brandMapper;
     private final CarMapper carMapper;
+    private final PhotoMapper photoMapper;
 
     private final ReporterService reporterService;
     private final UserService userService;
@@ -54,6 +56,7 @@ public class ModelServiceImpl implements ModelService {
                             ReporterService reporterService,
                             BrandMapper brandMapper,
                             CarMapper carMapper,
+                            PhotoMapper photoMapper,
                             UserService userService,
                             AuditService auditService,
                             CloudStorageService cloudStorageService) {
@@ -65,6 +68,7 @@ public class ModelServiceImpl implements ModelService {
         this.reporterService = reporterService;
         this.brandMapper = brandMapper;
         this.carMapper = carMapper;
+        this.photoMapper = photoMapper;
         this.userService = userService;
         this.auditService = auditService;
         this.cloudStorageService = cloudStorageService;
@@ -124,6 +128,60 @@ public class ModelServiceImpl implements ModelService {
 
     @Transactional
     @Override
+    public ResponseWrapper<FileUploadResponse> uploadInterior(long modelId, MultipartFile file) {
+        try {
+            PhotoDTO photoDTO = uploadImage(true, modelId, file);
+            if (photoDTO == null) return reporterService.reportError(new IllegalArgumentException(""));
+            return reporterService.reportSuccess(new FileUploadResponse(photoDTO));
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    private PhotoDTO uploadImage(boolean interior, long modelId, MultipartFile file) {
+        try {
+            Optional<ModelEntity> modelOptional = modelRepository.findById(modelId);
+
+            if (!modelOptional.isPresent()) {
+                throw new NotFoundException("model not found !");
+            }
+
+            ModelEntity model = modelOptional.get();
+
+            String mainImage = cloudStorageService.uploadFile(file);
+
+            PhotoEntity interiorPhoto = photoRepository
+                    .save(PhotoEntity.builder()
+                            .photoUrl(mainImage)
+                            .caption(model.getName())
+                            .interior(interior)
+                            .build());
+
+            List<PhotoEntity> modelPhotos = model.getPhotos();
+            modelPhotos.add(interiorPhoto);
+            model.setPhotos(modelPhotos);
+            modelRepository.save(model);
+            return photoMapper.convertToDTO(interiorPhoto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Transactional
+    @Override
+    public ResponseWrapper<FileUploadResponse> uploadExterior(long modelId, MultipartFile file) {
+        try {
+            PhotoDTO photoDTO = uploadImage(false, modelId, file);
+            if (photoDTO == null) return reporterService.reportError(new IllegalArgumentException(""));
+            return reporterService.reportSuccess(new FileUploadResponse(photoDTO));
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Transactional
+    @Override
     public ResponseWrapper<Boolean> updateModel(ModelDTO modelDTO, String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
@@ -165,6 +223,7 @@ public class ModelServiceImpl implements ModelService {
         }
 
     }
+
     @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteModel(Long modelId, String authHeader) {

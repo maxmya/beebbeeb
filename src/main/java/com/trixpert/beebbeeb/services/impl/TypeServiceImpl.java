@@ -105,7 +105,8 @@ public class TypeServiceImpl implements TypeService {
 
             auditService.logAudit(auditDTO);
 
-            return reporterService.reportSuccess("Type Deleted Successful ID :".concat(Long.toString(typeId)));
+            return reporterService.reportSuccess("Type Deleted Successful ID :"
+                    .concat(Long.toString(typeId)));
         } catch (Exception e) {
             return reporterService.reportError(e);
         }
@@ -114,8 +115,9 @@ public class TypeServiceImpl implements TypeService {
     @Transactional
     @Override
     public ResponseWrapper<Boolean> updateType(TypeRegistrationRequest typeRegistrationRequest ,
-            long typeId ,  String authHeader) {
+            long typeId , MultipartFile logoFile ,  String authHeader) throws IOException {
         String username = auditService.getUsernameForAudit(authHeader);
+
 
         try {
             Optional<TypeEntity> optionalTypeEntity = typeRepository.findById(typeId);
@@ -125,9 +127,20 @@ public class TypeServiceImpl implements TypeService {
 
             TypeEntity typeEntityRecord = optionalTypeEntity.get();
             if (typeRegistrationRequest.getName() != null &&
-                    !typeRegistrationRequest.getName().equals(typeEntityRecord.getName()))
+                    !typeRegistrationRequest.getName().equals(typeEntityRecord.getName())) {
                 typeEntityRecord.setName(typeRegistrationRequest.getName());
-
+            }
+            if (typeRegistrationRequest.getDescription() != null &&
+                    !typeRegistrationRequest.getDescription().equals(typeEntityRecord.getDescription())){
+                typeEntityRecord.setDescription(typeRegistrationRequest.getDescription());
+            }
+            if (logoFile!=null) {
+                String logoUrlRecord = cloudStorageService.uploadFile(logoFile);
+                typeEntityRecord.setLogoUrl(logoUrlRecord);
+            }
+            if(logoFile==null){
+                typeEntityRecord.setLogoUrl(typeEntityRecord.getLogoUrl());
+            }
             typeRepository.save(typeEntityRecord);
 
 
