@@ -34,6 +34,8 @@ public class PhotoEntity {
     @Column(name = "main_photo")
     private boolean mainPhoto;
 
+    private boolean active;
+
     @Fetch(value = FetchMode.SUBSELECT)
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
