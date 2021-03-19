@@ -164,7 +164,9 @@ public class CustomerServiceImpl implements CustomerService {
                         .phone(customerRegistrationRequest.getPhone())
                         .build();
                 userService.updateUser(employeeDTO);
-            }            AuditDTO auditDTO =
+            }
+            customerRepository.save(customerEntityRecord);
+            AuditDTO auditDTO =
                     AuditDTO.builder()
                             .user(userService.getUserByUsername(username))
                             .action(AuditActions.UPDATE)
@@ -173,7 +175,7 @@ public class CustomerServiceImpl implements CustomerService {
                             .build();
             auditService.logAudit(auditDTO);
 
-            return reporterService.reportSuccess("A new customer  has been added ");
+            return reporterService.reportSuccess("Customer updated successfully");
         } catch (Exception e) {
             return reporterService.reportError(e);
         }
