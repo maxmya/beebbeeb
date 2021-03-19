@@ -53,22 +53,20 @@ public class CustomerController {
             @PathVariable("customerId") long customerId, HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
-        return ResponseEntity.ok(customerService.updateCustomer(customerRegistrationRequest ,
+        return ResponseEntity.ok(customerService.updateCustomer(customerRegistrationRequest,
                 customerId, authorizationHeader));
     }
 
     @CrossOrigin(origins = {"*"})
-    @PostMapping(value="/auth/register" ,  consumes = {MediaType.APPLICATION_JSON_VALUE , MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/auth/register", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation("Add New Customer")
     @ResponseBody
     public ResponseEntity<ResponseWrapper<Boolean>> mobileRegisterCustomer(
-            @RequestParam(name = "file") MultipartFile photoFile,
-            @RequestParam(name = "body") String regRequest ,
+            @RequestBody CustomerMobileRegistrationRequest regRequest,
             HttpServletRequest request) throws IOException {
 
-          ObjectMapper objectMapper = new ObjectMapper();
-          CustomerMobileRegistrationRequest customerRegistrationRequest = objectMapper.readValue(regRequest , CustomerMobileRegistrationRequest.class);
-          return ResponseEntity.ok(customerService.registerCustomer(customerRegistrationRequest , photoFile));
+        ObjectMapper objectMapper = new ObjectMapper();
+         return ResponseEntity.ok(customerService.registerCustomer(regRequest, null));
     }
 
 

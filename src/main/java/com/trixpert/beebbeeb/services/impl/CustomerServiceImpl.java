@@ -75,8 +75,8 @@ public class CustomerServiceImpl implements CustomerService {
                 throw new NotFoundException("Role customer Not Found");
             }
 
-            String photoUrlRecord ="";
-            photoUrlRecord = cloudStorageService.uploadFile(photoFile);
+//            String photoUrlRecord ="";
+//            photoUrlRecord = cloudStorageService.uploadFile(photoFile);
 
             RegistrationRequest registrationRequest = new RegistrationRequest();
             registrationRequest.setName(customerRegisterRequest.getName());
@@ -84,7 +84,7 @@ public class CustomerServiceImpl implements CustomerService {
             registrationRequest.setPassword(customerRegisterRequest.getPassword());
 
             UserEntity savedUser = userService.registerUser(customerRegisterRequest.getPhone(),
-                    customerRole.get(), registrationRequest,photoUrlRecord , true).getData();
+                    customerRole.get(), registrationRequest, "", true).getData();
 
             CustomerEntity customerEntityRecord = CustomerEntity.builder()
                     .horoscope(customerRegisterRequest.getHoroscope())
@@ -125,9 +125,10 @@ public class CustomerServiceImpl implements CustomerService {
             return reporterService.reportError(e);
         }
     }
+
     @Transactional
     @Override
-    public ResponseWrapper<Boolean> updateCustomer(CustomerRegistrationRequest customerRegistrationRequest ,
+    public ResponseWrapper<Boolean> updateCustomer(CustomerRegistrationRequest customerRegistrationRequest,
                                                    long customerId, String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
         try {
@@ -146,17 +147,17 @@ public class CustomerServiceImpl implements CustomerService {
             }
             if (customerRegistrationRequest.getJobAddress() != null &&
                     !customerRegistrationRequest.getJobAddress()
-                    .equals(customerEntityRecord.getJobAddress())) {
+                            .equals(customerEntityRecord.getJobAddress())) {
                 customerEntityRecord.setJobAddress(customerRegistrationRequest.getJobAddress());
             }
             if (customerRegistrationRequest.getJobTitle() != null &&
                     !customerRegistrationRequest.getJobTitle().equals(
-                    customerEntityRecord.getJobTitle())) {
+                            customerEntityRecord.getJobTitle())) {
                 customerEntityRecord.setJobTitle(customerRegistrationRequest.getJobTitle());
             }
             if (customerRegistrationRequest.getPreferredBank() != null &&
                     !customerRegistrationRequest.getPreferredBank().equals(
-                    customerEntityRecord.getPreferredBank())) {
+                            customerEntityRecord.getPreferredBank())) {
                 customerEntityRecord.setPreferredBank(customerRegistrationRequest.getPreferredBank());
             }
             if (customerRegistrationRequest.getName() != null ||
@@ -190,7 +191,7 @@ public class CustomerServiceImpl implements CustomerService {
     public ResponseWrapper<List<CustomerResponse>> getAllCustomers(boolean active) {
         try {
             List<CustomerResponse> customerList = new ArrayList<>();
-            customerRepository.findAllByActive(active).forEach(customer ->{
+            customerRepository.findAllByActive(active).forEach(customer -> {
                 CustomerResponse customerResponse = CustomerResponse.builder()
                         .id(customer.getId())
                         .name(customer.getUser().getName())
@@ -202,7 +203,7 @@ public class CustomerServiceImpl implements CustomerService {
                         .jobAddress(customer.getJobAddress())
                         .income(customer.getIncome())
                         .build();
-                    customerList.add(customerResponse);
+                customerList.add(customerResponse);
             });
             return reporterService.reportSuccess(customerList);
         } catch (Exception e) {
