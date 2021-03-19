@@ -57,12 +57,14 @@ public class CategoryServiceImpl implements CategoryService {
 
 
     @Override
-    public ResponseWrapper<Boolean> registerCategory(CategoryRegistrationRequest categoryRegistrationRequest,
-                                                     String authHeader) {
+    public ResponseWrapper<Boolean> registerCategory(
+            CategoryRegistrationRequest categoryRegistrationRequest,
+            String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
-            Optional<TypeEntity> optionalTypeEntity = typeRepository.findById(categoryRegistrationRequest.getTypeId());
+            Optional<TypeEntity> optionalTypeEntity = typeRepository.
+                    findById(categoryRegistrationRequest.getTypeId());
             if(!optionalTypeEntity.isPresent()){
                 throw new NotFoundException("Type entity not found");
             }
@@ -78,7 +80,7 @@ public class CategoryServiceImpl implements CategoryService {
                     AuditDTO.builder()
                             .user(userService.getUserByUsername(username))
                             .action(AuditActions.INSERT)
-                            .description("adding new Category entity " + categoryEntityRecord.toString())
+                            .description("adding new Category entity" + categoryEntityRecord.toString())
                             .timestamp(LocalDateTime.now())
                             .build();
 
@@ -113,7 +115,8 @@ public class CategoryServiceImpl implements CategoryService {
                             .build();
 
             auditService.logAudit(auditDTO);
-            return reporterService.reportSuccess("Category Deleted Successful ID : ".concat(Long.toString(categoryId)));
+            return reporterService.reportSuccess("Category Deleted Successful ID : "
+                    .concat(Long.toString(categoryId)));
 
         } catch (Exception e) {
             return reporterService.reportError(e);
@@ -132,12 +135,14 @@ public class CategoryServiceImpl implements CategoryService {
                 throw new NotFoundException("Category Entity Not Found!");
             }
             CategoryEntity categoryEntityRecord = optionalCategoryEntity.get();
-            if(categoryRegistrationRequest.getName()!=null && !categoryRegistrationRequest.getName().equals(categoryEntityRecord.getName())){
+            if(categoryRegistrationRequest.getName()!=null &&
+                    !categoryRegistrationRequest.getName().equals(categoryEntityRecord.getName())){
                 categoryEntityRecord.setName(categoryRegistrationRequest.getName());
             }
             if(categoryRegistrationRequest.getTypeId() != -1
                     && categoryRegistrationRequest.getTypeId() != categoryEntityRecord.getId()){
-                Optional<TypeEntity> optionalTypeEntity = typeRepository.findById(categoryRegistrationRequest.getTypeId());
+                Optional<TypeEntity> optionalTypeEntity = typeRepository.
+                        findById(categoryRegistrationRequest.getTypeId());
                 if(!optionalTypeEntity.isPresent()){
                     throw new NotFoundException("Type entity not found");
                 }
@@ -154,7 +159,9 @@ public class CategoryServiceImpl implements CategoryService {
                             .build();
 
             auditService.logAudit(auditDTO);
-            return reporterService.reportSuccess("Category ID : ".concat(Long.toString(categoryEntityRecord.getId())).concat(" is Updated Successfully ! "));
+            return reporterService.reportSuccess("Category ID : "
+                    .concat(Long.toString(categoryEntityRecord.getId()))
+                    .concat(" is Updated Successfully ! "));
         }catch (Exception e){
             return reporterService.reportError(e);
         }
