@@ -140,17 +140,17 @@ public class CustomerServiceImpl implements CustomerService {
                 customerEntityRecord.setIncome(customerRegistrationRequest.getIncome());
             }
             if (customerRegistrationRequest.getJobAddress() != null &&
-                    customerRegistrationRequest.getJobAddress()
+                    !customerRegistrationRequest.getJobAddress()
                     .equals(customerEntityRecord.getJobAddress())) {
                 customerEntityRecord.setJobAddress(customerRegistrationRequest.getJobAddress());
             }
             if (customerRegistrationRequest.getJobTitle() != null &&
-                    customerRegistrationRequest.getJobTitle().equals(
+                    !customerRegistrationRequest.getJobTitle().equals(
                     customerEntityRecord.getJobTitle())) {
                 customerEntityRecord.setJobTitle(customerRegistrationRequest.getJobTitle());
             }
             if (customerRegistrationRequest.getPreferredBank() != null &&
-                    customerRegistrationRequest.getPreferredBank().equals(
+                    !customerRegistrationRequest.getPreferredBank().equals(
                     customerEntityRecord.getPreferredBank())) {
                 customerEntityRecord.setPreferredBank(customerRegistrationRequest.getPreferredBank());
             }
