@@ -11,6 +11,7 @@ import com.trixpert.beebbeeb.services.ModelService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.checkerframework.checker.units.qual.A;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,8 @@ public class ModelController {
         this.modelService = modelService;
     }
 
-    @PostMapping("/register")
+    @CrossOrigin(origins = {"*"})
+    @PostMapping(value = "/register", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation("Register New Model")
     public ResponseEntity<ResponseWrapper<Boolean>> registerModel(
             @RequestParam("file") MultipartFile images,

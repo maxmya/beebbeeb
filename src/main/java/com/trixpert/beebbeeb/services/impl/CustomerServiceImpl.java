@@ -20,11 +20,9 @@ import com.trixpert.beebbeeb.data.to.AuditDTO;
 import com.trixpert.beebbeeb.data.to.CustomerDTO;
 import com.trixpert.beebbeeb.data.to.UserDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
-import com.trixpert.beebbeeb.services.AuditService;
-import com.trixpert.beebbeeb.services.CustomerService;
-import com.trixpert.beebbeeb.services.ReporterService;
-import com.trixpert.beebbeeb.services.UserService;
+import com.trixpert.beebbeeb.services.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -47,11 +45,13 @@ public class CustomerServiceImpl implements CustomerService {
     private final AuditService auditService;
 
     private final UserMapper userMapper;
+    private final CloudStorageService cloudStorageService;
+
 
     public CustomerServiceImpl(UserService userService, UserRepository userRepository,
                                RolesRepository rolesRepository, UserRolesRepository userRolesRepository,
                                CustomerRepository customerRepository, CustomerMapper customerMapper, ReporterService reporterService, AuditService auditService,
-                               UserMapper userMapper) {
+                               UserMapper userMapper, CloudStorageService cloudStorageService) {
         this.userService = userService;
         this.userRepository = userRepository;
         this.rolesRepository = rolesRepository;
@@ -61,10 +61,12 @@ public class CustomerServiceImpl implements CustomerService {
         this.reporterService = reporterService;
         this.auditService = auditService;
         this.userMapper = userMapper;
+        this.cloudStorageService = cloudStorageService;
     }
 
     @Override
-    public ResponseWrapper<Boolean> registerCustomer(CustomerMobileRegistrationRequest customerRegisterRequest) {
+    public ResponseWrapper<Boolean> registerCustomer(CustomerMobileRegistrationRequest customerRegisterRequest,
+                                                     MultipartFile photoFile) {
         try {
 
             Optional<RolesEntity> customerRole = rolesRepository.findByName(Roles.ROLE_CUSTOMER);
@@ -73,13 +75,16 @@ public class CustomerServiceImpl implements CustomerService {
                 throw new NotFoundException("Role customer Not Found");
             }
 
+            String photoUrlRecord ="";
+            photoUrlRecord = cloudStorageService.uploadFile(photoFile);
+
             RegistrationRequest registrationRequest = new RegistrationRequest();
             registrationRequest.setName(customerRegisterRequest.getName());
             registrationRequest.setPhone(customerRegisterRequest.getPhone());
             registrationRequest.setPassword(customerRegisterRequest.getPassword());
 
             UserEntity savedUser = userService.registerUser(customerRegisterRequest.getPhone(),
-                    customerRole.get(), registrationRequest, true).getData();
+                    customerRole.get(), registrationRequest,photoUrlRecord , true).getData();
 
             CustomerEntity customerEntityRecord = CustomerEntity.builder()
                     .horoscope(customerRegisterRequest.getHoroscope())

@@ -18,7 +18,7 @@ public interface TypeService {
     ResponseWrapper<Boolean> deleteType(long typeId, String authHeader);
 
     ResponseWrapper<Boolean> updateType(TypeRegistrationRequest typeRegistrationRequest,
-            long typeId, String authHeader);
+            long typeId, MultipartFile logoFile  , String authHeader) throws IOException;
 
     ResponseWrapper<List<TypeDTO>> listAllTypes(boolean active);
 

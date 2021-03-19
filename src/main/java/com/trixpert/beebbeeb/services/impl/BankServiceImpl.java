@@ -87,7 +87,7 @@ public class BankServiceImpl implements BankService {
             }
 
             UserEntity userEntity = userService.registerUser(bankRegistrationRequest.getEmail(),
-                    bankRole.get(), registrationRequest, false).getData();
+                    bankRole.get(), registrationRequest , "", false).getData();
 
             BankEntity bankEntityRecord = BankEntity.builder()
                     .name(bankRegistrationRequest.getBankName())
