@@ -3,6 +3,7 @@ package com.trixpert.beebbeeb.api.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trixpert.beebbeeb.data.request.ModelRegisterRequest;
+import com.trixpert.beebbeeb.data.response.FileUploadResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.CarDTO;
 import com.trixpert.beebbeeb.data.to.ModelDTO;
@@ -50,7 +51,7 @@ public class ModelController {
 
     @PostMapping("/interior/{modelId}")
     @ApiOperation("Add Interior Photo For Model")
-    public ResponseEntity<ResponseWrapper<Boolean>> uploadInterior(
+    public ResponseEntity<ResponseWrapper<FileUploadResponse>> uploadInterior(
             @PathVariable("modelId") long modelId,
             @RequestParam("file") MultipartFile image,
             HttpServletRequest request) {
@@ -59,7 +60,7 @@ public class ModelController {
 
     @PostMapping("/exterior/{modelId}")
     @ApiOperation("Add Interior Photo For Model")
-    public ResponseEntity<ResponseWrapper<Boolean>> uploadExterior(
+    public ResponseEntity<ResponseWrapper<FileUploadResponse>> uploadExterior(
             @PathVariable("modelId") long modelId,
             @RequestParam("file") MultipartFile image,
             HttpServletRequest request) {
