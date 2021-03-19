@@ -44,15 +44,17 @@ public class BrandController {
         return ResponseEntity.ok(brandService.getAllBrands(false));
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/{brandId}")
     @ApiOperation("Update an existing brand with new data")
     public ResponseEntity<ResponseWrapper<Boolean>> updateBrand(
             @RequestPart(name = "file") MultipartFile logoFile,
-            @RequestPart(name = "body") BrandDTO brandDTO,
+            @Valid @RequestBody BrandRegisterRequest brandRegisterRequest,
+            @PathVariable("brandId") long brandId ,
             HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
-        return ResponseEntity.ok(brandService.updateBrand(logoFile, brandDTO, authorizationHeader));
+        return ResponseEntity.ok(brandService.updateBrand(logoFile, brandRegisterRequest ,
+                brandId, authorizationHeader));
     }
 
     @PostMapping(value = "/add", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,

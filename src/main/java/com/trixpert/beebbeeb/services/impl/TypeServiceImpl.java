@@ -113,18 +113,20 @@ public class TypeServiceImpl implements TypeService {
 
     @Transactional
     @Override
-    public ResponseWrapper<Boolean> updateType(TypeDTO typeDTO, String authHeader) {
+    public ResponseWrapper<Boolean> updateType(TypeRegistrationRequest typeRegistrationRequest ,
+            long typeId ,  String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
-            Optional<TypeEntity> optionalTypeEntity = typeRepository.findById(typeDTO.getId());
+            Optional<TypeEntity> optionalTypeEntity = typeRepository.findById(typeId);
 
             if (!optionalTypeEntity.isPresent())
                 throw new NotFoundException("This type doesn't exist");
 
             TypeEntity typeEntityRecord = optionalTypeEntity.get();
-            if (typeDTO.getName() != null && !typeDTO.getName().equals(typeEntityRecord.getName()))
-                typeEntityRecord.setName(typeDTO.getName());
+            if (typeRegistrationRequest.getName() != null &&
+                    !typeRegistrationRequest.getName().equals(typeEntityRecord.getName()))
+                typeEntityRecord.setName(typeRegistrationRequest.getName());
 
             typeRepository.save(typeEntityRecord);
 

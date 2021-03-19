@@ -9,16 +9,16 @@ import java.util.List;
 
 public interface BranchService {
     ResponseWrapper<Boolean> registerBranchForVendor(BranchRegistrationRequest branchRegistrationRequest,
-                                                     Long vendorId,
+                                                     long vendorId,
                                                      String authHeader);
 
-    ResponseWrapper<List<BranchDTO>> getAllBranchesForVendor(Long vendorId, boolean active);
+    ResponseWrapper<List<BranchDTO>> getAllBranchesForVendor(long vendorId, boolean active);
 
     ResponseWrapper<Boolean> updateBranchForVendor(BranchRegistrationRequest branchRegistrationRequest,
                                                    long branchId,
                                                    String authHeader);
 
-    ResponseWrapper<Boolean> deleteBranchForVendor(Long branchID , String authHeader);
+    ResponseWrapper<Boolean> deleteBranchForVendor(long branchID , String authHeader);
 
     ResponseWrapper<List<CarDTO>> listCarsForBranch(long branchId);
 

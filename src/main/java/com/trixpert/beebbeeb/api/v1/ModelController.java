@@ -42,7 +42,8 @@ public class ModelController {
             , HttpServletRequest request) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
-        ModelRegisterRequest registerRequest = objectMapper.readValue(modelRegisterRequest, ModelRegisterRequest.class);
+        ModelRegisterRequest registerRequest = objectMapper.readValue(
+                modelRegisterRequest, ModelRegisterRequest.class);
         String authorizationHeader = request.getHeader("Authorization");
 
         return ResponseEntity.ok(modelService.registerModel(images, registerRequest, authorizationHeader));

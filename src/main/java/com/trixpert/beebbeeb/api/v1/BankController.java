@@ -32,7 +32,7 @@ public class BankController {
     @ApiOperation("Adding a new bank")
     public ResponseEntity<ResponseWrapper<Boolean>> registerBank(
             @RequestPart(name = "file") MultipartFile logoFile,
-            @Valid @RequestPart(name = "body") BankRegistrationRequest bankRegisterRequest,
+            @Valid @RequestBody BankRegistrationRequest bankRegisterRequest,
             HttpServletRequest request) throws IOException {
 
         String authorizationHeader = request.getHeader("Authorization");
@@ -40,15 +40,17 @@ public class BankController {
                 bankRegisterRequest,authorizationHeader));
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/{bankId}")
     @ApiOperation("Updating a bank")
     public ResponseEntity<ResponseWrapper<Boolean>> updateBank(
             @RequestPart(name = "file") MultipartFile logoFile
             , HttpServletRequest request,
-            @RequestBody BankDTO bankDTO) {
+            @Valid @RequestBody BankRegistrationRequest bankRegistrationRequest ,
+            @PathVariable("bankId") long bankId) {
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(bankService.updateBank(logoFile, bankDTO , authorizationHeader ));
+        return ResponseEntity.ok(bankService.updateBank(logoFile, bankRegistrationRequest
+                , bankId , authorizationHeader ));
     }
 
     @PutMapping("/delete/{bankId}")

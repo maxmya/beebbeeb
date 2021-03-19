@@ -14,7 +14,8 @@ public interface BrandService {
 
     ResponseWrapper<Boolean> deleteBrand(long brandId , String authHeader);
 
-    ResponseWrapper<Boolean> updateBrand(MultipartFile logoFile, BrandDTO brandDTO , String authHeader);
+    ResponseWrapper<Boolean> updateBrand(MultipartFile logoFile, BrandRegisterRequest brandRegisterRequest
+            , long brandId, String authHeader);
 
     ResponseWrapper<List<BrandDTO>> getAllBrands(boolean active);
  

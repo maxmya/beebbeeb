@@ -9,6 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,13 +45,16 @@ public class TypeController {
     }
 
 
-    @PutMapping("/update")
+    @PutMapping("/update/{typeId}")
     @ApiOperation("Update an existing type with new data")
     public ResponseEntity<ResponseWrapper<Boolean>> updateType(
-            @RequestPart(name = "body") TypeDTO typeDTO, HttpServletRequest request) {
+            @RequestBody TypeRegistrationRequest typeRegistrationRequest,
+            @PathVariable("typeId") long typeId
+            , HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(typeService.updateType(typeDTO, authorizationHeader));
+        return ResponseEntity.ok(typeService.updateType(typeRegistrationRequest ,
+                typeId, authorizationHeader));
     }
 
     @CrossOrigin(origins = {"*"})

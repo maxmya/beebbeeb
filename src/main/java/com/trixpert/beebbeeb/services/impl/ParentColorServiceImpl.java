@@ -110,20 +110,22 @@ public class ParentColorServiceImpl implements ParentColorService {
 
     @Transactional
     @Override
-    public ResponseWrapper<Boolean> updateParentColor(ParentColorDTO parentColorDTO, String authHeader) {
+    public ResponseWrapper<Boolean> updateParentColor(ParentColorRegistrationRequest parentColorRegistrationRequest
+           , long parentColorId , String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
             Optional<ParentColorEntity> optionalParentColorEntity = parentColorRepository
-                    .findById(parentColorDTO.getId());
+                    .findById(parentColorId);
             if (!optionalParentColorEntity.isPresent()) {
                 throw new NotFoundException("This ParentColor Was Not Found");
             }
             ParentColorEntity parentColorEntityRecord = optionalParentColorEntity.get();
-            if (parentColorDTO.getName() != null && !parentColorDTO.getName().equals(
+            if (parentColorRegistrationRequest.getName() != null &&
+                    !parentColorRegistrationRequest.getName().equals(
                     parentColorEntityRecord.getName())) {
-                parentColorEntityRecord.setName(parentColorDTO.getName());
+                parentColorEntityRecord.setName(parentColorRegistrationRequest.getName());
             }
             parentColorRepository.save(parentColorEntityRecord);
 

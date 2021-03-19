@@ -114,25 +114,29 @@ public class BrandServiceImpl implements BrandService {
 
     @Transactional
     @Override
-    public ResponseWrapper<Boolean> updateBrand(MultipartFile logoFile, BrandDTO brandDTO,
+    public ResponseWrapper<Boolean> updateBrand(MultipartFile logoFile,
+                                                BrandRegisterRequest brandRegisterRequest, long brandId,
                                                 String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
-            Optional<BrandEntity> optionalBrandEntity = brandRepository.findById(brandDTO.getId());
+            Optional<BrandEntity> optionalBrandEntity = brandRepository.findById(brandId);
             if (!optionalBrandEntity.isPresent()) {
                 throw new NotFoundException("This Brand Was Not Found");
             }
             BrandEntity brandEntityRecord = optionalBrandEntity.get();
-            if (brandDTO.getName() != null && !brandDTO.getName().equals(brandEntityRecord.getName())) {
-                brandEntityRecord.setName(brandDTO.getName());
+            if (brandRegisterRequest.getName() != null && !brandRegisterRequest.getName()
+                    .equals(brandEntityRecord.getName())) {
+                brandEntityRecord.setName(brandRegisterRequest.getName());
             }
-            if (brandDTO.getDescription() != null && !brandDTO.getDescription().equals(brandEntityRecord.getDescription())) {
-                brandEntityRecord.setDescription(brandDTO.getDescription());
+            if (brandRegisterRequest.getDescription() != null &&
+                    !brandRegisterRequest.getDescription().equals(brandEntityRecord.getDescription())) {
+                brandEntityRecord.setDescription(brandRegisterRequest.getDescription());
             }
-            if (brandDTO.getOrigin() != null && !brandDTO.getOrigin().equals(brandEntityRecord.getOrigin())) {
-                brandEntityRecord.setOrigin(brandDTO.getOrigin());
+            if (brandRegisterRequest.getOrigin() != null &&
+                    !brandRegisterRequest.getOrigin().equals(brandEntityRecord.getOrigin())) {
+                brandEntityRecord.setOrigin(brandRegisterRequest.getOrigin());
             }
             if (logoFile != null) {
                 String logoUrlRecord = cloudStorageService.uploadFile(logoFile);

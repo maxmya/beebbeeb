@@ -14,7 +14,8 @@ public interface ParentColorService {
 
     ResponseWrapper<Boolean> deleteParentColor(long parentColorId , String authHeader);
 
-    ResponseWrapper<Boolean> updateParentColor(ParentColorDTO parentColorDTO , String authHeader);
+    ResponseWrapper<Boolean> updateParentColor(ParentColorRegistrationRequest parentColorRegistrationRequest
+            ,long parentColorId, String authHeader);
 
     ResponseWrapper<List<ParentColorDTO>> getAllParentColors(boolean active);
 
