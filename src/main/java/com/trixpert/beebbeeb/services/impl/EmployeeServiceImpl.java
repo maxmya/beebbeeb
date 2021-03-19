@@ -91,7 +91,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
             UserEntity userEntity = userService.registerUser(
                     employeeRegistrationRequest.getEmail(),
-                    employeesRole.get(), registrationRequest, false).getData();
+                    employeesRole.get(), registrationRequest,"", false).getData();
 
             EmployeeEntity employeeRecord = EmployeeEntity.builder()
                     .title(employeeRegistrationRequest.getTitle())

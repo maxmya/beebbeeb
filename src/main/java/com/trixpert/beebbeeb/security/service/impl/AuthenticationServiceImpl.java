@@ -133,6 +133,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     registrationRequest.getEmail(),
                     adminRole.get(),
                     registrationRequest,
+                    "",
                     false);
 
             return reporterService.reportSuccess();

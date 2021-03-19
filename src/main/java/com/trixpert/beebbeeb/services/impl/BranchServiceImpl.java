@@ -82,6 +82,7 @@ public class BranchServiceImpl implements BranchService {
                     branchRegistrationRequest.getEmail(),
                     branchRole.get(),
                     registrationRequest,
+                            "",
                     false
             ).getData();
             Optional<VendorEntity> optionalVendorEntity = vendorRepository.findById(vendorId);
