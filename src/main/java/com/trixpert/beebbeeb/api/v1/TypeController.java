@@ -48,7 +48,7 @@ public class TypeController {
     @PutMapping("/update/{typeId}")
     @ApiOperation("Update an existing type with new data")
     public ResponseEntity<ResponseWrapper<Boolean>> updateType(
-            @RequestBody TypeRegistrationRequest typeRegistrationRequest,
+            @Valid  @RequestBody TypeRegistrationRequest typeRegistrationRequest,
             @PathVariable("typeId") long typeId
             , HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");

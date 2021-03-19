@@ -64,7 +64,7 @@ public class CategoryController {
     }
 
     @PutMapping("/delete/{categoryId}")
-    @ApiOperation("Remove Category By ID")
+    @ApiOperation("Remove Category By Id")
     public ResponseEntity<ResponseWrapper<Boolean>> deleteCategory(
             @PathVariable("categoryId") Long categoryId,
             HttpServletRequest request) {
