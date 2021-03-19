@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -146,6 +147,7 @@ public class VendorServiceImpl implements VendorService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteVendor(long vendorId, String authHeader) {
 
@@ -177,6 +179,7 @@ public class VendorServiceImpl implements VendorService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> updateVendor(VendorDTO vendorDTO, String authHeader) {
 

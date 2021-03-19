@@ -25,6 +25,7 @@ import com.trixpert.beebbeeb.services.CustomerService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import com.trixpert.beebbeeb.services.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -91,6 +92,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteCustomer(long customerId, String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
@@ -118,7 +120,7 @@ public class CustomerServiceImpl implements CustomerService {
             return reporterService.reportError(e);
         }
     }
-
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> updateCustomer(CustomerRegistrationRequest customerRegistrationRequest ,
                                                    long customerId, String authHeader) {

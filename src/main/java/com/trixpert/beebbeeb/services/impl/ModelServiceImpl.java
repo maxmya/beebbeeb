@@ -20,6 +20,7 @@ import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
 import org.checkerframework.checker.nullness.Opt;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -121,6 +122,7 @@ public class ModelServiceImpl implements ModelService {
 
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> updateModel(ModelDTO modelDTO, String authHeader) {
 
@@ -163,7 +165,7 @@ public class ModelServiceImpl implements ModelService {
         }
 
     }
-
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteModel(Long modelId, String authHeader) {
 

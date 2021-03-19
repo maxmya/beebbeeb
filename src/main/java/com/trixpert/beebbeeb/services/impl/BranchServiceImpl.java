@@ -21,6 +21,7 @@ import com.trixpert.beebbeeb.data.to.UserDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -127,7 +128,7 @@ public class BranchServiceImpl implements BranchService {
             return reporterService.reportError(e);
         }
     }
-
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> updateBranchForVendor(BranchRegistrationRequest branchRegistrationRequest,
                                                           long branchId,
@@ -183,7 +184,7 @@ public class BranchServiceImpl implements BranchService {
         }
     }
 
-
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteBranchForVendor(Long branchId  , String authHeader) {
 

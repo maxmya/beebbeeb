@@ -14,6 +14,7 @@ import com.trixpert.beebbeeb.services.ParentColorService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import com.trixpert.beebbeeb.services.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import java.util.Optional;
 
 @Service
 public class ParentColorServiceImpl implements ParentColorService {
-    final private ParentColorRepository  parentColorRepository ;
+    final private ParentColorRepository parentColorRepository;
     final private ParentColorMapper parentColorMapper;
     private final ReporterService reporterService;
     private final UserService userService;
@@ -33,17 +34,18 @@ public class ParentColorServiceImpl implements ParentColorService {
                                   ParentColorMapper parentColorMapper,
                                   ReporterService reporterService,
                                   UserService userService,
-                                  AuditService auditService){
-        this.parentColorRepository = parentColorRepository ;
-        this.parentColorMapper = parentColorMapper ;
-        this.reporterService = reporterService ;
+                                  AuditService auditService) {
+        this.parentColorRepository = parentColorRepository;
+        this.parentColorMapper = parentColorMapper;
+        this.reporterService = reporterService;
         this.userService = userService;
         this.auditService = auditService;
     }
+
     @Override
     public ResponseWrapper<Boolean> AddParentColor(
             ParentColorRegistrationRequest parentColorRegistrationRequest
-    , String authHeader){
+            , String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
@@ -71,15 +73,17 @@ public class ParentColorServiceImpl implements ParentColorService {
         }
 
     }
+
+    @Transactional
     @Override
-    public ResponseWrapper<Boolean> deleteParentColor(long parentColorId , String authHeader){
+    public ResponseWrapper<Boolean> deleteParentColor(long parentColorId, String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
             Optional<ParentColorEntity> optionalParentColorEntity = parentColorRepository
                     .findById(parentColorId);
-            if (!optionalParentColorEntity.isPresent()){
+            if (!optionalParentColorEntity.isPresent()) {
                 throw new NotFoundException("This Parent Color does not exist");
             }
             ParentColorEntity parentColorEntityRecord = optionalParentColorEntity.get();
@@ -102,10 +106,11 @@ public class ParentColorServiceImpl implements ParentColorService {
         } catch (Exception e) {
             return reporterService.reportError(e);
         }
-        }
+    }
 
+    @Transactional
     @Override
-    public ResponseWrapper<Boolean> updateParentColor(ParentColorDTO parentColorDTO , String authHeader) {
+    public ResponseWrapper<Boolean> updateParentColor(ParentColorDTO parentColorDTO, String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
@@ -139,6 +144,7 @@ public class ParentColorServiceImpl implements ParentColorService {
 
         }
     }
+
     @Override
     public ResponseWrapper<List<ParentColorDTO>> getAllParentColors(boolean active) {
         try {
@@ -151,20 +157,19 @@ public class ParentColorServiceImpl implements ParentColorService {
             return reporterService.reportError(e);
         }
 
-        }
+    }
 
     @Override
     public ResponseWrapper<ParentColorDTO> getParentColor(long parentColorId) {
-        try{
+        try {
             Optional<ParentColorEntity> optionalParentColorEntity = parentColorRepository.findById(
                     parentColorId);
-            if(!optionalParentColorEntity.isPresent()){
+            if (!optionalParentColorEntity.isPresent()) {
                 throw new NotFoundException("This Parent color doesn't exist");
             }
             ParentColorEntity parentColorEntityRecord = optionalParentColorEntity.get();
             return reporterService.reportSuccess(parentColorMapper.convertToDTO(parentColorEntityRecord));
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return reporterService.reportError(e);
         }
     }

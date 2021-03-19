@@ -15,6 +15,7 @@ import com.trixpert.beebbeeb.services.AuditService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import com.trixpert.beebbeeb.services.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -92,6 +93,7 @@ public class AddressServiceImpl implements AddressService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> updateAddress(AddressRegistrationRequest addressRegistrationRequest
             , Long addressId, String authHeader) {
@@ -135,6 +137,7 @@ public class AddressServiceImpl implements AddressService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteAddress(Long addressId, String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);

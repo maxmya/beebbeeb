@@ -10,6 +10,7 @@ import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.CarService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,6 +94,7 @@ public class CarServiceImpl implements CarService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> updateCar(long carId, CarRegistrationRequest carRegistrationRequest) {
         try {
@@ -149,6 +151,7 @@ public class CarServiceImpl implements CarService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteCar(long carId) {
         try {

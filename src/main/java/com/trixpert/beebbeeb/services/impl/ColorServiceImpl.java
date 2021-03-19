@@ -19,6 +19,8 @@ import com.trixpert.beebbeeb.services.ColorService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import com.trixpert.beebbeeb.services.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,8 +58,7 @@ public class ColorServiceImpl implements ColorService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> registerColor(ColorRegistrationRequest colorRegistrationRequest
-                          ,  String authHeader) {
+    public ResponseWrapper<Boolean> registerColor(ColorRegistrationRequest colorRegistrationRequest,  String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
@@ -122,6 +123,7 @@ public class ColorServiceImpl implements ColorService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> updateColor(ColorRegistrationRequest colorRegistrationRequest,
                                                 long colorId, String authHeader) {

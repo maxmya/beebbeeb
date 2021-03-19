@@ -17,6 +17,7 @@ import com.trixpert.beebbeeb.data.to.BankDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -112,6 +113,7 @@ public class BankServiceImpl implements BankService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> updateBank(MultipartFile logoFile, BankDTO bankDTO, String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
@@ -154,6 +156,7 @@ public class BankServiceImpl implements BankService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteBank(Long bankId, String authHeader) {
         try {

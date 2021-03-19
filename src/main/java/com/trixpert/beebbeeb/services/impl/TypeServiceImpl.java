@@ -11,6 +11,7 @@ import com.trixpert.beebbeeb.data.to.TypeDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -78,6 +79,7 @@ public class TypeServiceImpl implements TypeService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteType(long typeId, String authHeader) {
 
@@ -109,7 +111,7 @@ public class TypeServiceImpl implements TypeService {
         }
     }
 
-
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> updateType(TypeDTO typeDTO, String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
