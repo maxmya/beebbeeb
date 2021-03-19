@@ -10,8 +10,8 @@ import javax.validation.constraints.Size;
 public class PhoneLoginRequest {
 
     @NotNull(message = "phone number can't be null")
-    @Pattern(message = "phone number must be a number", regexp = "^[0-9]*$")
-    @Size(min = 10, max = 11)
+    @Pattern(message = "phone number must be a number", regexp = "^\\+[0-9]*$")
+    @Size(min = 10, max = 15)
     private String phone;
 
     @NotNull(message = "password can't be null")
