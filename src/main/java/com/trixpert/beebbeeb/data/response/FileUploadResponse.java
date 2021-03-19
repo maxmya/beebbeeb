@@ -1,5 +1,6 @@
 package com.trixpert.beebbeeb.data.response;
 
+import com.trixpert.beebbeeb.data.to.PhotoDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,5 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class FileUploadResponse {
-    private String fileUrl;
+    private PhotoDTO photo;
 }
