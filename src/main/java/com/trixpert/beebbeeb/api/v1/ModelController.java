@@ -34,7 +34,8 @@ public class ModelController {
         this.modelService = modelService;
     }
 
-    @PostMapping("/register")
+    @CrossOrigin(origins = {"*"})
+    @PostMapping(value = "/register", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation("Register New Model")
     public ResponseEntity<ResponseWrapper<Boolean>> registerModel(
             @RequestParam("file") MultipartFile images,
