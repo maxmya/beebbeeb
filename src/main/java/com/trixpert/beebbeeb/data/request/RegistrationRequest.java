@@ -26,7 +26,6 @@ public class RegistrationRequest {
 
     private boolean active;
 
-    @NotNull(message = "password can't be null")
     @Size(min = 6, max = 255 ,message = "password is between 6 and 255 char")
     private String password;
 }
