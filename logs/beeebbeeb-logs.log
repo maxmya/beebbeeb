@@ -1,0 +1,40 @@
+2021-03-19 23:36:38.704  INFO [           main] : Starting BeebbeebApplication using Java 15.0.2 on Mahmouds-MacBook-Air.local with PID 7717 (/Users/maxmya/Development/beebbeeb/target/classes started by maxmya in /Users/maxmya/Development/beebbeeb)
+2021-03-19 23:36:38.709  INFO [           main] : No active profile set, falling back to default profiles: default
+2021-03-19 23:36:39.835  INFO [           main] : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2021-03-19 23:36:40.026  INFO [           main] : Finished Spring Data repository scanning in 184 ms. Found 27 JPA repository interfaces.
+2021-03-19 23:36:40.380  INFO [           main] : Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@7c96c85' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-03-19 23:36:40.385  INFO [           main] : Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-03-19 23:36:40.557  INFO [           main] : Tomcat initialized with port(s): 8181 (http)
+2021-03-19 23:36:40.562  INFO [           main] : Initializing ProtocolHandler ["http-nio-8181"]
+2021-03-19 23:36:40.562  INFO [           main] : Starting service [Tomcat]
+2021-03-19 23:36:40.563  INFO [           main] : Starting Servlet engine: [Apache Tomcat/9.0.43]
+2021-03-19 23:36:40.638  INFO [           main] : Initializing Spring embedded WebApplicationContext
+2021-03-19 23:36:40.639  INFO [           main] : Root WebApplicationContext: initialization completed in 1894 ms
+2021-03-19 23:36:40.798  INFO [           main] : HikariPool-1 - Starting...
+2021-03-19 23:36:42.775  INFO [           main] : HikariPool-1 - Start completed.
+2021-03-19 23:36:42.851  INFO [           main] : HHH000204: Processing PersistenceUnitInfo [name: default]
+2021-03-19 23:36:42.877  INFO [           main] : HHH000412: Hibernate ORM core version 5.4.28.Final
+2021-03-19 23:36:42.938  INFO [           main] : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2021-03-19 23:36:42.993  INFO [           main] : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQL10Dialect
+2021-03-19 23:36:45.359  INFO [           main] : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2021-03-19 23:36:45.364  INFO [           main] : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2021-03-19 23:36:45.934  WARN [           main] : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2021-03-19 23:36:47.226  INFO [           main] : Will secure Ant [pattern='/swagger-resources/**'] with []
+2021-03-19 23:36:47.229  INFO [           main] : Will secure Ant [pattern='/swagger-ui.html'] with []
+2021-03-19 23:36:47.230  INFO [           main] : Will secure Ant [pattern='/v2/api-docs'] with []
+2021-03-19 23:36:47.230  INFO [           main] : Will secure Ant [pattern='/webjars/**'] with []
+2021-03-19 23:36:47.230  INFO [           main] : Will secure Ant [pattern='/'] with []
+2021-03-19 23:36:47.254  INFO [           main] : Adding welcome page template: index
+2021-03-19 23:36:47.353  INFO [           main] : Will secure any request with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@549dfe1d, org.springframework.security.web.context.SecurityContextPersistenceFilter@16c6d5a2, org.springframework.security.web.header.HeaderWriterFilter@c53dfb2, org.springframework.web.filter.CorsFilter@537fb7bf, org.springframework.security.web.authentication.logout.LogoutFilter@6c165921, com.trixpert.beebbeeb.security.jwt.JwtAuthTokenFilter@39d37da8, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@8616368, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@6d4b09c7, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@445adbd7, org.springframework.security.web.session.SessionManagementFilter@5eb4b746, org.springframework.security.web.access.ExceptionTranslationFilter@265361a, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@64dc0a5f]
+2021-03-19 23:36:47.394  INFO [           main] : Initializing ExecutorService 'applicationTaskExecutor'
+2021-03-19 23:36:47.889  INFO [           main] : Default credentials provider for service account beebbeeb-backend@clear-spirit-305111.iam.gserviceaccount.com
+2021-03-19 23:36:47.890  INFO [           main] : Scopes in use by default credentials: [https://www.googleapis.com/auth/pubsub, https://www.googleapis.com/auth/spanner.admin, https://www.googleapis.com/auth/spanner.data, https://www.googleapis.com/auth/datastore, https://www.googleapis.com/auth/sqlservice.admin, https://www.googleapis.com/auth/devstorage.read_only, https://www.googleapis.com/auth/devstorage.read_write, https://www.googleapis.com/auth/cloudruntimeconfig, https://www.googleapis.com/auth/trace.append, https://www.googleapis.com/auth/cloud-platform, https://www.googleapis.com/auth/cloud-vision, https://www.googleapis.com/auth/bigquery, https://www.googleapis.com/auth/monitoring.write]
+2021-03-19 23:36:47.952  INFO [           main] : The default project ID is null
+2021-03-19 23:36:48.053  INFO [           main] : Starting ProtocolHandler ["http-nio-8181"]
+2021-03-19 23:36:48.069  INFO [           main] : Tomcat started on port(s): 8181 (http) with context path ''
+2021-03-19 23:36:54.570  INFO [           main] : Started BeebbeebApplication in 16.147 seconds (JVM running for 22.134)
+2021-03-20 00:04:53.396  WARN [l-1 housekeeper] : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=12m10s226ms).
+2021-03-20 00:16:16.809  WARN [l-1 housekeeper] : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=9m53s362ms).
+2021-03-20 00:51:55.706  WARN [l-1 housekeeper] : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=19m8s720ms).
+2021-03-20 00:53:20.409  WARN [l-1 housekeeper] : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m24s706ms).
+2021-03-20 01:04:30.690  WARN [l-1 housekeeper] : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=10m40s301ms).

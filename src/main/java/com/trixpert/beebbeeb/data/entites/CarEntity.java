@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "car", schema = "public")
@@ -23,15 +24,11 @@ public class CarEntity {
     private String condition;
 
     @Column(name = "addition_date")
-    private Date additionDate;
+    private LocalDateTime additionDate;
 
     @ManyToOne
     @JoinColumn(name = "model_id", referencedColumnName = "id")
     private ModelEntity model;
-
-    @ManyToOne
-    @JoinColumn(name = "branch_id", referencedColumnName = "id")
-    private BranchEntity branch;
 
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")

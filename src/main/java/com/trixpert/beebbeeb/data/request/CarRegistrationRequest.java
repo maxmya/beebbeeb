@@ -1,5 +1,8 @@
 package com.trixpert.beebbeeb.data.request;
 
+import com.trixpert.beebbeeb.data.to.CategoryDTO;
+import com.trixpert.beebbeeb.data.to.ColorDTO;
+import com.trixpert.beebbeeb.data.to.TypeDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,18 +15,10 @@ import java.sql.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CarRegistrationRequest {
-    @NotNull(message = "additional date can't be null")
-    private Date additionDate;
-
     @NotNull(message = "model id can't be null")
     private long modelId;
-
-    @NotNull(message = "branch id can't be null")
-    private long branchId;
-
-    @NotNull(message = "category id can't be null")
-    private long categoryId;
-
-    @NotNull(message = "color id can't be null")
-    private long colorId;
+    private CategoryDTO category;
+    private ColorDTO color;
+    private long typeId;
+    private long parentColorId;
 }

@@ -16,8 +16,7 @@ public class CarDTO {
     private String condition;
     private Date additionDate;
     private ModelDTO model;
-    private BranchDTO branch;
     private CategoryDTO category;
     private ColorDTO color;
-    private  boolean active;
+    private boolean active;
 }

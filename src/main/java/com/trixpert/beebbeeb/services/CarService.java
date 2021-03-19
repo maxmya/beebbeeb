@@ -9,7 +9,7 @@ import java.util.List;
 public interface CarService {
     ResponseWrapper<Boolean> registerCar(CarRegistrationRequest carRegistrationRequest);
 
-    ResponseWrapper<Boolean> updateCar(long carId, CarRegistrationRequest carRegistrationRequest);
+//    ResponseWrapper<Boolean> updateCar(long carId, CarRegistrationRequest carRegistrationRequest);
 
     ResponseWrapper<Boolean> deleteCar(long carId);
 
