@@ -57,7 +57,7 @@ public class ModelController {
         return ResponseEntity.ok(modelService.uploadInterior(modelId, image));
     }
 
-    @PutMapping("/exterior/{modelId}")
+    @PostMapping("/exterior/{modelId}")
     @ApiOperation("Add Interior Photo For Model")
     public ResponseEntity<ResponseWrapper<Boolean>> uploadExterior(
             @PathVariable("modelId") long modelId,
