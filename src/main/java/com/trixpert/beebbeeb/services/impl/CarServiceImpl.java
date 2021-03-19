@@ -69,6 +69,7 @@ public class CarServiceImpl implements CarService {
     @Override
     public ResponseWrapper<Boolean> registerCar(CarRegistrationRequest carRegistrationRequest) {
         try {
+
             Optional<ModelEntity> optionalModelEntity = modelRepository.findById(carRegistrationRequest.getModelId());
 
             if (!optionalModelEntity.isPresent()) {
@@ -101,8 +102,8 @@ public class CarServiceImpl implements CarService {
             CarEntity carEntityRecord = CarEntity.builder()
                     .additionDate(LocalDateTime.now())
                     .model(modelRecord)
-                    .category(categoryRecord)
-                    .color(colorRecord)
+                    .category(categoryEntity)
+                    .color(colorEntity)
                     .active(true)
                     .build();
 
