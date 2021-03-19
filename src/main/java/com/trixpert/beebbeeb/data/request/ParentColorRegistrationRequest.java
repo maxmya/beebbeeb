@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -14,8 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ParentColorRegistrationRequest {
-    private Long id;
-
+    @NotNull(message = "parent color name can't be null")
     private String name;
 
 }

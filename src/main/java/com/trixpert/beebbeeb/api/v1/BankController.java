@@ -11,13 +11,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
 @Api(tags = {"Banks API"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
 @RestController
-@RequestMapping("/banks")
+@RequestMapping("/api/v1/banks")
 public class BankController {
 
     private final BankService bankService;
@@ -31,27 +32,32 @@ public class BankController {
     @ApiOperation("Adding a new bank")
     public ResponseEntity<ResponseWrapper<Boolean>> registerBank(
             @RequestPart(name = "file") MultipartFile logoFile,
-            @RequestPart(name = "body") BankRegistrationRequest bankRegisterRequest,
+            @Valid @RequestBody BankRegistrationRequest bankRegisterRequest,
             HttpServletRequest request) throws IOException {
 
         String authorizationHeader = request.getHeader("Authorization");
-        return ResponseEntity.ok(bankService.registerBank(logoFile, bankRegisterRequest,authorizationHeader));
+        return ResponseEntity.ok(bankService.registerBank(logoFile,
+                bankRegisterRequest,authorizationHeader));
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/{bankId}")
     @ApiOperation("Updating a bank")
-    public ResponseEntity<ResponseWrapper<Boolean>> updateBank(@RequestPart(name = "file") MultipartFile logoFile
-                                                               , HttpServletRequest request,
-                                                               @RequestBody BankDTO bankDTO) {
+    public ResponseEntity<ResponseWrapper<Boolean>> updateBank(
+            @RequestPart(name = "file") MultipartFile logoFile
+            , HttpServletRequest request,
+            @Valid @RequestBody BankRegistrationRequest bankRegistrationRequest ,
+            @PathVariable("bankId") long bankId) {
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(bankService.updateBank(logoFile, bankDTO , authorizationHeader ));
+        return ResponseEntity.ok(bankService.updateBank(logoFile, bankRegistrationRequest
+                , bankId , authorizationHeader ));
     }
 
     @PutMapping("/delete/{bankId}")
     @ApiOperation("Api for deleting a bank")
-    public ResponseEntity<ResponseWrapper<Boolean>> deleteBank(@PathVariable("bankId") Long bankId ,
-                                                               HttpServletRequest request) {
+    public ResponseEntity<ResponseWrapper<Boolean>> deleteBank(
+            @PathVariable("bankId") Long bankId ,
+            HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
 
         return ResponseEntity.ok(bankService.deleteBank(bankId , authorizationHeader));
@@ -69,6 +75,13 @@ public class BankController {
     public ResponseEntity<ResponseWrapper<List<BankDTO>>> getInactiveBanks() {
 
         return ResponseEntity.ok(bankService.getAllBanks(false ));
+    }
+    @GetMapping("/get/{bankId}")
+    @ApiOperation("Get bank by Id")
+    public ResponseEntity<ResponseWrapper<BankDTO>> getBank(
+            @PathVariable("bankId") Long bankId){
+    return ResponseEntity.ok(bankService.getBank(bankId));
+
     }
 
 }

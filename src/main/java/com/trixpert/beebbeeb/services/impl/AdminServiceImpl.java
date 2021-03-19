@@ -16,6 +16,7 @@ import com.trixpert.beebbeeb.services.AdminService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import com.trixpert.beebbeeb.services.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,6 +94,7 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteAdmin(long adminId) {
         try {

@@ -1,13 +1,15 @@
 package com.trixpert.beebbeeb.data.request;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class TypeRegistrationRequest {
-    private String name ;
-    private String description ;
+    @NotNull(message = "type name can't be null")
+    @Size(min = 2, max = 50)
+    private String name;
+
+    private String description;
 }

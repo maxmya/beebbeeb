@@ -14,6 +14,7 @@ import com.trixpert.beebbeeb.services.ParentColorService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import com.trixpert.beebbeeb.services.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import java.util.Optional;
 
 @Service
 public class ParentColorServiceImpl implements ParentColorService {
-    final private ParentColorRepository  parentColorRepository ;
+    final private ParentColorRepository parentColorRepository;
     final private ParentColorMapper parentColorMapper;
     private final ReporterService reporterService;
     private final UserService userService;
@@ -31,23 +32,25 @@ public class ParentColorServiceImpl implements ParentColorService {
 
     public ParentColorServiceImpl(ParentColorRepository parentColorRepository,
                                   ParentColorMapper parentColorMapper,
-                                  ReporterService reporterService, UserService userService, AuditService auditService){
-        this.parentColorRepository = parentColorRepository ;
-        this.parentColorMapper = parentColorMapper ;
-        this.reporterService = reporterService ;
+                                  ReporterService reporterService,
+                                  UserService userService,
+                                  AuditService auditService) {
+        this.parentColorRepository = parentColorRepository;
+        this.parentColorMapper = parentColorMapper;
+        this.reporterService = reporterService;
         this.userService = userService;
         this.auditService = auditService;
     }
+
     @Override
     public ResponseWrapper<Boolean> AddParentColor(
             ParentColorRegistrationRequest parentColorRegistrationRequest
-    , String authHeader){
+            , String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
             ParentColorEntity parentColorEntityRecord = ParentColorEntity.builder()
-                    .id(parentColorRegistrationRequest.getId())
                     .name(parentColorRegistrationRequest.getName())
                     .active(true)
                     .build();
@@ -57,7 +60,8 @@ public class ParentColorServiceImpl implements ParentColorService {
                     AuditDTO.builder()
                             .user(userService.getUserByUsername(username))
                             .action(AuditActions.INSERT)
-                            .description("Adding new Parent Color entity " + parentColorEntityRecord.toString())
+                            .description("Adding new Parent Color entity " +
+                                    parentColorEntityRecord.toString())
                             .timestamp(LocalDateTime.now())
                             .build();
 
@@ -69,14 +73,17 @@ public class ParentColorServiceImpl implements ParentColorService {
         }
 
     }
+
+    @Transactional
     @Override
-    public ResponseWrapper<Boolean> deleteParentColor(long parentColorId , String authHeader){
+    public ResponseWrapper<Boolean> deleteParentColor(long parentColorId, String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
-            Optional<ParentColorEntity> optionalParentColorEntity = parentColorRepository.findById(parentColorId);
-            if (!optionalParentColorEntity.isPresent()){
+            Optional<ParentColorEntity> optionalParentColorEntity = parentColorRepository
+                    .findById(parentColorId);
+            if (!optionalParentColorEntity.isPresent()) {
                 throw new NotFoundException("This Parent Color does not exist");
             }
             ParentColorEntity parentColorEntityRecord = optionalParentColorEntity.get();
@@ -87,7 +94,8 @@ public class ParentColorServiceImpl implements ParentColorService {
                     AuditDTO.builder()
                             .user(userService.getUserByUsername(username))
                             .action(AuditActions.DELETE)
-                            .description("Deleting new Parent Color entity " + parentColorEntityRecord.toString())
+                            .description("Deleting new Parent Color entity " +
+                                    parentColorEntityRecord.toString())
                             .timestamp(LocalDateTime.now())
                             .build();
 
@@ -98,21 +106,26 @@ public class ParentColorServiceImpl implements ParentColorService {
         } catch (Exception e) {
             return reporterService.reportError(e);
         }
-        }
+    }
 
+    @Transactional
     @Override
-    public ResponseWrapper<Boolean> updateParentColor(ParentColorDTO parentColorDTO , String authHeader) {
+    public ResponseWrapper<Boolean> updateParentColor(ParentColorRegistrationRequest parentColorRegistrationRequest
+           , long parentColorId , String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
-            Optional<ParentColorEntity> optionalParentColorEntity = parentColorRepository.findById(parentColorDTO.getId());
+            Optional<ParentColorEntity> optionalParentColorEntity = parentColorRepository
+                    .findById(parentColorId);
             if (!optionalParentColorEntity.isPresent()) {
                 throw new NotFoundException("This ParentColor Was Not Found");
             }
             ParentColorEntity parentColorEntityRecord = optionalParentColorEntity.get();
-            if (parentColorDTO.getName() != null && !parentColorDTO.getName().equals(parentColorEntityRecord.getName())) {
-                parentColorEntityRecord.setName(parentColorDTO.getName());
+            if (parentColorRegistrationRequest.getName() != null &&
+                    !parentColorRegistrationRequest.getName().equals(
+                    parentColorEntityRecord.getName())) {
+                parentColorEntityRecord.setName(parentColorRegistrationRequest.getName());
             }
             parentColorRepository.save(parentColorEntityRecord);
 
@@ -120,7 +133,8 @@ public class ParentColorServiceImpl implements ParentColorService {
                     AuditDTO.builder()
                             .user(userService.getUserByUsername(username))
                             .action(AuditActions.UPDATE)
-                            .description("updating new Parent Color entity " + parentColorEntityRecord.toString())
+                            .description("updating new Parent Color entity " + parentColorEntityRecord.
+                                    toString())
                             .timestamp(LocalDateTime.now())
                             .build();
 
@@ -132,6 +146,7 @@ public class ParentColorServiceImpl implements ParentColorService {
 
         }
     }
+
     @Override
     public ResponseWrapper<List<ParentColorDTO>> getAllParentColors(boolean active) {
         try {
@@ -144,7 +159,22 @@ public class ParentColorServiceImpl implements ParentColorService {
             return reporterService.reportError(e);
         }
 
+    }
+
+    @Override
+    public ResponseWrapper<ParentColorDTO> getParentColor(long parentColorId) {
+        try {
+            Optional<ParentColorEntity> optionalParentColorEntity = parentColorRepository.findById(
+                    parentColorId);
+            if (!optionalParentColorEntity.isPresent()) {
+                throw new NotFoundException("This Parent color doesn't exist");
+            }
+            ParentColorEntity parentColorEntityRecord = optionalParentColorEntity.get();
+            return reporterService.reportSuccess(parentColorMapper.convertToDTO(parentColorEntityRecord));
+        } catch (Exception e) {
+            return reporterService.reportError(e);
         }
     }
+}
 
 

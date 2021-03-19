@@ -10,6 +10,7 @@ import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.CarService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,6 @@ public class CarServiceImpl implements CarService {
     }
 
 
-
     @Override
     public ResponseWrapper<Boolean> registerCar(CarRegistrationRequest carRegistrationRequest) {
         try {
@@ -61,16 +61,16 @@ public class CarServiceImpl implements CarService {
             Optional<CategoryEntity> optionalCategoryEntity = categoryRepository.findById(carRegistrationRequest.getCategoryId());
             Optional<ColorEntity> optionalColorEntity = colorRepository.findById(carRegistrationRequest.getColorId());
 
-            if(!optionalModelEntity.isPresent()){
+            if (!optionalModelEntity.isPresent()) {
                 throw new NotFoundException("Model entity not found");
             }
-            if(!optionalBranchEntity.isPresent()){
+            if (!optionalBranchEntity.isPresent()) {
                 throw new NotFoundException("Branch entity not found");
             }
-            if(!optionalCategoryEntity.isPresent()){
+            if (!optionalCategoryEntity.isPresent()) {
                 throw new NotFoundException("Category entity not found");
             }
-            if(!optionalColorEntity.isPresent()){
+            if (!optionalColorEntity.isPresent()) {
                 throw new NotFoundException("Color entity not found");
             }
             ModelEntity modelRecord = optionalModelEntity.get();
@@ -79,7 +79,6 @@ public class CarServiceImpl implements CarService {
             ColorEntity colorRecord = optionalColorEntity.get();
 
             CarEntity carEntityRecord = CarEntity.builder()
-                    .condition(carRegistrationRequest.getCondition())
                     .additionDate(carRegistrationRequest.getAdditionDate())
                     .model(modelRecord)
                     .branch(branchRecord)
@@ -90,86 +89,82 @@ public class CarServiceImpl implements CarService {
 
             carRepository.save(carEntityRecord);
             return reporterService.reportSuccess("A new Car has been added successfully");
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             return reporterService.reportError(e);
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> updateCar(long carId, CarRegistrationRequest carRegistrationRequest) {
         try {
             Optional<CarEntity> optionalCarEntity = carRepository.findById(carId);
-            if(!optionalCarEntity.isPresent()){
+            if (!optionalCarEntity.isPresent()) {
                 throw new NotFoundException("Car entity not found");
             }
-            CarEntity  carEntityRecord = optionalCarEntity.get();
-            if(carRegistrationRequest.getCondition() != null &&
-                    !carRegistrationRequest.getCondition().equals(carEntityRecord.getCondition())){
-                carEntityRecord.setCondition(carRegistrationRequest.getCondition());
-            }
-            if(carRegistrationRequest.getAdditionDate() != null &&
-                    !carRegistrationRequest.getAdditionDate().equals(carEntityRecord.getAdditionDate())){
+            CarEntity carEntityRecord = optionalCarEntity.get();
+
+            if (carRegistrationRequest.getAdditionDate() != null &&
+                    !carRegistrationRequest.getAdditionDate().equals(carEntityRecord.getAdditionDate())) {
                 carEntityRecord.setAdditionDate(carRegistrationRequest.getAdditionDate());
             }
-            if(carRegistrationRequest.getModelId() != -1 &&
-                    carRegistrationRequest.getModelId() != carEntityRecord.getModel().getId()){
+            if (carRegistrationRequest.getModelId() != -1 &&
+                    carRegistrationRequest.getModelId() != carEntityRecord.getModel().getId()) {
                 Optional<ModelEntity> optionalModelEntity = modelRepository.findById(carRegistrationRequest.getModelId());
-                if(!optionalModelEntity.isPresent()){
+                if (!optionalModelEntity.isPresent()) {
                     throw new NotFoundException("Model entity not found");
                 }
                 carEntityRecord.setModel(optionalModelEntity.get());
             }
 
-            if(carRegistrationRequest.getBranchId() != -1 &&
-                    carRegistrationRequest.getBranchId() != carEntityRecord.getBranch().getId()){
+            if (carRegistrationRequest.getBranchId() != -1 &&
+                    carRegistrationRequest.getBranchId() != carEntityRecord.getBranch().getId()) {
                 Optional<BranchEntity> optionalBranchEntity = branchRepository.findById(carRegistrationRequest.getBranchId());
-                if(!optionalBranchEntity.isPresent()){
+                if (!optionalBranchEntity.isPresent()) {
                     throw new NotFoundException("Branch entity not found");
                 }
                 carEntityRecord.setBranch(optionalBranchEntity.get());
             }
 
-            if(carRegistrationRequest.getCategoryId() != -1 &&
-                    carRegistrationRequest.getCategoryId() != carEntityRecord.getCategory().getId()){
+            if (carRegistrationRequest.getCategoryId() != -1 &&
+                    carRegistrationRequest.getCategoryId() != carEntityRecord.getCategory().getId()) {
                 Optional<CategoryEntity> optionalCategoryEntity = categoryRepository.findById(carRegistrationRequest.getCategoryId());
-                if(!optionalCategoryEntity.isPresent()){
+                if (!optionalCategoryEntity.isPresent()) {
                     throw new NotFoundException("Category entity not found");
                 }
                 carEntityRecord.setCategory(optionalCategoryEntity.get());
             }
 
-            if(carRegistrationRequest.getColorId() != -1 &&
-                    carRegistrationRequest.getColorId() != carEntityRecord.getColor().getId()){
+            if (carRegistrationRequest.getColorId() != -1 &&
+                    carRegistrationRequest.getColorId() != carEntityRecord.getColor().getId()) {
                 Optional<ColorEntity> optionalColorEntity = colorRepository.findById(carRegistrationRequest.getColorId());
-                if(!optionalColorEntity.isPresent()){
+                if (!optionalColorEntity.isPresent()) {
                     throw new NotFoundException("Color entity not found");
                 }
                 carEntityRecord.setColor(optionalColorEntity.get());
             }
             carRepository.save(carEntityRecord);
             return reporterService.reportSuccess("Car with ID: ".concat(Long.toString(carId))
-            .concat(" has been updated successfully"));
-        }
-        catch(Exception e){
+                    .concat(" has been updated successfully"));
+        } catch (Exception e) {
             return reporterService.reportError(e);
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteCar(long carId) {
         try {
             Optional<CarEntity> optionalCarEntity = carRepository.findById(carId);
-            if(!optionalCarEntity.isPresent()){
+            if (!optionalCarEntity.isPresent()) {
                 throw new NotFoundException("Car entity not found");
             }
             CarEntity carEntityRecord = optionalCarEntity.get();
             carEntityRecord.setActive(false);
             carRepository.save(carEntityRecord);
             return reporterService.reportSuccess("Car with Id: ".concat(Long.toString(carId))
-            .concat(" has been deleted successfully"));
-        }
-        catch(Exception e){
+                    .concat(" has been deleted successfully"));
+        } catch (Exception e) {
             return reporterService.reportError(e);
         }
     }
@@ -179,12 +174,27 @@ public class CarServiceImpl implements CarService {
         try {
             List<CarDTO> carDTOList = new ArrayList<>();
             carRepository.findAllByActive(active).forEach(car ->
-                carDTOList.add(carMapper.convertToDTO(car))
+                    carDTOList.add(carMapper.convertToDTO(car))
             );
             return reporterService.reportSuccess(carDTOList);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             return reporterService.reportError(e);
         }
+    }
+
+    @Override
+    public ResponseWrapper<CarDTO> getCar(long carId) {
+        try {
+            Optional<CarEntity> optionalCarEntity = carRepository.findById(carId);
+            if(!optionalCarEntity.isPresent()){
+                throw new NotFoundException("This car not found");
+            }
+            CarEntity carEntityRecord = optionalCarEntity.get();
+            return reporterService.reportSuccess(carMapper.convertToDTO(carEntityRecord));
+
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+
     }
 }

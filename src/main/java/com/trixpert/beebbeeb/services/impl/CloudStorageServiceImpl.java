@@ -1,36 +1,27 @@
 package com.trixpert.beebbeeb.services.impl;
 
-import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.trixpert.beebbeeb.services.CloudStorageService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.IOException;
+import java.util.Map;
 
 @Service
 public class CloudStorageServiceImpl implements CloudStorageService {
 
-    private final Storage storage;
+    private final Cloudinary cloudinary;
 
-    public CloudStorageServiceImpl(Storage storage) {
-        this.storage = storage;
+    public CloudStorageServiceImpl(Cloudinary cloudinary) {
+        this.cloudinary = cloudinary;
     }
 
     @Override
-    public String uploadFile(String directory, String fileName, File file) {
-        try {
-            BlobId fileBlobId = BlobId.of(directory, fileName);
-            BlobInfo fileBlobInfo = BlobInfo.newBuilder(fileBlobId).build();
-            byte[] fileBytes = Files.readAllBytes(Paths.get(file.toURI()));
-            Blob blob = storage.create(fileBlobInfo, fileBytes);
-            return blob.getMediaLink();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return "cannot-upload-file";
-        }
+    public String uploadFile(MultipartFile file) throws IOException {
+        Map result = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+        return (String) result.get("url");
     }
+
 }

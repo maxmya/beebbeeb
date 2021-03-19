@@ -10,16 +10,17 @@ import com.trixpert.beebbeeb.data.mappers.EmployeeMapper;
 import com.trixpert.beebbeeb.data.repositories.BranchRepository;
 import com.trixpert.beebbeeb.data.repositories.EmployeeRepository;
 import com.trixpert.beebbeeb.data.repositories.RolesRepository;
-import com.trixpert.beebbeeb.data.repositories.UserRepository;
 import com.trixpert.beebbeeb.data.repositories.VendorRepository;
 import com.trixpert.beebbeeb.data.request.EmployeeRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.RegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
 import com.trixpert.beebbeeb.data.to.EmployeeDTO;
+import com.trixpert.beebbeeb.data.to.UserDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,12 +34,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final BranchRepository branchRepository;
     private final RolesRepository rolesRepository;
-    private final UserRepository userRepository;
     private final VendorRepository vendorRepository;
 
     private final ReporterService reporterService;
     private final UserService userService;
-    private final BranchService branchService;
     private final AuditService auditService;
 
 
@@ -47,21 +46,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeServiceImpl(EmployeeRepository employeeRepository,
                                BranchRepository branchRepository,
                                RolesRepository rolesRepository,
-                               UserRepository userRepository,
                                VendorRepository vendorRepository,
                                ReporterService reporterService,
                                UserService userService,
-                               BranchService branchService,
                                EmployeeMapper employeeMapper,
                                AuditService auditService) {
         this.employeeRepository = employeeRepository;
         this.branchRepository = branchRepository;
         this.rolesRepository = rolesRepository;
-        this.userRepository = userRepository;
         this.vendorRepository = vendorRepository;
         this.reporterService = reporterService;
         this.userService = userService;
-        this.branchService = branchService;
         this.employeeMapper = employeeMapper;
         this.auditService = auditService;
     }
@@ -74,17 +69,17 @@ public class EmployeeServiceImpl implements EmployeeService {
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
-            Optional<BranchEntity> optionalBranchRecord = branchRepository.findById(employeeRegistrationRequest.getBranch().getId());
+            Optional<BranchEntity> optionalBranchRecord = branchRepository.findById(employeeRegistrationRequest.getBranchId());
             if (!optionalBranchRecord.isPresent()) {
                 throw new NotFoundException(" Branch Entity not found");
             }
             BranchEntity branchRecord = optionalBranchRecord.get();
 
             RegistrationRequest registrationRequest = new RegistrationRequest(
-                    employeeRegistrationRequest.getUser().getName(),
-                    employeeRegistrationRequest.getUser().getPhone(),
-                    employeeRegistrationRequest.getUser().getEmail(),
-                    employeeRegistrationRequest.getUser().isActive(),
+                    employeeRegistrationRequest.getName(),
+                    employeeRegistrationRequest.getPhone(),
+                    employeeRegistrationRequest.getEmail(),
+                    employeeRegistrationRequest.isActive(),
                     employeeRegistrationRequest.getPassword()
             );
 
@@ -95,7 +90,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
 
             UserEntity userEntity = userService.registerUser(
-                    employeeRegistrationRequest.getUser().getEmail(),
+                    employeeRegistrationRequest.getEmail(),
                     employeesRole.get(), registrationRequest, false).getData();
 
             EmployeeEntity employeeRecord = EmployeeEntity.builder()
@@ -133,34 +128,39 @@ public class EmployeeServiceImpl implements EmployeeService {
             return reporterService.reportError(e);
         }
     }
-
+    @Transactional
     @Override
-    public ResponseWrapper<Boolean> updateEmployeeForBranch(EmployeeDTO employeeDTO, String authHeader) {
-
+    public ResponseWrapper<Boolean> updateEmployeeForBranch(EmployeeRegistrationRequest employeeRegistrationRequest,
+                                                            long employeeId,
+                                                            String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
-            Optional<EmployeeEntity> optionalEmployeeRecord = employeeRepository.findById(employeeDTO.getId());
+            Optional<EmployeeEntity> optionalEmployeeRecord = employeeRepository.findById(employeeId);
             if (!optionalEmployeeRecord.isPresent()) {
                 throw new NotFoundException("Employee entity not found");
             }
             EmployeeEntity employeeRecord = optionalEmployeeRecord.get();
-            if (employeeDTO.getTitle() != null) {
-                employeeRecord.setTitle(employeeDTO.getTitle());
+            if (employeeRegistrationRequest.getTitle() != null) {
+                employeeRecord.setTitle(employeeRegistrationRequest.getTitle());
             }
-            if (employeeDTO.getUser() != null) {
-                Optional<UserEntity> optionalUserRecord = userRepository.findById(employeeDTO.getUser().getId());
-                if (!optionalUserRecord.isPresent()) {
-                    throw new NotFoundException(" User Entity not found");
-                }
-                userService.updateUser(employeeDTO.getUser());
+            if (employeeRegistrationRequest.getName() != null || employeeRegistrationRequest.getEmail() != null
+                    || employeeRegistrationRequest.getPhone() != null) {
+                UserDTO employeeDTO = UserDTO.builder()
+                        .id(employeeRecord.getUser().getId())
+                        .name(employeeRegistrationRequest.getName())
+                        .email(employeeRegistrationRequest.getEmail())
+                        .phone(employeeRegistrationRequest.getPhone())
+                        .build();
+                userService.updateUser(employeeDTO);
             }
-            if (employeeDTO.getBranch() != null) {
-                Optional<BranchEntity> optionalBranchRecord = branchRepository.findById(employeeDTO.getBranch().getId());
+            if (employeeRegistrationRequest.getBranchId() != -1 &&
+                    employeeRegistrationRequest.getBranchId() != employeeRecord.getBranch().getId()) {
+                Optional<BranchEntity> optionalBranchRecord = branchRepository.findById(employeeRegistrationRequest.getBranchId());
                 if (!optionalBranchRecord.isPresent()) {
                     throw new NotFoundException(" Branch Entity not found");
                 }
-                branchService.updateBranchForVendor(employeeDTO.getBranch(), authHeader);
+                employeeRecord.setBranch(optionalBranchRecord.get());
             }
             employeeRepository.save(employeeRecord);
             AuditDTO auditDTO =
@@ -177,8 +177,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         } catch (Exception e) {
             return reporterService.reportError(e);
         }
+
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteEmployeeForBranch(Long employeeId, String authHeader) {
         try {
@@ -209,10 +211,25 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public ResponseWrapper<EmployeeDTO> getEmployee(long employeeId) {
+        try {
+            Optional<EmployeeEntity> optionalEmployeeEntity = employeeRepository.findById(employeeId);
+            if (!optionalEmployeeEntity.isPresent()) {
+                throw new Exception("this employee does not exist");
+            }
+            EmployeeEntity employeeEntity = optionalEmployeeEntity.get();
+            return reporterService.reportSuccess(employeeMapper.convertToDTO(employeeEntity));
+
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
     public ResponseWrapper<List<EmployeeDTO>> getAllEmployeesForVendor(boolean active, Long vendorId) {
         try {
             List<EmployeeDTO> employeesList = new ArrayList<>();
-            branchRepository.findAllByVendor(vendorRepository.getOne(vendorId)).forEach(branch ->
+            branchRepository.findAllByVendorAndActive(vendorRepository.getOne(vendorId), true).forEach(branch ->
                     employeeRepository.findAllByBranchAndActive(branch, active).forEach(employee ->
                             employeesList.add(employeeMapper.convertToDTO(employee))
                     )

@@ -6,21 +6,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ModelDTO {
-
-    private Long id ;
-
-    private BrandDTO brand ;
-
-    private String name ;
-
-    private String year ;
-
-    private boolean active ;
-
-
+    private Long id;
+    private BrandDTO brand;
+    private List<PhotoDTO> photos;
+    private String name;
+    private String year;
+    private boolean active;
 }

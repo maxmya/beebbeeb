@@ -14,7 +14,10 @@ public interface EmployeeService {
 
     ResponseWrapper<List<EmployeeDTO>> getAllEmployeesForVendor(boolean active, Long vendorId);
 
-    ResponseWrapper<Boolean> updateEmployeeForBranch(EmployeeDTO employeeDTO , String authHeader);
+    ResponseWrapper<Boolean> updateEmployeeForBranch(EmployeeRegistrationRequest employeeRegistrationRequest,
+                                                     long employeeId, String authHeader);
 
     ResponseWrapper<Boolean> deleteEmployeeForBranch(Long employeeId , String authHeader);
+
+    ResponseWrapper<EmployeeDTO> getEmployee(long employeeId);
 }

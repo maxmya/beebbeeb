@@ -2,10 +2,11 @@ package com.trixpert.beebbeeb.services.impl;
 
 import com.trixpert.beebbeeb.data.constants.AuditActions;
 import com.trixpert.beebbeeb.data.entites.CategoryEntity;
+import com.trixpert.beebbeeb.data.entites.TypeEntity;
 import com.trixpert.beebbeeb.data.mappers.CarMapper;
 import com.trixpert.beebbeeb.data.mappers.CategoryMapper;
-import com.trixpert.beebbeeb.data.mappers.TypeMapper;
 import com.trixpert.beebbeeb.data.repositories.CategoryRepository;
+import com.trixpert.beebbeeb.data.repositories.TypeRepository;
 import com.trixpert.beebbeeb.data.request.CategoryRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
@@ -17,6 +18,7 @@ import com.trixpert.beebbeeb.services.CategoryService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import com.trixpert.beebbeeb.services.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,29 +29,28 @@ import java.util.Optional;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final TypeRepository typeRepository;
 
     private final ReporterService reporterService;
 
     private final CategoryMapper categoryMapper;
     private final CarMapper carMapper;
-    private final TypeMapper typeMapper;
 
     private final UserService userService;
     private final AuditService auditService;
 
 
     public CategoryServiceImpl(CategoryRepository categoryRepository,
-                               ReporterService reporterService,
+                               TypeRepository typeRepository, ReporterService reporterService,
                                CategoryMapper categoryMapper,
                                CarMapper carMapper,
-                               TypeMapper typeMapper,
                                UserService userService,
                                AuditService auditService) {
         this.categoryRepository = categoryRepository;
+        this.typeRepository = typeRepository;
         this.reporterService = reporterService;
         this.categoryMapper = categoryMapper;
         this.carMapper = carMapper;
-        this.typeMapper = typeMapper;
         this.userService = userService;
         this.auditService = auditService;
     }
@@ -61,9 +62,13 @@ public class CategoryServiceImpl implements CategoryService {
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
+            Optional<TypeEntity> optionalTypeEntity = typeRepository.findById(categoryRegistrationRequest.getTypeId());
+            if(!optionalTypeEntity.isPresent()){
+                throw new NotFoundException("Type entity not found");
+            }
             CategoryEntity categoryEntityRecord = CategoryEntity.builder()
                     .name(categoryRegistrationRequest.getName())
-                    .type(typeMapper.convertToEntity(categoryRegistrationRequest.getType()))
+                    .type(optionalTypeEntity.get())
                     .active(true)
                     .build();
             categoryRepository.save(categoryEntityRecord);
@@ -83,7 +88,7 @@ public class CategoryServiceImpl implements CategoryService {
             return reporterService.reportError(e);
         }
     }
-
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteCategory(long categoryId , String authHeader) {
 
@@ -114,20 +119,29 @@ public class CategoryServiceImpl implements CategoryService {
             return reporterService.reportError(e);
         }
     }
-
+    @Transactional
     @Override
-    public ResponseWrapper<Boolean> updateCategory(CategoryDTO categoryDTO , String authHeader) {
+    public ResponseWrapper<Boolean> updateCategory(CategoryRegistrationRequest categoryRegistrationRequest,
+                                                   long categoryId , String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
-            Optional<CategoryEntity> optionalCategoryEntity = categoryRepository.findById(categoryDTO.getId());
+            Optional<CategoryEntity> optionalCategoryEntity = categoryRepository.findById(categoryId);
             if(!optionalCategoryEntity.isPresent()){
                 throw new NotFoundException("Category Entity Not Found!");
             }
             CategoryEntity categoryEntityRecord = optionalCategoryEntity.get();
-            if(categoryDTO.getName()!=null && !categoryDTO.getName().equals(categoryEntityRecord.getName())){
-                categoryEntityRecord.setName(categoryDTO.getName());
+            if(categoryRegistrationRequest.getName()!=null && !categoryRegistrationRequest.getName().equals(categoryEntityRecord.getName())){
+                categoryEntityRecord.setName(categoryRegistrationRequest.getName());
+            }
+            if(categoryRegistrationRequest.getTypeId() != -1
+                    && categoryRegistrationRequest.getTypeId() != categoryEntityRecord.getId()){
+                Optional<TypeEntity> optionalTypeEntity = typeRepository.findById(categoryRegistrationRequest.getTypeId());
+                if(!optionalTypeEntity.isPresent()){
+                    throw new NotFoundException("Type entity not found");
+                }
+                categoryEntityRecord.setType(optionalTypeEntity.get());
             }
             categoryRepository.save(categoryEntityRecord);
 
@@ -140,7 +154,7 @@ public class CategoryServiceImpl implements CategoryService {
                             .build();
 
             auditService.logAudit(auditDTO);
-            return reporterService.reportSuccess("Category ID : ".concat(Long.toString(categoryDTO.getId())).concat(" is Updated Successfully ! "));
+            return reporterService.reportSuccess("Category ID : ".concat(Long.toString(categoryEntityRecord.getId())).concat(" is Updated Successfully ! "));
         }catch (Exception e){
             return reporterService.reportError(e);
         }
@@ -150,9 +164,9 @@ public class CategoryServiceImpl implements CategoryService {
     public ResponseWrapper<List<CategoryDTO>> getAllCategories(boolean active) {
         try {
             List<CategoryDTO> categoryDTOList = new ArrayList<>();
-            categoryRepository.findAllByActive(active).forEach(category -> {
-                categoryDTOList.add(categoryMapper.convertToDTO(category));
-            });
+            categoryRepository.findAllByActive(active).forEach(category ->
+                categoryDTOList.add(categoryMapper.convertToDTO(category))
+            );
             return reporterService.reportSuccess(categoryDTOList);
         }catch (Exception e){
             return reporterService.reportError(e);
@@ -173,6 +187,21 @@ public class CategoryServiceImpl implements CategoryService {
             return reporterService.reportSuccess(listCars);
         }
         catch(Exception e){
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<CategoryDTO> getCategory(long categoryId) {
+        try{
+            Optional<CategoryEntity> optionalCategoryEntity = categoryRepository.findById(categoryId);
+            if(!optionalCategoryEntity.isPresent()){
+                throw new NotFoundException("Category entity not found");
+            }
+            CategoryEntity categoryEntityRecord = optionalCategoryEntity.get();
+
+            return reporterService.reportSuccess(categoryMapper.convertToDTO(categoryEntityRecord));
+        }catch (Exception e){
             return reporterService.reportError(e);
         }
     }

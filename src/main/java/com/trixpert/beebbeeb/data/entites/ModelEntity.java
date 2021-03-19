@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.List;
@@ -33,4 +35,14 @@ public class ModelEntity {
     @OneToMany(mappedBy = "model")
     private List<CarEntity> cars;
 
+    @Fetch(value = FetchMode.SUBSELECT)
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    }, fetch = FetchType.EAGER)
+    @JoinTable(name = "model_photos",
+            joinColumns = @JoinColumn(name = "model_id"),
+            inverseJoinColumns = @JoinColumn(name = "photo_id")
+    )
+    private List<PhotoEntity> photos;
 }

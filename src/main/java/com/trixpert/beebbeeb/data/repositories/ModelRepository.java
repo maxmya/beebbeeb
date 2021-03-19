@@ -5,7 +5,6 @@ import com.trixpert.beebbeeb.data.entites.ModelEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import javax.jws.WebParam;
 import java.util.List;
 
 @Repository

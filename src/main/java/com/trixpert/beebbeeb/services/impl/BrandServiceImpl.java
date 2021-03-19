@@ -11,6 +11,7 @@ import com.trixpert.beebbeeb.data.to.BrandDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -54,9 +55,7 @@ public class BrandServiceImpl implements BrandService {
     ) throws IOException {
         String username = auditService.getUsernameForAudit(authHeader);
 
-        File convFile = new File(logoFile.getName());
-        logoFile.transferTo(convFile);
-        String logoUrlRecord = cloudStorageService.uploadFile(convFile.getPath(), convFile.getName(), convFile.getAbsoluteFile());
+        String logoUrlRecord = cloudStorageService.uploadFile(logoFile);
         try {
             BrandEntity brandEntityRecord = BrandEntity.builder()
                     .name(brandRegisterRequest.getName())
@@ -82,6 +81,7 @@ public class BrandServiceImpl implements BrandService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteBrand(long brandId, String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
@@ -112,31 +112,34 @@ public class BrandServiceImpl implements BrandService {
 
     }
 
+    @Transactional
     @Override
-    public ResponseWrapper<Boolean> updateBrand(MultipartFile logoFile, BrandDTO brandDTO,
+    public ResponseWrapper<Boolean> updateBrand(MultipartFile logoFile,
+                                                BrandRegisterRequest brandRegisterRequest, long brandId,
                                                 String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
-            Optional<BrandEntity> optionalBrandEntity = brandRepository.findById(brandDTO.getId());
+            Optional<BrandEntity> optionalBrandEntity = brandRepository.findById(brandId);
             if (!optionalBrandEntity.isPresent()) {
                 throw new NotFoundException("This Brand Was Not Found");
             }
             BrandEntity brandEntityRecord = optionalBrandEntity.get();
-            if (brandDTO.getName() != null && !brandDTO.getName().equals(brandEntityRecord.getName())) {
-                brandEntityRecord.setName(brandDTO.getName());
+            if (brandRegisterRequest.getName() != null && !brandRegisterRequest.getName()
+                    .equals(brandEntityRecord.getName())) {
+                brandEntityRecord.setName(brandRegisterRequest.getName());
             }
-            if (brandDTO.getDescription() != null && !brandDTO.getDescription().equals(brandEntityRecord.getDescription())) {
-                brandEntityRecord.setDescription(brandDTO.getDescription());
+            if (brandRegisterRequest.getDescription() != null &&
+                    !brandRegisterRequest.getDescription().equals(brandEntityRecord.getDescription())) {
+                brandEntityRecord.setDescription(brandRegisterRequest.getDescription());
             }
-            if (brandDTO.getOrigin() != null && !brandDTO.getOrigin().equals(brandEntityRecord.getOrigin())) {
-                brandEntityRecord.setOrigin(brandDTO.getOrigin());
+            if (brandRegisterRequest.getOrigin() != null &&
+                    !brandRegisterRequest.getOrigin().equals(brandEntityRecord.getOrigin())) {
+                brandEntityRecord.setOrigin(brandRegisterRequest.getOrigin());
             }
             if (logoFile != null) {
-                File convFile = new File(logoFile.getName());
-                logoFile.transferTo(convFile);
-                String logoUrlRecord = cloudStorageService.uploadFile(convFile.getPath(), convFile.getName(), convFile.getAbsoluteFile());
+                String logoUrlRecord = cloudStorageService.uploadFile(logoFile);
                 brandEntityRecord.setLogoUrl(logoUrlRecord);
             }
             brandRepository.save(brandEntityRecord);
@@ -170,12 +173,11 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
- 
-    public ResponseWrapper<BrandDTO> getBrand(boolean isActive ,long brandId) {
+    public ResponseWrapper<BrandDTO> getBrand(long brandId) {
         try {
-            Optional<BrandEntity> optionalBrandEntity = brandRepository.findByActiveAndId(isActive, brandId);
+            Optional<BrandEntity> optionalBrandEntity = brandRepository.findById(brandId);
 
-           if (!optionalBrandEntity.isPresent()) {
+            if (!optionalBrandEntity.isPresent()) {
                 throw new NotFoundException("This Brand does not exist");
             }
             BrandEntity brandEntityRecord = optionalBrandEntity.get();

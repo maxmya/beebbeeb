@@ -1,18 +1,20 @@
 package com.trixpert.beebbeeb.data.request;
 
-import com.trixpert.beebbeeb.data.to.BranchDTO;
-import com.trixpert.beebbeeb.data.to.UserDTO;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeeRegistrationRequest {
+public class EmployeeRegistrationRequest extends RegistrationRequest {
+    @NotNull(message = "title can't be null")
     private String title;
-    private UserDTO user;
-    private BranchDTO branch;
-    private boolean active;
-    private String password;
+
+    @NotNull(message = "branch id can't be null")
+    private long branchId;
+
 }

@@ -10,12 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 
 @Api(tags = {"ParentColor API"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
 @RestController
-@RequestMapping("/parentcolor")
+@RequestMapping("/api/v1/parentcolor")
 public class ParentColorController {
 
     private final ParentColorService parentColorService;
@@ -37,20 +38,22 @@ public class ParentColorController {
         return ResponseEntity.ok(parentColorService.getAllParentColors(false));
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/{parentColorId}")
     @ApiOperation("Update an existing color with new data")
     public ResponseEntity<ResponseWrapper<Boolean>> updateParentColor(
-            @RequestPart(name = "body")ParentColorDTO parentColorDTO
+            @RequestBody ParentColorRegistrationRequest parentColorRegistrationRequest
+            , @PathVariable("parentColorId") long parentColorId
             , HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(parentColorService.updateParentColor(parentColorDTO , authorizationHeader));
+        return ResponseEntity.ok(parentColorService.updateParentColor(
+                parentColorRegistrationRequest , parentColorId , authorizationHeader));
     }
 
     @PostMapping("/add")
     @ApiOperation("Add New Parent Color")
     public ResponseEntity<ResponseWrapper<Boolean>> addParentColor(
-            @RequestPart(name = "body") ParentColorRegistrationRequest parentColorRegistrationRequest
+            @Valid @RequestBody ParentColorRegistrationRequest parentColorRegistrationRequest
             , HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
 
@@ -67,5 +70,12 @@ public class ParentColorController {
         String authorizationHeader = request.getHeader("Authorization");
 
         return ResponseEntity.ok(parentColorService.deleteParentColor(parentcolorId, authorizationHeader));
+    }
+
+    @GetMapping("get/{parentColorId}")
+    @ApiOperation("Get parent color by Id")
+    public ResponseEntity<ResponseWrapper<ParentColorDTO>> getParentColor(
+            @PathVariable("parentColorId")long parentColorId ){
+        return ResponseEntity.ok(parentColorService.getParentColor(parentColorId));
     }
 }

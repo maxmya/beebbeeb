@@ -11,17 +11,21 @@ import com.trixpert.beebbeeb.data.repositories.CustomerRepository;
 import com.trixpert.beebbeeb.data.repositories.RolesRepository;
 import com.trixpert.beebbeeb.data.repositories.UserRepository;
 import com.trixpert.beebbeeb.data.repositories.UserRolesRepository;
-import com.trixpert.beebbeeb.data.request.CustomerRegistraionRequest;
+import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
+import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.RegistrationRequest;
+import com.trixpert.beebbeeb.data.response.CustomerResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
 import com.trixpert.beebbeeb.data.to.CustomerDTO;
+import com.trixpert.beebbeeb.data.to.UserDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.AuditService;
 import com.trixpert.beebbeeb.services.CustomerService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import com.trixpert.beebbeeb.services.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -60,8 +64,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> registerCustomer(CustomerRegistraionRequest customerRegisterRequest, String authHeader) {
-        String username = auditService.getUsernameForAudit(authHeader);
+    public ResponseWrapper<Boolean> registerCustomer(CustomerMobileRegistrationRequest customerRegisterRequest) {
         try {
 
             Optional<RolesEntity> customerRole = rolesRepository.findByName(Roles.ROLE_CUSTOMER);
@@ -69,42 +72,27 @@ public class CustomerServiceImpl implements CustomerService {
             if (!customerRole.isPresent()) {
                 throw new NotFoundException("Role customer Not Found");
             }
-            RegistrationRequest registrationRequest = new RegistrationRequest(
-                    customerRegisterRequest.getName(),
-                    customerRegisterRequest.getPhone(),
-                    customerRegisterRequest.getEmail(),
-                    customerRegisterRequest.isActive(),
-                    customerRegisterRequest.getPassword()
-            );
-            UserEntity userEntity = userService.registerUser(
-                    customerRegisterRequest.getEmail(),
-                    customerRole.get(),
-                    registrationRequest,
-                    false).getData();
+
+            RegistrationRequest registrationRequest = new RegistrationRequest();
+            registrationRequest.setName(customerRegisterRequest.getName());
+            registrationRequest.setPhone(customerRegisterRequest.getPhone());
+            registrationRequest.setPassword(customerRegisterRequest.getPassword());
+
+            UserEntity savedUser = userService.registerUser(customerRegisterRequest.getPhone(),
+                    customerRole.get(), registrationRequest, true).getData();
 
             CustomerEntity customerEntityRecord = CustomerEntity.builder()
-                    .preferredBank(customerRegisterRequest.getPreferredBank())
-                    .jobTitle(customerRegisterRequest.getJobTitle())
-                    .jobAddress(customerRegisterRequest.getJobAddress())
-                    .income(customerRegisterRequest.getIncome())
-                    .user(userEntity).build();
+                    .horoscope(customerRegisterRequest.getHoroscope())
+                    .user(savedUser).build();
+
             customerRepository.save(customerEntityRecord);
-
-            AuditDTO auditDTO =
-                    AuditDTO.builder()
-                            .user(userService.getUserByUsername(username))
-                            .action(AuditActions.INSERT)
-                            .description("Adding new customer " + customerEntityRecord.toString())
-                            .timestamp(LocalDateTime.now())
-                            .build();
-            auditService.logAudit(auditDTO);
-
             return reporterService.reportSuccess("A new customer  has been added ");
         } catch (Exception e) {
             return reporterService.reportError(e);
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteCustomer(long customerId, String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
@@ -132,46 +120,57 @@ public class CustomerServiceImpl implements CustomerService {
             return reporterService.reportError(e);
         }
     }
-
+    @Transactional
     @Override
-    public ResponseWrapper<Boolean> updateCustomer(CustomerDTO customerDTO, String authHeader) {
+    public ResponseWrapper<Boolean> updateCustomer(CustomerRegistrationRequest customerRegistrationRequest ,
+                                                   long customerId, String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
         try {
 
             Optional<CustomerEntity> optionalCustomerEntity = customerRepository.findById(
-                    customerDTO.getId());
+                    customerId);
 
             if (!optionalCustomerEntity.isPresent()) {
                 throw new NotFoundException("customer Not Found");
             }
             CustomerEntity customerEntityRecord = optionalCustomerEntity.get();
 
-            if (customerDTO.getIncome() != -1 && customerDTO.getIncome() != customerEntityRecord.getIncome()) {
-                customerEntityRecord.setIncome(customerDTO.getIncome());
+            if (customerRegistrationRequest.getIncome() != -1 &&
+                    customerRegistrationRequest.getIncome() != customerEntityRecord.getIncome()) {
+                customerEntityRecord.setIncome(customerRegistrationRequest.getIncome());
             }
-            if (customerDTO.getJobAddress() != null && customerDTO.getJobAddress()
+            if (customerRegistrationRequest.getJobAddress() != null &&
+                    customerRegistrationRequest.getJobAddress()
                     .equals(customerEntityRecord.getJobAddress())) {
-                customerEntityRecord.setJobAddress(customerDTO.getJobAddress());
+                customerEntityRecord.setJobAddress(customerRegistrationRequest.getJobAddress());
             }
-            if (customerDTO.getJobTitle() != null && customerDTO.getJobTitle().equals(
-                    customerEntityRecord.getJobTitle())){
-                customerEntityRecord.setJobTitle(customerDTO.getJobTitle());
+            if (customerRegistrationRequest.getJobTitle() != null &&
+                    customerRegistrationRequest.getJobTitle().equals(
+                    customerEntityRecord.getJobTitle())) {
+                customerEntityRecord.setJobTitle(customerRegistrationRequest.getJobTitle());
             }
-            if(customerDTO.getPreferredBank() != null && customerDTO.getPreferredBank().equals(
-                    customerEntityRecord.getPreferredBank())){
-                customerEntityRecord.setPreferredBank(customerDTO.getPreferredBank());
+            if (customerRegistrationRequest.getPreferredBank() != null &&
+                    customerRegistrationRequest.getPreferredBank().equals(
+                    customerEntityRecord.getPreferredBank())) {
+                customerEntityRecord.setPreferredBank(customerRegistrationRequest.getPreferredBank());
             }
-            if(customerDTO.getUser() != null && customerDTO.getUser().equals(
-                    customerEntityRecord.getUser())){
-                userService.updateUser(customerDTO.getUser());
-            }
-                AuditDTO auditDTO =
-                        AuditDTO.builder()
-                                .user(userService.getUserByUsername(username))
-                                .action(AuditActions.UPDATE)
-                                .description("Updating new customer " + customerDTO.getId())
-                                .timestamp(LocalDateTime.now())
-                                .build();
+            if (customerRegistrationRequest.getName() != null ||
+                    customerRegistrationRequest.getEmail() != null
+                    || customerRegistrationRequest.getPhone() != null) {
+                UserDTO employeeDTO = UserDTO.builder()
+                        .id(customerEntityRecord.getUser().getId())
+                        .name(customerRegistrationRequest.getName())
+                        .email(customerRegistrationRequest.getEmail())
+                        .phone(customerRegistrationRequest.getPhone())
+                        .build();
+                userService.updateUser(employeeDTO);
+            }            AuditDTO auditDTO =
+                    AuditDTO.builder()
+                            .user(userService.getUserByUsername(username))
+                            .action(AuditActions.UPDATE)
+                            .description("Updating new customer " + customerId)
+                            .timestamp(LocalDateTime.now())
+                            .build();
             auditService.logAudit(auditDTO);
 
             return reporterService.reportSuccess("A new customer  has been added ");
@@ -181,11 +180,23 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseWrapper<List<CustomerDTO>> getAllCustomers(boolean active) {
+    public ResponseWrapper<List<CustomerResponse>> getAllCustomers(boolean active) {
         try {
-            List<CustomerDTO> customerList = new ArrayList<>();
-            customerRepository.findAllByActive(active).forEach(customer ->
-                    customerList.add(customerMapper.convertToDTO(customer)));
+            List<CustomerResponse> customerList = new ArrayList<>();
+            customerRepository.findAllByActive(active).forEach(customer ->{
+                CustomerResponse customerResponse = CustomerResponse.builder()
+                        .id(customer.getId())
+                        .name(customer.getUser().getName())
+                        .email(customer.getUser().getEmail())
+                        .phone(customer.getUser().getPhone())
+                        .active(customer.isActive())
+                        .preferredBank(customer.getPreferredBank())
+                        .jobTitle(customer.getJobTitle())
+                        .jobAddress(customer.getJobAddress())
+                        .income(customer.getIncome())
+                        .build();
+                    customerList.add(customerResponse);
+            });
             return reporterService.reportSuccess(customerList);
         } catch (Exception e) {
             return reporterService.reportError(e);
@@ -194,7 +205,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseWrapper<CustomerDTO> getCustomer(long customerId) {
+    public ResponseWrapper<CustomerResponse> getCustomer(long customerId) {
         try {
             Optional<CustomerEntity> optionalCustomerEntity = customerRepository.findById(customerId);
 
@@ -202,7 +213,18 @@ public class CustomerServiceImpl implements CustomerService {
                 throw new NotFoundException("customer Not Found");
             }
             CustomerEntity customerEntityRecord = optionalCustomerEntity.get();
-            return reporterService.reportSuccess(customerMapper.convertToDTO(customerEntityRecord));
+            CustomerResponse customerResponse = CustomerResponse.builder()
+                    .id(customerEntityRecord.getId())
+                    .name(customerEntityRecord.getUser().getName())
+                    .email(customerEntityRecord.getUser().getEmail())
+                    .phone(customerEntityRecord.getUser().getPhone())
+                    .active(customerEntityRecord.isActive())
+                    .preferredBank(customerEntityRecord.getPreferredBank())
+                    .jobTitle(customerEntityRecord.getJobTitle())
+                    .jobAddress(customerEntityRecord.getJobAddress())
+                    .income(customerEntityRecord.getIncome())
+                    .build();
+            return reporterService.reportSuccess(customerResponse);
         } catch (Exception e) {
             return reporterService.reportError(e);
         }

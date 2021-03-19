@@ -16,7 +16,7 @@ import java.util.List;
 @Api(tags = {"Employees API"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
 @RestController
-@RequestMapping("/employees")
+@RequestMapping("/api/v1/employees")
 public class EmployeeController {
 
     private final EmployeeService employeeService;
@@ -28,7 +28,7 @@ public class EmployeeController {
     @PostMapping("/vendor/branch/add")
     @ApiOperation("Adding a new employee to a specific branch")
     public ResponseEntity<ResponseWrapper<Boolean>> addEmployeeForBranch(
-            EmployeeRegistrationRequest employeeRegistrationRequest ,
+            @Valid @RequestBody EmployeeRegistrationRequest employeeRegistrationRequest ,
             HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
@@ -39,24 +39,28 @@ public class EmployeeController {
 
     @GetMapping("{branchId}/list/active")
     @ApiOperation("Get list of active employees for a specific branch")
-    public ResponseEntity<ResponseWrapper<List<EmployeeDTO>>> getAllActiveEmployeesForBranch(@PathVariable("branchId") Long branchId) {
+    public ResponseEntity<ResponseWrapper<List<EmployeeDTO>>> getAllActiveEmployeesForBranch(
+            @PathVariable("branchId") Long branchId) {
         return ResponseEntity.ok(employeeService.getAllEmployeesForBranch(true, branchId));
     }
 
     @GetMapping("{branchId}/list/inactive")
     @ApiOperation("Get list of inactive employees for a specific branch")
-    public ResponseEntity<ResponseWrapper<List<EmployeeDTO>>> getAllInactiveEmployeesForBranch(@PathVariable("branchId") Long branchId) {
+    public ResponseEntity<ResponseWrapper<List<EmployeeDTO>>> getAllInactiveEmployeesForBranch
+            (@PathVariable("branchId") Long branchId) {
         return ResponseEntity.ok(employeeService.getAllEmployeesForBranch(false, branchId));
     }
 
     @PutMapping("/update")
     @ApiOperation("Update an existing employee")
     public ResponseEntity<ResponseWrapper<Boolean>> updateEmployeeForBranch(
-            @Valid @RequestBody EmployeeDTO employeeDTO , HttpServletRequest request){
+            @Valid @RequestBody EmployeeRegistrationRequest employeeRegistrationRequest,
+            long employeeId, HttpServletRequest request){
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(employeeService.updateEmployeeForBranch(employeeDTO , authorizationHeader));
+        return ResponseEntity.ok(employeeService.updateEmployeeForBranch(employeeRegistrationRequest,
+                employeeId, authorizationHeader));
     }
 
     @PutMapping("/delete/{employeeId}")
@@ -72,13 +76,22 @@ public class EmployeeController {
 
     @GetMapping("{vendorId}/list/active")
     @ApiOperation("Get list of all active employees for a specific vendor")
-    public ResponseEntity<ResponseWrapper<List<EmployeeDTO>>> getAllActiveEmployeesForVendor(@PathVariable("vendorId") Long vendorId){
+    public ResponseEntity<ResponseWrapper<List<EmployeeDTO>>> getAllActiveEmployeesForVendor(
+            @PathVariable("vendorId") Long vendorId){
         return ResponseEntity.ok(employeeService.getAllEmployeesForVendor(true, vendorId));
     }
 
     @GetMapping("{vendorId}/list/inactive")
     @ApiOperation("Get list of all active employees for a specific vendor")
-    public ResponseEntity<ResponseWrapper<List<EmployeeDTO>>> getAllInactiveEmployeesForVendor(@PathVariable("vendorId") Long vendorId){
+    public ResponseEntity<ResponseWrapper<List<EmployeeDTO>>> getAllInactiveEmployeesForVendor(
+            @PathVariable("vendorId") Long vendorId){
         return ResponseEntity.ok(employeeService.getAllEmployeesForVendor(false, vendorId));
+    }
+
+    @GetMapping("Get/{employeeId}")
+    @ApiOperation("Get employee by Id")
+    public ResponseEntity<ResponseWrapper<EmployeeDTO>> getEmployee(@PathVariable("employeeId")
+                                                                    long employeeId){
+        return ResponseEntity.ok(employeeService.getEmployee(employeeId));
     }
 }

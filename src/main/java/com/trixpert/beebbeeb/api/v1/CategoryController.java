@@ -17,7 +17,7 @@ import java.util.List;
 @Api(tags = {"Categories API"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("/api/v1/categories")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -38,15 +38,17 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.getAllCategories(false));
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/{categoryId}")
     @ApiOperation("Update an existing Category with new data")
     public ResponseEntity<ResponseWrapper<Boolean>> updateCategory(
-            @Valid @RequestBody CategoryDTO categoryDTO
+            @Valid @RequestBody CategoryRegistrationRequest categoryRegistrationRequest,
+            @PathVariable("categoryId") long categoryId
             , HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(categoryService.updateCategory(categoryDTO , authorizationHeader));
+        return ResponseEntity.ok(categoryService.updateCategory(categoryRegistrationRequest ,
+                categoryId, authorizationHeader));
     }
 
     @PostMapping("/add")
@@ -84,5 +86,11 @@ public class CategoryController {
     public ResponseEntity<ResponseWrapper<List<CarDTO>>> listInactiveCarsForCategory(
             @PathVariable("categoryId") long categoryId){
         return ResponseEntity.ok(categoryService.listCarsForCategory(false, categoryId));
+    }
+    @GetMapping("/get/{categoryId}")
+    @ApiOperation("Get category by Id ")
+    public ResponseEntity<ResponseWrapper<CategoryDTO>> getCategory(@PathVariable("categoryId")
+                                                                    long categoryId){
+        return ResponseEntity.ok(categoryService.getCategory(categoryId));
     }
 }

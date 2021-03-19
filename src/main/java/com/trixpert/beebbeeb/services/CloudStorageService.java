@@ -1,10 +1,12 @@
 package com.trixpert.beebbeeb.services;
 
 
-import java.io.File;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 public interface CloudStorageService {
 
-    String uploadFile(String directory, String fileName, File file);
+    String uploadFile(MultipartFile file) throws IOException;
 
 }
