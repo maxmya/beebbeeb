@@ -19,5 +19,4 @@ public class CategoryRegistrationRequest {
 
     @NotNull(message = "type id can't be null")
     private long typeId;
-    private boolean active;
 }

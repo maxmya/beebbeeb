@@ -105,7 +105,8 @@ public class TypeServiceImpl implements TypeService {
 
             auditService.logAudit(auditDTO);
 
-            return reporterService.reportSuccess("Type Deleted Successful ID :".concat(Long.toString(typeId)));
+            return reporterService.reportSuccess("Type Deleted Successful ID :"
+                    .concat(Long.toString(typeId)));
         } catch (Exception e) {
             return reporterService.reportError(e);
         }
