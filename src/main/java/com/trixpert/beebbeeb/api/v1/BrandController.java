@@ -1,7 +1,9 @@
 package com.trixpert.beebbeeb.api.v1;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trixpert.beebbeeb.data.request.BrandRegisterRequest;
+import com.trixpert.beebbeeb.data.request.TypeRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.BrandDTO;
 import com.trixpert.beebbeeb.services.BrandService;
@@ -44,16 +46,22 @@ public class BrandController {
         return ResponseEntity.ok(brandService.getAllBrands(false));
     }
 
-    @PutMapping("/update/{brandId}")
+    @CrossOrigin(origins = {"*"})
+    @PutMapping(value="/update/{brandId}" , consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @ResponseBody
     @ApiOperation("Update an existing brand with new data")
     public ResponseEntity<ResponseWrapper<Boolean>> updateBrand(
             @RequestPart(name = "file") MultipartFile logoFile,
-            @Valid @RequestBody BrandRegisterRequest brandRegisterRequest,
+            @Valid @RequestParam(name = "body") String regRequest,
             @PathVariable("brandId") long brandId ,
-            HttpServletRequest request) {
+            HttpServletRequest request) throws JsonProcessingException {
 
         String authorizationHeader = request.getHeader("Authorization");
-        return ResponseEntity.ok(brandService.updateBrand(logoFile, brandRegisterRequest ,
+        ObjectMapper objectMapper = new ObjectMapper();
+        BrandRegisterRequest brandRegistrationRequest = objectMapper.readValue(
+                regRequest, BrandRegisterRequest.class);
+
+        return ResponseEntity.ok(brandService.updateBrand(logoFile, brandRegistrationRequest ,
                 brandId, authorizationHeader));
     }
 

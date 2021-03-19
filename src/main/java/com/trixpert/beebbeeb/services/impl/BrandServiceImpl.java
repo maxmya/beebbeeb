@@ -142,6 +142,9 @@ public class BrandServiceImpl implements BrandService {
                 String logoUrlRecord = cloudStorageService.uploadFile(logoFile);
                 brandEntityRecord.setLogoUrl(logoUrlRecord);
             }
+            if(logoFile==null){
+                brandEntityRecord.setLogoUrl(brandEntityRecord.getLogoUrl());
+            }
             brandRepository.save(brandEntityRecord);
 
             AuditDTO auditDTO =
