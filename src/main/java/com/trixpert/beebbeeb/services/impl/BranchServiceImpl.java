@@ -141,8 +141,8 @@ public class BranchServiceImpl implements BranchService {
                 throw new NotFoundException(" Branch Entity not found");
             }
             BranchEntity branchRecord = optionalBranchRecord.get();
-            if (branchRegistrationRequest.getName() != null) {
-                branchRecord.setName(branchRegistrationRequest.getName());
+            if (branchRegistrationRequest.getBranchName() != null) {
+                branchRecord.setName(branchRegistrationRequest.getBranchName());
             }
             if (branchRegistrationRequest.getAddress() != null) {
                 branchRecord.setAddress(branchRegistrationRequest.getAddress());
