@@ -96,8 +96,8 @@ public class CategoryServiceImpl implements CategoryService {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
+        Optional<CategoryEntity> categoryEntityOptional = categoryRepository.findById(categoryId);
         try {
-            Optional<CategoryEntity> categoryEntityOptional = categoryRepository.findById(categoryId);
             if (!categoryEntityOptional.isPresent()) {
                 throw new NotFoundException("This Category Already Deleted or not exist !");
             }
