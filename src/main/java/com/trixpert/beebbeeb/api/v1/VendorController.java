@@ -37,6 +37,7 @@ public class VendorController {
     @ApiOperation("Register Vendor With Email & Password")
     @ResponseBody
     public ResponseEntity<ResponseWrapper<Boolean>> registerVendor(
+<<<<<<< HEAD
             @RequestParam(name = "file") MultipartFile logoFile,
             @RequestParam(name = "body") String regRequest,
             HttpServletRequest request) throws IOException {
@@ -45,6 +46,15 @@ public class VendorController {
         ObjectMapper objectMapper = new ObjectMapper();
         VendorRegistrationRequest vendorRegistrationRequest = objectMapper.readValue(regRequest,VendorRegistrationRequest.class);
         return ResponseEntity.ok(vendorService.registerVendor(vendorRegistrationRequest, logoFile , authorizationHeader));
+=======
+            @Valid @RequestBody VendorRegistrationRequest vendorRegistrationRequest
+            , HttpServletRequest request) {
+
+        String authorizationHeader = request.getHeader("Authorization");
+
+        return ResponseEntity.ok(vendorService.registerVendor(
+                vendorRegistrationRequest, authorizationHeader));
+>>>>>>> 8b9d94299751689a0377348e402e050668f806d7
     }
 
 
@@ -56,27 +66,36 @@ public class VendorController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping("/update")
+    @PutMapping("/update/{vendorId}")
     @ApiOperation("Updating an existing vendor with new data")
     public ResponseEntity<ResponseWrapper<Boolean>> updateVendor(
-            @Valid @RequestBody VendorDTO vendorDTO ,
+            @Valid @RequestBody VendorRegistrationRequest vendorRegistrationRequest,
+            @PathVariable("vendorId") long vendorId ,
             HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(vendorService.updateVendor(vendorDTO , authorizationHeader));
+        return ResponseEntity.ok(vendorService.updateVendor(vendorRegistrationRequest
+                , vendorId, authorizationHeader));
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{vendorId}")
     @ApiOperation("Deleting a vendor with vendor Id")
     public ResponseEntity<ResponseWrapper<Boolean>> deleteVendor(
-            @PathVariable("vendorId") Long vendorId ,
+            @PathVariable("vendorId") Long vendorId,
             HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(vendorService.deleteVendor(vendorId , authorizationHeader));
-    
+        return ResponseEntity.ok(vendorService.deleteVendor(vendorId, authorizationHeader));
+
+    }
+
+    @GetMapping("/get/{vendorId}")
+    @ApiOperation("Get vendor by Id")
+    public ResponseEntity<ResponseWrapper<VendorDTO>> getVendor(
+            @PathVariable("vendorId") long vendorId) {
+        return ResponseEntity.ok(vendorService.getVendor(vendorId));
     }
 }

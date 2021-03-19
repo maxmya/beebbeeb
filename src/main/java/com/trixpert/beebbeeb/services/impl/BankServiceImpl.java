@@ -17,6 +17,7 @@ import com.trixpert.beebbeeb.data.to.BankDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -112,25 +113,21 @@ public class BankServiceImpl implements BankService {
         }
     }
 
+    @Transactional
     @Override
-    public ResponseWrapper<Boolean> updateBank(MultipartFile logoFile, BankDTO bankDTO, String authHeader) {
+    public ResponseWrapper<Boolean> updateBank(
+            MultipartFile logoFile, BankRegistrationRequest bankRegistrationRequest , long bankId ,
+            String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
-            Optional<BankEntity> optionalBankRecord = bankRepository.findById(bankDTO.getId());
+            Optional<BankEntity> optionalBankRecord = bankRepository.findById(bankId);
             if (!optionalBankRecord.isPresent()) {
                 throw new NotFoundException("Bank entity not found");
             }
             BankEntity bankEntityRecord = optionalBankRecord.get();
-            if (bankDTO.getName() != null) {
-                bankEntityRecord.setName(bankDTO.getName());
-            }
-            if (bankDTO.getUser() != null) {
-                Optional<UserEntity> optionalUserRecord = userRepository.findById(bankDTO.getUser().getId());
-                if (!optionalUserRecord.isPresent()) {
-                    throw new NotFoundException(" User Entity not found");
-                }
-                userService.updateUser(bankDTO.getUser());
+            if (bankRegistrationRequest.getName() != null) {
+                bankEntityRecord.setName(bankRegistrationRequest.getName());
             }
             if (logoFile != null) {
                 String logoUrlRecord = cloudStorageService.uploadFile(logoFile);
@@ -154,6 +151,7 @@ public class BankServiceImpl implements BankService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteBank(Long bankId, String authHeader) {
         try {
@@ -195,4 +193,19 @@ public class BankServiceImpl implements BankService {
             return reporterService.reportError(e);
         }
     }
+
+    @Override
+    public ResponseWrapper<BankDTO> getBank(long bankId) {
+        try {
+            Optional<BankEntity> optionalBankEntity = bankRepository.findById(bankId);
+            if (!optionalBankEntity.isPresent()) {
+                throw new NotFoundException("This bank doesn't exist");
+            }
+            BankEntity bankEntityRecord = optionalBankEntity.get();
+            return reporterService.reportSuccess(bankMapper.convertToDTO(bankEntityRecord));
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
 }

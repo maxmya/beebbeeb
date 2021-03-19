@@ -14,6 +14,7 @@ import com.trixpert.beebbeeb.data.repositories.UserRolesRepository;
 import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.RegistrationRequest;
+import com.trixpert.beebbeeb.data.response.CustomerResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
 import com.trixpert.beebbeeb.data.to.CustomerDTO;
@@ -21,7 +22,11 @@ import com.trixpert.beebbeeb.data.to.UserDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
 import org.springframework.stereotype.Service;
+<<<<<<< HEAD
 import org.springframework.web.multipart.MultipartFile;
+=======
+import org.springframework.transaction.annotation.Transactional;
+>>>>>>> 8b9d94299751689a0377348e402e050668f806d7
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -95,6 +100,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteCustomer(long customerId, String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
@@ -122,7 +128,7 @@ public class CustomerServiceImpl implements CustomerService {
             return reporterService.reportError(e);
         }
     }
-
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> updateCustomer(CustomerRegistrationRequest customerRegistrationRequest ,
                                                    long customerId, String authHeader) {
@@ -137,18 +143,22 @@ public class CustomerServiceImpl implements CustomerService {
             }
             CustomerEntity customerEntityRecord = optionalCustomerEntity.get();
 
-            if (customerRegistrationRequest.getIncome() != -1 && customerRegistrationRequest.getIncome() != customerEntityRecord.getIncome()) {
+            if (customerRegistrationRequest.getIncome() != -1 &&
+                    customerRegistrationRequest.getIncome() != customerEntityRecord.getIncome()) {
                 customerEntityRecord.setIncome(customerRegistrationRequest.getIncome());
             }
-            if (customerRegistrationRequest.getJobAddress() != null && customerRegistrationRequest.getJobAddress()
+            if (customerRegistrationRequest.getJobAddress() != null &&
+                    customerRegistrationRequest.getJobAddress()
                     .equals(customerEntityRecord.getJobAddress())) {
                 customerEntityRecord.setJobAddress(customerRegistrationRequest.getJobAddress());
             }
-            if (customerRegistrationRequest.getJobTitle() != null && customerRegistrationRequest.getJobTitle().equals(
+            if (customerRegistrationRequest.getJobTitle() != null &&
+                    customerRegistrationRequest.getJobTitle().equals(
                     customerEntityRecord.getJobTitle())) {
                 customerEntityRecord.setJobTitle(customerRegistrationRequest.getJobTitle());
             }
-            if (customerRegistrationRequest.getPreferredBank() != null && customerRegistrationRequest.getPreferredBank().equals(
+            if (customerRegistrationRequest.getPreferredBank() != null &&
+                    customerRegistrationRequest.getPreferredBank().equals(
                     customerEntityRecord.getPreferredBank())) {
                 customerEntityRecord.setPreferredBank(customerRegistrationRequest.getPreferredBank());
             }
@@ -178,11 +188,23 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseWrapper<List<CustomerDTO>> getAllCustomers(boolean active) {
+    public ResponseWrapper<List<CustomerResponse>> getAllCustomers(boolean active) {
         try {
-            List<CustomerDTO> customerList = new ArrayList<>();
-            customerRepository.findAllByActive(active).forEach(customer ->
-                    customerList.add(customerMapper.convertToDTO(customer)));
+            List<CustomerResponse> customerList = new ArrayList<>();
+            customerRepository.findAllByActive(active).forEach(customer ->{
+                CustomerResponse customerResponse = CustomerResponse.builder()
+                        .id(customer.getId())
+                        .name(customer.getUser().getName())
+                        .email(customer.getUser().getEmail())
+                        .phone(customer.getUser().getPhone())
+                        .active(customer.isActive())
+                        .preferredBank(customer.getPreferredBank())
+                        .jobTitle(customer.getJobTitle())
+                        .jobAddress(customer.getJobAddress())
+                        .income(customer.getIncome())
+                        .build();
+                    customerList.add(customerResponse);
+            });
             return reporterService.reportSuccess(customerList);
         } catch (Exception e) {
             return reporterService.reportError(e);
@@ -191,7 +213,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseWrapper<CustomerDTO> getCustomer(long customerId) {
+    public ResponseWrapper<CustomerResponse> getCustomer(long customerId) {
         try {
             Optional<CustomerEntity> optionalCustomerEntity = customerRepository.findById(customerId);
 
@@ -199,7 +221,18 @@ public class CustomerServiceImpl implements CustomerService {
                 throw new NotFoundException("customer Not Found");
             }
             CustomerEntity customerEntityRecord = optionalCustomerEntity.get();
-            return reporterService.reportSuccess(customerMapper.convertToDTO(customerEntityRecord));
+            CustomerResponse customerResponse = CustomerResponse.builder()
+                    .id(customerEntityRecord.getId())
+                    .name(customerEntityRecord.getUser().getName())
+                    .email(customerEntityRecord.getUser().getEmail())
+                    .phone(customerEntityRecord.getUser().getPhone())
+                    .active(customerEntityRecord.isActive())
+                    .preferredBank(customerEntityRecord.getPreferredBank())
+                    .jobTitle(customerEntityRecord.getJobTitle())
+                    .jobAddress(customerEntityRecord.getJobAddress())
+                    .income(customerEntityRecord.getIncome())
+                    .build();
+            return reporterService.reportSuccess(customerResponse);
         } catch (Exception e) {
             return reporterService.reportError(e);
         }

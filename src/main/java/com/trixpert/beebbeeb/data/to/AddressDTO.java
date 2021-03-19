@@ -15,4 +15,6 @@ public class AddressDTO {
     private String fullAddress;
     private double longitude;
     private double latitude;
+    private boolean active;
+
 }

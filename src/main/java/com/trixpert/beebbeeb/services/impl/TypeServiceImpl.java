@@ -11,6 +11,7 @@ import com.trixpert.beebbeeb.data.to.TypeDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -78,6 +79,7 @@ public class TypeServiceImpl implements TypeService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteType(long typeId, String authHeader) {
 
@@ -109,20 +111,22 @@ public class TypeServiceImpl implements TypeService {
         }
     }
 
-
+    @Transactional
     @Override
-    public ResponseWrapper<Boolean> updateType(TypeDTO typeDTO, String authHeader) {
+    public ResponseWrapper<Boolean> updateType(TypeRegistrationRequest typeRegistrationRequest ,
+            long typeId ,  String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
-            Optional<TypeEntity> optionalTypeEntity = typeRepository.findById(typeDTO.getId());
+            Optional<TypeEntity> optionalTypeEntity = typeRepository.findById(typeId);
 
             if (!optionalTypeEntity.isPresent())
                 throw new NotFoundException("This type doesn't exist");
 
             TypeEntity typeEntityRecord = optionalTypeEntity.get();
-            if (typeDTO.getName() != null && !typeDTO.getName().equals(typeEntityRecord.getName()))
-                typeEntityRecord.setName(typeDTO.getName());
+            if (typeRegistrationRequest.getName() != null &&
+                    !typeRegistrationRequest.getName().equals(typeEntityRecord.getName()))
+                typeEntityRecord.setName(typeRegistrationRequest.getName());
 
             typeRepository.save(typeEntityRecord);
 
@@ -153,6 +157,21 @@ public class TypeServiceImpl implements TypeService {
 
             return reporterService.reportSuccess(typeList);
         } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<TypeDTO> getType(long typeId) {
+        try{
+            Optional<TypeEntity> optionalTypeEntity = typeRepository.findById(typeId);
+            if(!optionalTypeEntity.isPresent()){
+                throw new NotFoundException("This Type doesn't exist ");
+            }
+            TypeEntity typeEntityRecord = optionalTypeEntity.get();
+            return reporterService.reportSuccess(typeMapper.convertToDTO(typeEntityRecord));
+
+        }catch (Exception e){
             return reporterService.reportError(e);
         }
     }

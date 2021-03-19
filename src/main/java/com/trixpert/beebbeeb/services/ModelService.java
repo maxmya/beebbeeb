@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface ModelService {
 
-    ResponseWrapper<Boolean> registerModel(MultipartFile[] multipartFiles,
+    ResponseWrapper<Boolean> registerModel(MultipartFile img,
                                            ModelRegisterRequest modelRegisterRequest,
                                            String authHeader) throws IOException;
 
@@ -26,5 +26,7 @@ public interface ModelService {
     ResponseWrapper<List<ModelDTO>> listModelsForBrand(boolean active, long brandId);
 
     ResponseWrapper<List<CarDTO>> listCarsForModel(boolean active, long modelId);
+
+    ResponseWrapper<ModelDTO> getModel(long modelId);
 
 }

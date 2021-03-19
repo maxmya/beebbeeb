@@ -2,6 +2,7 @@ package com.trixpert.beebbeeb.services.impl;
 
 import com.trixpert.beebbeeb.data.constants.AuditActions;
 import com.trixpert.beebbeeb.data.entites.BrandEntity;
+import com.trixpert.beebbeeb.data.entites.EmployeeEntity;
 import com.trixpert.beebbeeb.data.entites.ModelEntity;
 import com.trixpert.beebbeeb.data.entites.PhotoEntity;
 import com.trixpert.beebbeeb.data.mappers.BrandMapper;
@@ -17,12 +18,15 @@ import com.trixpert.beebbeeb.data.to.CarDTO;
 import com.trixpert.beebbeeb.data.to.ModelDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
+import org.checkerframework.checker.nullness.Opt;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,14 +72,12 @@ public class ModelServiceImpl implements ModelService {
 
 
     @Override
-    public ResponseWrapper<Boolean> registerModel(MultipartFile[] files,
+    public ResponseWrapper<Boolean> registerModel(MultipartFile img,
                                                   ModelRegisterRequest modelRegisterRequest,
                                                   String authHeader) throws IOException {
 
 
-        List<PhotoEntity> modelPhotos = new ArrayList<>();
-
-        String mainImage = cloudStorageService.uploadFile(files[0]);
+        String mainImage = cloudStorageService.uploadFile(img);
 
         PhotoEntity mainImagePhotoEntity = photoRepository
                 .save(PhotoEntity.builder()
@@ -83,29 +85,6 @@ public class ModelServiceImpl implements ModelService {
                         .caption(modelRegisterRequest.getName())
                         .mainPhoto(true)
                         .build());
-        modelPhotos.add(mainImagePhotoEntity);
-
-        for (int i = 1; i < modelRegisterRequest.getSizeOfInteriors() - 1; i++) {
-            String interiorImagePath = cloudStorageService.uploadFile(files[i]);
-            PhotoEntity interiorImage = photoRepository
-                    .save(PhotoEntity.builder()
-                            .photoUrl(interiorImagePath)
-                            .interior(true)
-                            .caption(modelRegisterRequest.getName())
-                            .build());
-            modelPhotos.add(interiorImage);
-        }
-
-
-        for (int i = modelRegisterRequest.getSizeOfInteriors() - 1; i < files.length; i++) {
-            String exteriorImagePath = cloudStorageService.uploadFile(files[i]);
-            PhotoEntity exteriorImage = photoRepository
-                    .save(PhotoEntity.builder()
-                            .photoUrl(exteriorImagePath)
-                            .caption(modelRegisterRequest.getName())
-                            .build());
-            modelPhotos.add(exteriorImage);
-        }
 
 
         String username = auditService.getUsernameForAudit(authHeader);
@@ -120,7 +99,7 @@ public class ModelServiceImpl implements ModelService {
                     .name(modelRegisterRequest.getName())
                     .year(modelRegisterRequest.getYear())
                     .active(true)
-                    .photos(modelPhotos)
+                    .photos(Collections.singletonList(mainImagePhotoEntity))
                     .brand(optionalBrandEntity.get())
                     .build();
             modelRepository.save(modelEntityRecord);
@@ -143,6 +122,7 @@ public class ModelServiceImpl implements ModelService {
 
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> updateModel(ModelDTO modelDTO, String authHeader) {
 
@@ -185,7 +165,7 @@ public class ModelServiceImpl implements ModelService {
         }
 
     }
-
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteModel(Long modelId, String authHeader) {
 
@@ -267,6 +247,20 @@ public class ModelServiceImpl implements ModelService {
                     carList.add(carMapper.convertToDTO(car))
             );
             return reporterService.reportSuccess(carList);
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<ModelDTO> getModel(long modelId) {
+        try {
+            Optional<ModelEntity> optionalModelEntity = modelRepository.findById(modelId);
+            if (!optionalModelEntity.isPresent()) {
+                throw new Exception("this Model does not exist");
+            }
+            ModelEntity modelEntity = optionalModelEntity.get();
+            return reporterService.reportSuccess(modelMapper.convertToDTO(modelEntity));
         } catch (Exception e) {
             return reporterService.reportError(e);
         }

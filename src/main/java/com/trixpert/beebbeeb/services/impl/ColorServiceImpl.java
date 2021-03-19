@@ -1,6 +1,7 @@
 package com.trixpert.beebbeeb.services.impl;
 
 import com.trixpert.beebbeeb.data.constants.AuditActions;
+import com.trixpert.beebbeeb.data.entites.CarEntity;
 import com.trixpert.beebbeeb.data.entites.ColorEntity;
 import com.trixpert.beebbeeb.data.entites.ParentColorEntity;
 import com.trixpert.beebbeeb.data.mappers.CarMapper;
@@ -18,6 +19,8 @@ import com.trixpert.beebbeeb.services.ColorService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import com.trixpert.beebbeeb.services.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,8 +58,7 @@ public class ColorServiceImpl implements ColorService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> registerColor(ColorRegistrationRequest colorRegistrationRequest
-                          ,  String authHeader) {
+    public ResponseWrapper<Boolean> registerColor(ColorRegistrationRequest colorRegistrationRequest,  String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
@@ -121,6 +123,7 @@ public class ColorServiceImpl implements ColorService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> updateColor(ColorRegistrationRequest colorRegistrationRequest,
                                                 long colorId, String authHeader) {
@@ -194,6 +197,21 @@ public class ColorServiceImpl implements ColorService {
                 listCars.add(carMapper.convertToDTO(car))
             );
             return reporterService.reportSuccess(listCars);
+        }
+        catch (Exception e){
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<ColorDTO> getColor(long colorId) {
+        try{
+            Optional<ColorEntity> optionalColorEntity = colorRepository.findById(colorId);
+            if(!optionalColorEntity.isPresent()){
+                throw new NotFoundException("This Color doesn't exist");
+            }
+            ColorEntity colorEntityRecord = optionalColorEntity.get();
+            return reporterService.reportSuccess(colorMapper.convertToDTO(colorEntityRecord));
         }
         catch (Exception e){
             return reporterService.reportError(e);

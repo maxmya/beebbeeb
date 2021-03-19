@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.EmployeeRegistrationRequest;
+import com.trixpert.beebbeeb.data.response.CustomerResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.CustomerDTO;
 import com.trixpert.beebbeeb.services.CustomerService;
@@ -35,13 +36,13 @@ public class CustomerController {
 
     @GetMapping("/list/active")
     @ApiOperation("Get Active Customer List")
-    public ResponseEntity<ResponseWrapper<List<CustomerDTO>>> getActiveCustomers() {
+    public ResponseEntity<ResponseWrapper<List<CustomerResponse>>> getActiveCustomers() {
         return ResponseEntity.ok(customerService.getAllCustomers(true));
     }
 
     @GetMapping("/list/inactive")
     @ApiOperation("Get InActive Customer List")
-    public ResponseEntity<ResponseWrapper<List<CustomerDTO>>> getInActiveCustomers() {
+    public ResponseEntity<ResponseWrapper<List<CustomerResponse>>> getInActiveCustomers() {
         return ResponseEntity.ok(customerService.getAllCustomers(false));
     }
 
@@ -49,7 +50,6 @@ public class CustomerController {
     @ApiOperation("Update an existing customer")
     public ResponseEntity<ResponseWrapper<Boolean>> updateCustomer(
             @Valid @RequestBody CustomerRegistrationRequest customerRegistrationRequest,
-
             @PathVariable long customerId, HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
@@ -62,6 +62,7 @@ public class CustomerController {
     @ApiOperation("Add New Customer")
     @ResponseBody
     public ResponseEntity<ResponseWrapper<Boolean>> mobileRegisterCustomer(
+<<<<<<< HEAD
             @RequestParam(name = "file") MultipartFile photoFile,
             @RequestParam(name = "body") String regRequest ,
             HttpServletRequest request) throws IOException {
@@ -69,6 +70,10 @@ public class CustomerController {
           ObjectMapper objectMapper = new ObjectMapper();
           CustomerMobileRegistrationRequest customerRegistrationRequest = objectMapper.readValue(regRequest , CustomerMobileRegistrationRequest.class);
           return ResponseEntity.ok(customerService.registerCustomer(customerRegistrationRequest , photoFile));
+=======
+            @Valid @RequestBody CustomerMobileRegistrationRequest customerRegisterRequest) {
+        return ResponseEntity.ok(customerService.registerCustomer(customerRegisterRequest));
+>>>>>>> 8b9d94299751689a0377348e402e050668f806d7
     }
 
 
@@ -84,7 +89,7 @@ public class CustomerController {
 
     @GetMapping("/get/{customerId}")
     @ApiOperation("Get Customer By ID")
-    public ResponseEntity<ResponseWrapper<CustomerDTO>> getCustomer(
+    public ResponseEntity<ResponseWrapper<CustomerResponse>> getCustomer(
             @PathVariable("customerId") long customerId) {
 
         return ResponseEntity.ok(customerService.getCustomer(customerId));

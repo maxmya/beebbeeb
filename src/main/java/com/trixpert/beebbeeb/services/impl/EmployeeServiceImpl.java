@@ -20,6 +20,7 @@ import com.trixpert.beebbeeb.data.to.UserDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -127,7 +128,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return reporterService.reportError(e);
         }
     }
-
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> updateEmployeeForBranch(EmployeeRegistrationRequest employeeRegistrationRequest,
                                                             long employeeId,
@@ -179,6 +180,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     }
 
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteEmployeeForBranch(Long employeeId, String authHeader) {
         try {
@@ -203,6 +205,21 @@ public class EmployeeServiceImpl implements EmployeeService {
             auditService.logAudit(auditDTO);
 
             return reporterService.reportSuccess("Employee soft deleted(deActivated) successfully");
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<EmployeeDTO> getEmployee(long employeeId) {
+        try {
+            Optional<EmployeeEntity> optionalEmployeeEntity = employeeRepository.findById(employeeId);
+            if (!optionalEmployeeEntity.isPresent()) {
+                throw new Exception("this employee does not exist");
+            }
+            EmployeeEntity employeeEntity = optionalEmployeeEntity.get();
+            return reporterService.reportSuccess(employeeMapper.convertToDTO(employeeEntity));
+
         } catch (Exception e) {
             return reporterService.reportError(e);
         }

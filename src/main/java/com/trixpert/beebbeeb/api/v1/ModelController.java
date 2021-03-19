@@ -1,17 +1,17 @@
 package com.trixpert.beebbeeb.api.v1;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trixpert.beebbeeb.data.request.ModelRegisterRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
-import com.trixpert.beebbeeb.data.to.BrandDTO;
 import com.trixpert.beebbeeb.data.to.CarDTO;
 import com.trixpert.beebbeeb.data.to.ModelDTO;
 import com.trixpert.beebbeeb.services.ModelService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,12 +38,13 @@ public class ModelController {
     @PostMapping(value = "/register", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation("Register New Model")
     public ResponseEntity<ResponseWrapper<Boolean>> registerModel(
-            @RequestParam("file") MultipartFile[] images,
-            @RequestParam("body") String modelRegisterRequest
+            @RequestParam("file") MultipartFile images,
+            @Valid @RequestParam("body") String modelRegisterRequest
             , HttpServletRequest request) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
-        ModelRegisterRequest registerRequest = objectMapper.readValue(modelRegisterRequest, ModelRegisterRequest.class);
+        ModelRegisterRequest registerRequest = objectMapper.readValue(
+                modelRegisterRequest, ModelRegisterRequest.class);
         String authorizationHeader = request.getHeader("Authorization");
 
         return ResponseEntity.ok(modelService.registerModel(images, registerRequest, authorizationHeader));
@@ -52,7 +53,8 @@ public class ModelController {
 
     @PutMapping("/update")
     @ApiOperation("Update Model")
-    public ResponseEntity<ResponseWrapper<Boolean>> updateModel(@Valid @RequestBody ModelDTO modelDTO
+    public ResponseEntity<ResponseWrapper<Boolean>> updateModel(
+            @Valid @RequestBody ModelDTO modelDTO
             , HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
@@ -100,13 +102,21 @@ public class ModelController {
 
     @GetMapping("/cars/list/active/{modelId}")
     @ApiOperation("Get list of active cars for specific model")
-    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getActiveCarsForModel(@PathVariable("modelId") long modelId) {
+    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getActiveCarsForModel(
+            @PathVariable("modelId") long modelId) {
         return ResponseEntity.ok(modelService.listCarsForModel(true, modelId));
     }
 
     @GetMapping("/cars/list/inactive/{modelId}")
     @ApiOperation("Get list of inactive cars for specific model")
-    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getInactiveCarsForModel(@PathVariable("modelId") long modelId) {
+    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getInactiveCarsForModel(
+            @PathVariable("modelId") long modelId) {
         return ResponseEntity.ok(modelService.listCarsForModel(false, modelId));
     }
+    @GetMapping("/Get/{modelId}")
+    @ApiOperation("Get model by Id")
+    public ResponseEntity<ResponseWrapper<ModelDTO>> getModel(@PathVariable("modelId")long modelId){
+        return ResponseEntity.ok(modelService.getModel(modelId));
+    }
 }
+

@@ -18,6 +18,7 @@ import com.trixpert.beebbeeb.services.CategoryService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import com.trixpert.beebbeeb.services.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -87,7 +88,7 @@ public class CategoryServiceImpl implements CategoryService {
             return reporterService.reportError(e);
         }
     }
-
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> deleteCategory(long categoryId , String authHeader) {
 
@@ -118,7 +119,7 @@ public class CategoryServiceImpl implements CategoryService {
             return reporterService.reportError(e);
         }
     }
-
+    @Transactional
     @Override
     public ResponseWrapper<Boolean> updateCategory(CategoryRegistrationRequest categoryRegistrationRequest,
                                                    long categoryId , String authHeader) {
@@ -186,6 +187,21 @@ public class CategoryServiceImpl implements CategoryService {
             return reporterService.reportSuccess(listCars);
         }
         catch(Exception e){
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<CategoryDTO> getCategory(long categoryId) {
+        try{
+            Optional<CategoryEntity> optionalCategoryEntity = categoryRepository.findById(categoryId);
+            if(!optionalCategoryEntity.isPresent()){
+                throw new NotFoundException("Category entity not found");
+            }
+            CategoryEntity categoryEntityRecord = optionalCategoryEntity.get();
+
+            return reporterService.reportSuccess(categoryMapper.convertToDTO(categoryEntityRecord));
+        }catch (Exception e){
             return reporterService.reportError(e);
         }
     }

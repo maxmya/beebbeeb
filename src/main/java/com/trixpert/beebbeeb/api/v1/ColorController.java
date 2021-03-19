@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 
 @Api(tags = {"Color API"})
@@ -40,31 +41,34 @@ public class ColorController {
 
     @PutMapping("/update/{colorId}")
     @ApiOperation("Update an existing color with new data")
-    public ResponseEntity<ResponseWrapper<Boolean>> updateColor(@RequestPart(name = "body") ColorRegistrationRequest colorRegistrationRequest,
-                                @PathVariable("colorId") long colorId, HttpServletRequest request) {
+    public ResponseEntity<ResponseWrapper<Boolean>> updateColor(
+            @RequestBody ColorRegistrationRequest colorRegistrationRequest,
+            @PathVariable("colorId") long colorId, HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(colorService.updateColor(colorRegistrationRequest, colorId,authorizationHeader));
+        return ResponseEntity.ok(colorService.updateColor(colorRegistrationRequest,
+                colorId,authorizationHeader));
     }
 
     @PostMapping("/add")
     @ApiOperation("Add New  Color")
-    public ResponseEntity<ResponseWrapper<Boolean>> addColor(@RequestBody ColorRegistrationRequest ColorRegistrationRequest,
-                                                             HttpServletRequest request) {
+    public ResponseEntity<ResponseWrapper<Boolean>> addColor(
+            @Valid @RequestBody ColorRegistrationRequest ColorRegistrationRequest,
+            HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
         return ResponseEntity.ok(colorService.registerColor(ColorRegistrationRequest, authorizationHeader));
     }
 
-    @PutMapping("/delete/{ColorID}")
-    @ApiOperation("Remove  Color By ID")
-    public ResponseEntity<ResponseWrapper<Boolean>> deleteColor(@PathVariable("ColorID") Long colorID,
+    @PutMapping("/delete/{colorId}")
+    @ApiOperation("Remove  Color By Id")
+    public ResponseEntity<ResponseWrapper<Boolean>> deleteColor(@PathVariable("colorId") Long colorId,
                                                                 HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(colorService.deleteColor(colorID, authorizationHeader));
+        return ResponseEntity.ok(colorService.deleteColor(colorId, authorizationHeader));
     }
 
     @GetMapping("/cars/list/active/{colorId}")
@@ -79,5 +83,13 @@ public class ColorController {
     public ResponseEntity<ResponseWrapper<List<CarDTO>>> listInactiveCarsForColor(
             @PathVariable("colorId") long colorId) {
         return ResponseEntity.ok(colorService.listCarsForColor(false, colorId));
+    }
+
+    @PutMapping("/Get/{colorId}")
+    @ApiOperation("Get  Color By Id")
+    public ResponseEntity<ResponseWrapper<ColorDTO>> getColor(
+            @PathVariable("colorId") Long colorId) {
+
+        return ResponseEntity.ok(colorService.getColor(colorId));
     }
 }
