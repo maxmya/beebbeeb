@@ -12,6 +12,7 @@ import com.trixpert.beebbeeb.data.repositories.BrandRepository;
 import com.trixpert.beebbeeb.data.repositories.ModelRepository;
 import com.trixpert.beebbeeb.data.repositories.PhotoRepository;
 import com.trixpert.beebbeeb.data.request.ModelRegisterRequest;
+import com.trixpert.beebbeeb.data.response.FileUploadResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
 import com.trixpert.beebbeeb.data.to.CarDTO;
@@ -124,17 +125,17 @@ public class ModelServiceImpl implements ModelService {
 
     @Transactional
     @Override
-    public ResponseWrapper<Boolean> uploadInterior(long modelId, MultipartFile file) {
+    public ResponseWrapper<FileUploadResponse> uploadInterior(long modelId, MultipartFile file) {
         try {
-            boolean success = uploadImage(true, modelId, file);
-            if (!success) return reporterService.reportError(new IllegalArgumentException(""));
-            return reporterService.reportSuccess();
+            String photoURl = uploadImage(true, modelId, file);
+            if ("error".equals(photoURl)) return reporterService.reportError(new IllegalArgumentException(""));
+            return reporterService.reportSuccess(new FileUploadResponse(photoURl));
         } catch (Exception e) {
             return reporterService.reportError(e);
         }
     }
 
-    private boolean uploadImage(boolean interior, long modelId, MultipartFile file) {
+    private String uploadImage(boolean interior, long modelId, MultipartFile file) {
         try {
             Optional<ModelEntity> modelOptional = modelRepository.findById(modelId);
 
@@ -157,19 +158,19 @@ public class ModelServiceImpl implements ModelService {
             modelPhotos.add(interiorPhoto);
             model.setPhotos(modelPhotos);
             modelRepository.save(model);
-            return true;
+            return mainImage;
         } catch (Exception e) {
-            return false;
+            return "error";
         }
     }
 
     @Transactional
     @Override
-    public ResponseWrapper<Boolean> uploadExterior(long modelId, MultipartFile file) {
+    public ResponseWrapper<FileUploadResponse> uploadExterior(long modelId, MultipartFile file) {
         try {
-            boolean success = uploadImage(false, modelId, file);
-            if (!success) return reporterService.reportError(new IllegalArgumentException(""));
-            return reporterService.reportSuccess();
+            String photoURl = uploadImage(false, modelId, file);
+            if ("error".equals(photoURl)) return reporterService.reportError(new IllegalArgumentException(""));
+            return reporterService.reportSuccess(new FileUploadResponse(photoURl));
         } catch (Exception e) {
             return reporterService.reportError(e);
         }
