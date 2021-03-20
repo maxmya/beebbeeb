@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -14,7 +15,7 @@ import java.sql.Date;
 public class CarDTO {
     private long id;
     private String condition;
-    private Date additionDate;
+    private LocalDateTime additionDate;
     private ModelDTO model;
     private CategoryDTO category;
     private ColorDTO color;
