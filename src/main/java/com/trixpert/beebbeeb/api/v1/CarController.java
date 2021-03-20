@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -27,32 +28,35 @@ public class CarController {
     @PostMapping("/add")
     @ApiOperation("Adding a new car")
     public ResponseEntity<ResponseWrapper<Boolean>> registerCar(
-            @Valid @RequestBody CarRegistrationRequest carRegistrationRequest){
-        return ResponseEntity.ok(carService.registerCar(carRegistrationRequest));
+            @Valid @RequestBody CarRegistrationRequest carRegistrationRequest,
+            HttpServletRequest request
+    ) {
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(carService.registerCar(carRegistrationRequest, authorizationHeader));
     }
 
 
     @PutMapping("/delete/{carId}")
     @ApiOperation("Delete a car")
-    public ResponseEntity<ResponseWrapper<Boolean>> deleteCar(@PathVariable("carId") long carId){
+    public ResponseEntity<ResponseWrapper<Boolean>> deleteCar(@PathVariable("carId") long carId) {
         return ResponseEntity.ok(carService.deleteCar(carId));
     }
 
     @GetMapping("/list/active")
     @ApiOperation("Get list of active cars")
-    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getAllActiveCars(){
+    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getAllActiveCars() {
         return ResponseEntity.ok(carService.getAllCars(true));
     }
 
     @GetMapping("/list/inactive")
     @ApiOperation("Get list of inactive cars")
-    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getAllInactiveCars(){
+    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getAllInactiveCars() {
         return ResponseEntity.ok(carService.getAllCars(false));
     }
 
     @GetMapping("/get/{carId}")
     @ApiOperation("Get car by id ")
-    public ResponseEntity<ResponseWrapper<CarDTO>> getCar(@PathVariable("carId") long carId){
+    public ResponseEntity<ResponseWrapper<CarDTO>> getCar(@PathVariable("carId") long carId) {
         return ResponseEntity.ok(carService.getCar(carId));
     }
 }

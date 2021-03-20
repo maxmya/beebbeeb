@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "brand", schema = "public")
@@ -29,5 +30,9 @@ public class BrandEntity {
     private String description;
 
     private boolean active;
+
+    @OneToMany(mappedBy = "brand")
+    private List<CarEntity> cars;
+
 
 }

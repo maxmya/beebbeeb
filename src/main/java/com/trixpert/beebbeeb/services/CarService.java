@@ -8,12 +8,12 @@ import java.util.List;
 
 public interface CarService {
 
-    ResponseWrapper<Boolean> registerCar(CarRegistrationRequest carRegistrationRequest);
+    ResponseWrapper<Boolean> registerCar(CarRegistrationRequest carRegistrationRequest, String authHeader);
 
     ResponseWrapper<Boolean> deleteCar(long carId);
 
     ResponseWrapper<List<CarDTO>> getAllCars(boolean active);
 
     ResponseWrapper<CarDTO> getCar(long carId);
-    
+
 }

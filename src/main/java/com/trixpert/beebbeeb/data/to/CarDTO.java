@@ -18,5 +18,6 @@ public class CarDTO {
     private ModelDTO model;
     private CategoryDTO category;
     private ColorDTO color;
+    private UserDTO creator;
     private boolean active;
 }

@@ -7,6 +7,7 @@ import com.trixpert.beebbeeb.data.request.CarRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.CarDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
+import com.trixpert.beebbeeb.services.AuditService;
 import com.trixpert.beebbeeb.services.CarService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import org.springframework.stereotype.Service;
@@ -26,10 +27,12 @@ public class CarServiceImpl implements CarService {
     private final ColorRepository colorRepository;
     private final ParentColorRepository parentColorRepository;
     private final TypeRepository typeRepository;
+    private final UserRepository userRepository;
 
     private final CarMapper carMapper;
 
     private final ReporterService reporterService;
+    private final AuditService auditService;
 
     public CarServiceImpl(CarRepository carRepository,
                           ModelRepository modelRepository,
@@ -37,8 +40,8 @@ public class CarServiceImpl implements CarService {
                           ColorRepository colorRepository,
                           ParentColorRepository parentColorRepository,
                           TypeRepository typeRepository,
-                          CarMapper carMapper,
-                          ReporterService reporterService) {
+                          UserRepository userRepository, CarMapper carMapper,
+                          ReporterService reporterService, AuditService auditService) {
 
         this.carRepository = carRepository;
         this.modelRepository = modelRepository;
@@ -46,14 +49,24 @@ public class CarServiceImpl implements CarService {
         this.colorRepository = colorRepository;
         this.parentColorRepository = parentColorRepository;
         this.typeRepository = typeRepository;
+        this.userRepository = userRepository;
         this.carMapper = carMapper;
         this.reporterService = reporterService;
+        this.auditService = auditService;
     }
 
 
     @Override
-    public ResponseWrapper<Boolean> registerCar(CarRegistrationRequest carRegistrationRequest) {
+    public ResponseWrapper<Boolean> registerCar(CarRegistrationRequest carRegistrationRequest, String authHeader) {
         try {
+
+            String username = auditService.getUsernameForAudit(authHeader);
+
+            Optional<UserEntity> optionalUser = userRepository.findByEmail(username);
+
+            if (!optionalUser.isPresent()) {
+                throw new NotFoundException("user not found !!");
+            }
 
             Optional<ModelEntity> optionalModelEntity = modelRepository.findById(carRegistrationRequest.getModelId());
 
@@ -68,6 +81,7 @@ public class CarServiceImpl implements CarService {
             }
 
             ColorEntity colorEntity = ColorEntity.builder()
+
                     .name(carRegistrationRequest.getColorName())
                     .code(carRegistrationRequest.getColorCode())
                     .build();
@@ -92,6 +106,7 @@ public class CarServiceImpl implements CarService {
             CarEntity carEntityRecord = CarEntity.builder()
                     .additionDate(LocalDateTime.now())
                     .model(modelRecord)
+                    .creator(optionalUser.get())
                     .category(categoryEntity)
                     .color(colorEntity)
                     .active(true)

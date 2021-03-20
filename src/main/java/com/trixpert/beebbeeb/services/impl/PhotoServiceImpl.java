@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @Service
 public class PhotoServiceImpl implements PhotoService {
-    
+
     private final PhotoMapper photoMapper;
     private final PhotoRepository photoRepository;
     private final ReporterService reporterService;
