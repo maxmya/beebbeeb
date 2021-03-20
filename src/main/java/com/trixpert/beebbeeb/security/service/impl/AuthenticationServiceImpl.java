@@ -85,6 +85,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     @Override
+    public ResponseWrapper<Boolean> isUserExisted(String phone) {
+        try {
+            boolean isExisted = userRepository.existsByPhone(phone);
+            return reporterService.reportSuccess(isExisted);
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
     public ResponseWrapper<AuthResponse> loginUserWithPhone(PhoneLoginRequest userLoginRequest) {
         try {
             return reporterService.reportSuccess(

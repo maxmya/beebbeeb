@@ -41,6 +41,12 @@ public class AuthController {
         return ResponseEntity.ok(authService.loginUserWithPhone(phoneLoginRequest));
     }
 
+    @PostMapping("/existed/{phone}")
+    @ApiOperation("Login User With Phone & Password")
+    public ResponseEntity<ResponseWrapper<Boolean>> isUserExisted(@PathVariable("phone") String phone) {
+        return ResponseEntity.ok(authService.isUserExisted(phone));
+    }
+
     @GetMapping("/validate")
     @ApiOperation("Validate User Token")
     public ResponseEntity<?> validateToken(HttpServletRequest request) {
