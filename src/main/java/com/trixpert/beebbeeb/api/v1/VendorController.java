@@ -37,14 +37,10 @@ public class VendorController {
     @ApiOperation("Register Vendor With Email & Password")
     @ResponseBody
     public ResponseEntity<ResponseWrapper<Boolean>> registerVendor(
-            @RequestParam(name = "file") MultipartFile logoFile,
-            @RequestParam(name = "body") String regRequest,
-            HttpServletRequest request) throws IOException {
-
+            @Valid @RequestBody VendorRegistrationRequest vendorRegistrationRequest,
+            HttpServletRequest request){
         String authorizationHeader = request.getHeader("Authorization");
-        ObjectMapper objectMapper = new ObjectMapper();
-        VendorRegistrationRequest vendorRegistrationRequest = objectMapper.readValue(regRequest,VendorRegistrationRequest.class);
-        return ResponseEntity.ok(vendorService.registerVendor(vendorRegistrationRequest, logoFile , authorizationHeader));
+        return ResponseEntity.ok(vendorService.registerVendor(vendorRegistrationRequest, authorizationHeader));
     }
 
 
