@@ -20,9 +20,7 @@ public class CarEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String condition;
-
+    
     @Column(name = "addition_date")
     private LocalDateTime additionDate;
 
