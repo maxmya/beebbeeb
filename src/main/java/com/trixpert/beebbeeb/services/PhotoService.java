@@ -8,8 +8,7 @@ import org.springframework.stereotype.Service;
 
 public interface PhotoService {
 
-    ResponseWrapper<Boolean> registerPhoto (PhotoRegistrationRequest photoRegistrationRequest
-            , String authHeader);
+    ResponseWrapper<Boolean> registerPhoto (PhotoRegistrationRequest photoRegistrationRequest, String authHeader);
 
     ResponseWrapper<Boolean> deletePhoto(long photoId, String authHeader);
 

@@ -13,9 +13,6 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @Builder
 public class BannerRegistrationRequest {
-
     private String name;
-
     private boolean main;
-
 }
