@@ -109,6 +109,7 @@ public class VendorServiceImpl implements VendorService {
                     .generalManagerPhone(vendorRegistrationRequest.getGmPhone())
                     .accountManagerName(vendorRegistrationRequest.getAccManagerName())
                     .accountManagerPhone(vendorRegistrationRequest.getAccManagerPhone())
+                    .active(vendorRegistrationRequest.isActive())
                     .build();
 
             vendorRepository.save(vendorEntityRecord);
@@ -132,12 +133,12 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
-    public ResponseWrapper<List<VendorDTO>> getAllVendors() {
+    public ResponseWrapper<List<VendorDTO>> getAllVendors(boolean active) {
         try {
             //Creating ArrayList for store all vendors on it
             List<VendorDTO> allVendors = new ArrayList<>();
             //Looping On All Vendors on database one by one
-            vendorRepository.findAll().forEach(vendor -> {
+            vendorRepository.findAllByActive(active).forEach(vendor -> {
                 UserDTO userDTO = userMapper.convertToDTO(vendor.getManager());
                 // For Every Vendor Create new Object from vendorDTO and Send needed data
                 // From vendorEntity to vendorDTO by passing this data on constructor
