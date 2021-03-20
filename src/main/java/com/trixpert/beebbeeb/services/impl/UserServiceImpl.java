@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
                     .phoneFlag(isPhone)
                     .picUrl(logoUrl)
                     .password(passwordEncoder.encode(registrationRequest.getPassword()))
-                    .active(registrationRequest.isActive())
+                    .active(true)
                     .build();
 
             UserEntity savedEntity = userRepository.save(userEntityRecord);

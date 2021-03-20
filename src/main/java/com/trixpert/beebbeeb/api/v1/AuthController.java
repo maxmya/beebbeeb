@@ -37,8 +37,7 @@ public class AuthController {
 
     @PostMapping("/login/phone")
     @ApiOperation("Login User With Phone & Password")
-    public ResponseEntity<ResponseWrapper<AuthResponse>> authenticateUserByPhone(
-            @Valid @RequestBody PhoneLoginRequest phoneLoginRequest) {
+    public ResponseEntity<ResponseWrapper<AuthResponse>> authenticateUserByPhone(@RequestBody PhoneLoginRequest phoneLoginRequest) {
         return ResponseEntity.ok(authService.loginUserWithPhone(phoneLoginRequest));
     }
 
