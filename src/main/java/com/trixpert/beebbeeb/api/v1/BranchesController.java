@@ -9,6 +9,7 @@ import com.trixpert.beebbeeb.services.BranchService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +28,9 @@ public class BranchesController {
         this.branchService = branchService;
     }
 
+
+    @CrossOrigin(origins = {"*"})
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/{vendorID}/register")
     @ApiOperation("Add Branches List For Specific Vendor")
     public ResponseEntity<ResponseWrapper<Boolean>> registerBranchForVendor(
