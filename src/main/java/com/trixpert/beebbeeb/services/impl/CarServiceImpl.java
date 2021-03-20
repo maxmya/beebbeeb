@@ -106,6 +106,7 @@ public class CarServiceImpl implements CarService {
             CarEntity carEntityRecord = CarEntity.builder()
                     .additionDate(LocalDateTime.now())
                     .model(modelRecord)
+                    .brand(modelRecord.getBrand())
                     .creator(optionalUser.get())
                     .category(categoryEntity)
                     .color(colorEntity)
