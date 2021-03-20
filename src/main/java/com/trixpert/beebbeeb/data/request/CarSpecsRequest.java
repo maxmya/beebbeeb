@@ -8,6 +8,6 @@ import java.util.List;
 public class CarSpecsRequest {
     private long carId;
     private boolean essential;
-    private List<String> keys;
-    private List<String> values;
+    private String key;
+    private String value;
 }

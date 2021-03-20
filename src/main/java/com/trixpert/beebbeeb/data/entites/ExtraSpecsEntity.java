@@ -23,4 +23,6 @@ public class ExtraSpecsEntity {
     private String key;
 
     private String value;
+
+    private boolean active;
 }

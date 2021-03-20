@@ -25,4 +25,6 @@ public class EssentialSpecsEntity {
 
     private String value;
 
+    private boolean active;
+
 }
