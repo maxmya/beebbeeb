@@ -31,13 +31,6 @@ public class CarController {
         return ResponseEntity.ok(carService.registerCar(carRegistrationRequest));
     }
 
-    @PutMapping("/update/{carId}")
-    @ApiOperation("updating a Car")
-    public ResponseEntity<ResponseWrapper<Boolean>> updateCar(
-            @PathVariable("carId") long carId,
-            @Valid @RequestBody CarRegistrationRequest carRegistrationRequest){
-        return ResponseEntity.ok(carService.updateCar(carId, carRegistrationRequest));
-    }
 
     @PutMapping("/delete/{carId}")
     @ApiOperation("Delete a car")
