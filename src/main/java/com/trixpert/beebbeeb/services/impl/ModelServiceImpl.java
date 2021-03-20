@@ -153,6 +153,7 @@ public class ModelServiceImpl implements ModelService {
             PhotoEntity interiorPhoto = photoRepository
                     .save(PhotoEntity.builder()
                             .photoUrl(mainImage)
+                            .active(true)
                             .caption(model.getName())
                             .interior(interior)
                             .build());

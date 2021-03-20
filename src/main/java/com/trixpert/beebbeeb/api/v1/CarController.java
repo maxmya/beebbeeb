@@ -1,6 +1,7 @@
 package com.trixpert.beebbeeb.api.v1;
 
 import com.trixpert.beebbeeb.data.request.CarRegistrationRequest;
+import com.trixpert.beebbeeb.data.response.FileUploadResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.CarDTO;
 import com.trixpert.beebbeeb.services.CarService;
@@ -8,6 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -33,6 +35,24 @@ public class CarController {
     ) {
         String authorizationHeader = request.getHeader("Authorization");
         return ResponseEntity.ok(carService.registerCar(carRegistrationRequest, authorizationHeader));
+    }
+
+    @PostMapping("/interior/{carId}")
+    @ApiOperation("Add Interior Photo For Car")
+    public ResponseEntity<ResponseWrapper<FileUploadResponse>> uploadInterior(
+            @PathVariable("carId") long modelId,
+            @RequestParam("file") MultipartFile image,
+            HttpServletRequest request) {
+        return ResponseEntity.ok(carService.uploadInterior(modelId, image));
+    }
+
+    @PostMapping("/exterior/{carId}")
+    @ApiOperation("Add Interior Photo For Car")
+    public ResponseEntity<ResponseWrapper<FileUploadResponse>> uploadExterior(
+            @PathVariable("carId") long modelId,
+            @RequestParam("file") MultipartFile image,
+            HttpServletRequest request) {
+        return ResponseEntity.ok(carService.uploadExterior(modelId, image));
     }
 
 
