@@ -9,6 +9,7 @@ import com.trixpert.beebbeeb.data.response.AuthResponse;
 
 public interface AuthenticationService {
 
+    ResponseWrapper<Boolean> isUserExisted(String phone);
 
     ResponseWrapper<AuthResponse> loginUserWithPhone(PhoneLoginRequest userLoginRequest);
 

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "car", schema = "public")
@@ -20,22 +21,24 @@ public class CarEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String condition;
-
     @Column(name = "addition_date")
-    private Date additionDate;
+    private LocalDateTime additionDate;
 
     @ManyToOne
     @JoinColumn(name = "model_id", referencedColumnName = "id")
     private ModelEntity model;
 
     @ManyToOne
-    @JoinColumn(name = "branch_id", referencedColumnName = "id")
-    private BranchEntity branch;
+    @JoinColumn(name = "brand_id", referencedColumnName = "id")
+    private BrandEntity brand;
 
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private CategoryEntity category;
+
+    @ManyToOne
+    @JoinColumn(name = "creator_id", referencedColumnName = "id")
+    private UserEntity creator;
 
     @ManyToOne
     @JoinColumn(name = "color_id", referencedColumnName = "id")

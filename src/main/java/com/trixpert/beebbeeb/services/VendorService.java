@@ -16,7 +16,7 @@ public interface VendorService {
                 MultipartFile logoFile
                 , String authHeader) throws IOException;
 
-    ResponseWrapper<List<VendorDTO>> getAllVendors();
+    ResponseWrapper<List<VendorDTO>> getAllVendors(boolean active);
 
     ResponseWrapper<Boolean> deleteVendor(long vendorId , String authHeader);
 

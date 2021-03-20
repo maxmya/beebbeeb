@@ -6,15 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
-@Table(name = "brand", schema = "public")
+@Table(name = "banner", schema = "public")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BrandEntity {
+public class BannerEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,17 +21,10 @@ public class BrandEntity {
 
     private String name;
 
-    private String origin;
+    private boolean main;
 
-    @Column(name = "logo_url")
-    private String logoUrl;
-
-    private String description;
-
-    private boolean active;
-
-    @OneToMany(mappedBy = "brand")
-    private List<CarEntity> cars;
-
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "photo_id", referencedColumnName = "id")
+    private PhotoEntity photo;
 
 }

@@ -49,10 +49,17 @@ public class VendorController {
 
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping("/list")
-    @ApiOperation("Get All Vendors")
-    public ResponseEntity<ResponseWrapper<List<VendorDTO>>> getAllVendors() {
-        return ResponseEntity.ok(vendorService.getAllVendors());
+    @GetMapping("/list/active")
+    @ApiOperation("Get All Active Vendors")
+    public ResponseEntity<ResponseWrapper<List<VendorDTO>>> getAllActiveVendors() {
+        return ResponseEntity.ok(vendorService.getAllVendors(true));
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/list/inactive")
+    @ApiOperation("Get All Inactive Vendors")
+    public ResponseEntity<ResponseWrapper<List<VendorDTO>>> getAllInactiveVendors(){
+        return ResponseEntity.ok(vendorService.getAllVendors(false));
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")

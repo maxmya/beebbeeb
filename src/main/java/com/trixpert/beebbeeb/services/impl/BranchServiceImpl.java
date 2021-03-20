@@ -228,9 +228,7 @@ public class BranchServiceImpl implements BranchService {
             if(!optionalBranchEntity.isPresent()){
                 throw new NotFoundException("Branch entity not found");
             }
-            optionalBranchEntity.get().getCars().forEach(car ->
-                    listCars.add(carMapper.convertToDTO(car))
-            );
+            
             return reporterService.reportSuccess(listCars);
         }
         catch(Exception e) {
