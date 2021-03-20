@@ -22,7 +22,6 @@ public class CarMapper {
     public CarEntity convertToEntity(CarDTO carDTO) {
         return CarEntity.builder()
                 .id(carDTO.getId())
-                .condition(carDTO.getCondition())
                 .additionDate(carDTO.getAdditionDate())
                 .model(modelMapper.convertToEntity(carDTO.getModel()))
                 .category(categoryMapper.convertToEntity(carDTO.getCategory()))
@@ -34,7 +33,6 @@ public class CarMapper {
     public CarDTO convertToDTO(CarEntity carEntity) {
         return CarDTO.builder()
                 .id(carEntity.getId())
-                .condition(carEntity.getCondition())
                 .additionDate(carEntity.getAdditionDate())
                 .model(modelMapper.convertToDTO(carEntity.getModel()))
                 .category(categoryMapper.convertToDTO(carEntity.getCategory()))

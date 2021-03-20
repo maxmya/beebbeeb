@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @Builder
 public class CarDTO {
     private long id;
-    private String condition;
     private LocalDateTime additionDate;
     private ModelDTO model;
     private CategoryDTO category;
