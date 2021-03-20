@@ -6,7 +6,6 @@ import com.trixpert.beebbeeb.data.to.PhotoDTO;
 import org.springframework.stereotype.Service;
 
 
-@Service
 public interface PhotoService {
 
     ResponseWrapper<Boolean> registerPhoto (PhotoRegistrationRequest photoRegistrationRequest

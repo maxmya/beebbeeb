@@ -13,11 +13,14 @@ import com.trixpert.beebbeeb.services.AuditService;
 import com.trixpert.beebbeeb.services.PhotoService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import com.trixpert.beebbeeb.services.UserService;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Service
 public class PhotoServiceImpl implements PhotoService {
+    
     private final PhotoMapper photoMapper;
     private final PhotoRepository photoRepository;
     private final ReporterService reporterService;
