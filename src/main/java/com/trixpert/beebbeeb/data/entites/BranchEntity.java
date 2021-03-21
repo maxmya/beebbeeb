@@ -34,5 +34,8 @@ public class BranchEntity {
     @OneToMany(mappedBy = "branch")
     private List<EmployeeEntity> employees;
 
+    @OneToMany(mappedBy = "branch")
+    private List<CarInstanceEntity> instances;
+
     boolean active;
 }

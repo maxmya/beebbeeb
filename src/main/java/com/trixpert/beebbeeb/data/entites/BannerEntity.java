@@ -27,4 +27,6 @@ public class BannerEntity {
     @JoinColumn(name = "photo_id", referencedColumnName = "id")
     private PhotoEntity photo;
 
+    private boolean active ;
+
 }

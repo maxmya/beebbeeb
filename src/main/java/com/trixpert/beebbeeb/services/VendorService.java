@@ -12,9 +12,7 @@ import java.util.List;
 public interface VendorService {
 
     ResponseWrapper<Boolean> registerVendor(
-                VendorRegistrationRequest vendorRegistrationRequest,
-                MultipartFile logoFile
-                , String authHeader) throws IOException;
+                VendorRegistrationRequest vendorRegistrationRequest, String authHeader);
 
     ResponseWrapper<List<VendorDTO>> getAllVendors(boolean active);
 

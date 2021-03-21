@@ -40,7 +40,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final UserService userService;
     private final AuditService auditService;
 
-
     private final EmployeeMapper employeeMapper;
 
     public EmployeeServiceImpl(EmployeeRepository employeeRepository,

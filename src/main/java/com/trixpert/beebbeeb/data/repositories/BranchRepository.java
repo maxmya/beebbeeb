@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface BranchRepository extends JpaRepository<BranchEntity, Long> {
     List<BranchEntity> findAllByVendorAndActive(VendorEntity vendorEntity, boolean active);
+    int countAllByActive(boolean active);
 }

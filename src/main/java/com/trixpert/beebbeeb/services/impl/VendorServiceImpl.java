@@ -69,13 +69,12 @@ public class VendorServiceImpl implements VendorService {
 
     @Override
     public ResponseWrapper<Boolean> registerVendor(
-            VendorRegistrationRequest vendorRegistrationRequest
-            ,MultipartFile logoFile, String authHeader) throws IOException {
+            VendorRegistrationRequest vendorRegistrationRequest,
+            String authHeader){
 
         String username = auditService.getUsernameForAudit(authHeader);
 
         String logoUrlRecord ="";
-        logoUrlRecord = cloudStorageService.uploadFile(logoFile);
 
 
         if (userRepository.existsByEmail(vendorRegistrationRequest.getEmail())) {

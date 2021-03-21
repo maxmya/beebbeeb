@@ -4,14 +4,18 @@ import com.trixpert.beebbeeb.data.entites.*;
 import com.trixpert.beebbeeb.data.mappers.*;
 import com.trixpert.beebbeeb.data.repositories.*;
 import com.trixpert.beebbeeb.data.request.CarRegistrationRequest;
+import com.trixpert.beebbeeb.data.response.FileUploadResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.CarDTO;
+import com.trixpert.beebbeeb.data.to.PhotoDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.AuditService;
 import com.trixpert.beebbeeb.services.CarService;
+import com.trixpert.beebbeeb.services.CloudStorageService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,9 +32,12 @@ public class CarServiceImpl implements CarService {
     private final ParentColorRepository parentColorRepository;
     private final TypeRepository typeRepository;
     private final UserRepository userRepository;
+    private final PhotoRepository photoRepository;
 
     private final CarMapper carMapper;
+    private final PhotoMapper photoMapper;
 
+    private final CloudStorageService cloudStorageService;
     private final ReporterService reporterService;
     private final AuditService auditService;
 
@@ -40,8 +47,13 @@ public class CarServiceImpl implements CarService {
                           ColorRepository colorRepository,
                           ParentColorRepository parentColorRepository,
                           TypeRepository typeRepository,
-                          UserRepository userRepository, CarMapper carMapper,
-                          ReporterService reporterService, AuditService auditService) {
+                          UserRepository userRepository,
+                          PhotoRepository photoRepository,
+                          CarMapper carMapper,
+                          PhotoMapper photoMapper,
+                          CloudStorageService cloudStorageService,
+                          ReporterService reporterService,
+                          AuditService auditService) {
 
         this.carRepository = carRepository;
         this.modelRepository = modelRepository;
@@ -50,7 +62,10 @@ public class CarServiceImpl implements CarService {
         this.parentColorRepository = parentColorRepository;
         this.typeRepository = typeRepository;
         this.userRepository = userRepository;
+        this.photoRepository = photoRepository;
         this.carMapper = carMapper;
+        this.photoMapper = photoMapper;
+        this.cloudStorageService = cloudStorageService;
         this.reporterService = reporterService;
         this.auditService = auditService;
     }
@@ -115,6 +130,61 @@ public class CarServiceImpl implements CarService {
 
             carRepository.save(carEntityRecord);
             return reporterService.reportSuccess("A new Car has been added successfully");
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Transactional
+    @Override
+    public ResponseWrapper<FileUploadResponse> uploadInterior(long modelId, MultipartFile file) {
+        try {
+            PhotoDTO photoDTO = uploadImage(true, modelId, file);
+            if (photoDTO == null) return reporterService.reportError(new IllegalArgumentException(""));
+            return reporterService.reportSuccess(new FileUploadResponse(photoDTO));
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    private PhotoDTO uploadImage(boolean interior, long carId, MultipartFile file) {
+        try {
+            Optional<CarEntity> optionalCar = carRepository.findById(carId);
+
+            if (!optionalCar.isPresent()) {
+                throw new NotFoundException("car not found !");
+            }
+
+            CarEntity carEntity = optionalCar.get();
+
+            String mainImage = cloudStorageService.uploadFile(file);
+
+            PhotoEntity photo = photoRepository
+                    .save(PhotoEntity.builder()
+                            .photoUrl(mainImage)
+                            .active(true)
+                            .caption(carEntity.getModel().getName())
+                            .interior(interior)
+                            .build());
+
+            List<PhotoEntity> modelPhotos = carEntity.getPhotos();
+            modelPhotos.add(photo);
+            carEntity.setPhotos(modelPhotos);
+            carRepository.save(carEntity);
+            return photoMapper.convertToDTO(photo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Transactional
+    @Override
+    public ResponseWrapper<FileUploadResponse> uploadExterior(long modelId, MultipartFile file) {
+        try {
+            PhotoDTO photoDTO = uploadImage(false, modelId, file);
+            if (photoDTO == null) return reporterService.reportError(new IllegalArgumentException(""));
+            return reporterService.reportSuccess(new FileUploadResponse(photoDTO));
         } catch (Exception e) {
             return reporterService.reportError(e);
         }

@@ -5,7 +5,6 @@ import com.trixpert.beebbeeb.data.to.AddressDTO;
 import org.springframework.stereotype.Component;
 
 @Component
-
 public class AddressMapper {
     public AddressEntity convertToEntity(AddressDTO addressDTO){
         return AddressEntity.builder()

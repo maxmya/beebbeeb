@@ -1,0 +1,16 @@
+package com.trixpert.beebbeeb.services;
+
+import com.trixpert.beebbeeb.data.request.CarInstanceRequest;
+import com.trixpert.beebbeeb.data.response.ResponseWrapper;
+import com.trixpert.beebbeeb.data.to.CarInstanceDTO;
+
+import java.util.List;
+
+public interface CarInstanceService {
+
+    ResponseWrapper<Boolean> addCarInstance(CarInstanceRequest carInstanceRequest , String authHeader);
+
+    ResponseWrapper<List<CarInstanceDTO>> getALLCarInstances(boolean active);
+
+    ResponseWrapper<List<CarInstanceDTO>> getAllCarInstancesForVendor(long vendorId, boolean active);
+}

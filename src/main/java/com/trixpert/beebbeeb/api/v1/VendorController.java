@@ -31,20 +31,15 @@ public class VendorController {
         this.vendorService = vendorService;
     }
 
-    @CrossOrigin(origins={"*"})
+    @CrossOrigin(origins = {"*"})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping(value = "/register", consumes= {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/register", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation("Register Vendor With Email & Password")
-    @ResponseBody
     public ResponseEntity<ResponseWrapper<Boolean>> registerVendor(
-            @RequestParam(name = "file") MultipartFile logoFile,
-            @RequestParam(name = "body") String regRequest,
-            HttpServletRequest request) throws IOException {
-
+            @Valid @RequestBody VendorRegistrationRequest vendorRegistrationRequest,
+            HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
-        ObjectMapper objectMapper = new ObjectMapper();
-        VendorRegistrationRequest vendorRegistrationRequest = objectMapper.readValue(regRequest,VendorRegistrationRequest.class);
-        return ResponseEntity.ok(vendorService.registerVendor(vendorRegistrationRequest, logoFile , authorizationHeader));
+        return ResponseEntity.ok(vendorService.registerVendor(vendorRegistrationRequest, authorizationHeader));
     }
 
 
@@ -58,7 +53,7 @@ public class VendorController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/list/inactive")
     @ApiOperation("Get All Inactive Vendors")
-    public ResponseEntity<ResponseWrapper<List<VendorDTO>>> getAllInactiveVendors(){
+    public ResponseEntity<ResponseWrapper<List<VendorDTO>>> getAllInactiveVendors() {
         return ResponseEntity.ok(vendorService.getAllVendors(false));
     }
 
@@ -67,7 +62,7 @@ public class VendorController {
     @ApiOperation("Updating an existing vendor with new data")
     public ResponseEntity<ResponseWrapper<Boolean>> updateVendor(
             @Valid @RequestBody VendorRegistrationRequest vendorRegistrationRequest,
-            @PathVariable("vendorId") long vendorId ,
+            @PathVariable("vendorId") long vendorId,
             HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");

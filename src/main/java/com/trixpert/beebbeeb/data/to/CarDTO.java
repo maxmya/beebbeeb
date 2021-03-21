@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -19,5 +20,6 @@ public class CarDTO {
     private CategoryDTO category;
     private ColorDTO color;
     private UserDTO creator;
+    private List<PhotoDTO> photos;
     private boolean active;
 }

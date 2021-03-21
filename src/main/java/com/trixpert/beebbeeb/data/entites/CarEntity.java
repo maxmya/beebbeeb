@@ -4,10 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "car", schema = "public")
@@ -45,5 +48,21 @@ public class CarEntity {
     private ColorEntity color;
 
     private boolean active;
+
+
+    @OneToMany(mappedBy = "car")
+    private List<CarInstanceEntity> instances;
+
+
+    @Fetch(value = FetchMode.SUBSELECT)
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    }, fetch = FetchType.EAGER)
+    @JoinTable(name = "car_photos",
+            joinColumns = @JoinColumn(name = "car_id"),
+            inverseJoinColumns = @JoinColumn(name = "photo_id")
+    )
+    private List<PhotoEntity> photos;
 
 }

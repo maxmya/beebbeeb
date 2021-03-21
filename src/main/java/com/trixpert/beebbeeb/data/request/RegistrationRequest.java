@@ -13,15 +13,10 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegistrationRequest {
-    @NotNull(message = "name can't be null")
     private String name;
     private String phone;
-
     @Email
     private String email;
-
     private boolean active;
-
-    @Size(min = 6, max = 255 ,message = "password is between 6 and 255 char")
     private String password;
 }

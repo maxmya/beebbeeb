@@ -19,7 +19,7 @@ public class VendorEntity {
     private Long id;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id",referencedColumnName = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserEntity manager;
 
     private String name;
@@ -54,6 +54,9 @@ public class VendorEntity {
 
     @OneToMany(mappedBy = "vendor")
     private List<BranchEntity> branches;
+
+    @OneToMany(mappedBy = "vendor")
+    private List<CarInstanceEntity> instances;
 
 
 }

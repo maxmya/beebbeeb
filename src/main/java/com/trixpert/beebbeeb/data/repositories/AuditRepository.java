@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface AuditRepository extends JpaRepository<AuditEntity, Long> {
     List<AuditEntity> findAllByAction(String action);
+
+    int countAllByAction(String action);
 }

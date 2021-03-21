@@ -47,4 +47,16 @@ public class PhotoEntity {
     )
     private List<ModelEntity> models;
 
+
+    @Fetch(value = FetchMode.SUBSELECT)
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    }, fetch = FetchType.EAGER)
+    @JoinTable(name = "car_photos",
+            joinColumns = @JoinColumn(name = "photo_id"),
+            inverseJoinColumns = @JoinColumn(name = "car_id")
+    )
+    private List<CarEntity> cars;
+
 }
