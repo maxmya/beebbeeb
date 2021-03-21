@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AddressMapper {
-    public AddressEntity convertToEntity(AddressDTO addressDTO){
+    public AddressEntity convertToEntity(AddressDTO addressDTO) {
         return AddressEntity.builder()
                 .id(addressDTO.getId())
                 .fullAddress(addressDTO.getFullAddress())
@@ -16,7 +16,9 @@ public class AddressMapper {
                 .active(addressDTO.isActive())
                 .build();
     }
-    public AddressDTO convertToDTO(AddressEntity addressEntity){
+
+    public AddressDTO convertToDTO(AddressEntity addressEntity) {
+        if (addressEntity == null) return null;
         return AddressDTO.builder()
                 .id(addressEntity.getId())
                 .fullAddress(addressEntity.getFullAddress())
