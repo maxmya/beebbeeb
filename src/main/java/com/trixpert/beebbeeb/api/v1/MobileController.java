@@ -99,17 +99,17 @@ public class MobileController {
         List<CarItemResponse> carItemResponses = new ArrayList<>();
         List<CarInstanceEntity> carInstanceEntities = carInstanceRepository.findAllByActive(true);
         carInstanceEntities.forEach(carInstance -> {
-            String carPhoto = "";
+            String carPhoto = "https://purepng.com/public/uploads/large/purepng.com-yellow-audi-caraudicars-961524670899johme.png";
             for (PhotoEntity photoEntity : carInstance.getCar().getPhotos()) {
                 if (photoEntity.isMainPhoto()) {
                     carPhoto = photoEntity.getPhotoUrl();
                     break;
                 }
             }
-            String carPrice = "";
-            if (carInstance.getPrices().size() > 1) {
+            String carPrice = "0";
+            if (carInstance.getPrices() != null && carInstance.getPrices().size() > 1) {
                 carPrice = (carInstance.getPrices().get(carInstance.getPrices().size() - 1)).getAmount();
-            } else {
+            } else if (carInstance.getPrices() != null && carInstance.getPrices().size() == 1) {
                 carPrice = carInstance.getPrices().get(0).getAmount();
             }
 
