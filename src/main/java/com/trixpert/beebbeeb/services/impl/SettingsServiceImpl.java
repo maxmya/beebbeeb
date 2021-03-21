@@ -53,11 +53,11 @@ public class SettingsServiceImpl implements SettingsService {
             long numberOfErrors = auditRepository.countAllByAction(AuditActions.ERROR);
 
             if (numberOfAudits == 0) numberOfAudits = 1;
-            long healthStatus = Math.floorDiv(numberOfErrors, numberOfAudits) * 100;
+            double healthStatus = (numberOfErrors / numberOfAudits) * 100;
 
-            long systemOperationsCount = auditRepository.countAllByAction(AuditActions.INSERT) +
-                    auditRepository.countAllByAction(AuditActions.UPDATE) +
-                    auditRepository.countAllByAction(AuditActions.DELETE);
+            long inserts = auditRepository.countAllByAction(AuditActions.INSERT);
+            long updates = auditRepository.countAllByAction(AuditActions.UPDATE);
+            long deletes = auditRepository.countAllByAction(AuditActions.DELETE);
 
             return reporterService.reportSuccess(SettingsDTO.builder()
                     .errorsCount(numberOfErrors)
@@ -68,7 +68,9 @@ public class SettingsServiceImpl implements SettingsService {
                     .numberOfAllCars(allCarsCount)
                     .numberOfAllVendors(allVendorsCount)
                     .numberOfCustomers(allActiveCustomersCount)
-                    .numberOfSystemOperations(systemOperationsCount)
+                    .numberOfInserts(inserts)
+                    .numberOfUpdates(updates)
+                    .numberOfDeletes(deletes)
                     .systemHealthStatus(healthStatus)
                     .build());
 

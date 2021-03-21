@@ -21,7 +21,7 @@ public class SettingsController {
     public SettingsController(SettingsService settingsService) {
         this.settingsService = settingsService;
     }
-    
+
     @GetMapping
     public ResponseEntity<ResponseWrapper<SettingsDTO>> getSystemSettings() {
         return ResponseEntity.ok(settingsService.getSystemSettings());

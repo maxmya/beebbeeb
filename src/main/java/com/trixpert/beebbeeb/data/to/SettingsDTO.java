@@ -17,7 +17,9 @@ public class SettingsDTO {
     private long numberOfAllCars;
     private long numberOfActiveCars;
     private long numberOfCustomers;
-    private long systemHealthStatus;
+    private double systemHealthStatus;
     private long errorsCount;
-    private long numberOfSystemOperations;
+    private long numberOfInserts;
+    private long numberOfUpdates;
+    private long numberOfDeletes;
 }
