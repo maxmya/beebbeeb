@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface CustomerRepository extends JpaRepository<CustomerEntity, Long> {
     List<CustomerEntity> findAllByActive(boolean isActive);
-
+    int countAllByActive(boolean active);
 }

@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface CarInstanceRepository extends JpaRepository<CarInstanceEntity, Long> {
     List<CarInstanceEntity> findAllByActive(boolean active);
-
-    List<CarInstanceEntity> findAllByActiveAndVendor(VendorEntity vendor, boolean active);
+    List<CarInstanceEntity> findAllByVendorAndActive(VendorEntity vendor, boolean active);
+    int countAllByActive(boolean active);
 }

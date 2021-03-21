@@ -9,5 +9,6 @@ import java.util.List;
 
 @Repository
 public interface VendorRepository extends JpaRepository<VendorEntity, Long> {
-        List<VendorEntity> findAllByActive(boolean active);
+    List<VendorEntity> findAllByActive(boolean active);
+    int countAllByActive(boolean active);
 }

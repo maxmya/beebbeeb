@@ -3,7 +3,6 @@ package com.trixpert.beebbeeb.services.impl;
 import com.trixpert.beebbeeb.data.constants.AuditActions;
 import com.trixpert.beebbeeb.data.entites.*;
 import com.trixpert.beebbeeb.data.mappers.CarInstanceMapper;
-import com.trixpert.beebbeeb.data.mappers.PriceMapper;
 import com.trixpert.beebbeeb.data.repositories.*;
 import com.trixpert.beebbeeb.data.request.CarInstanceRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
@@ -133,7 +132,7 @@ public class CarInstanceServiceImpl implements CarInstanceService {
             if (!optionalVendorEntityRecord.isPresent()) {
                 throw new NotFoundException("Vendor Entity not found");
             }
-            carInstanceRepository.findAllByActiveAndVendor(optionalVendorEntityRecord.get(), active).forEach(carInstance -> {
+            carInstanceRepository.findAllByVendorAndActive(optionalVendorEntityRecord.get(), active).forEach(carInstance -> {
                 carInstanceDTOForVendorList.add(carInstanceMapper.convertToDTO(carInstance));
             });
 
