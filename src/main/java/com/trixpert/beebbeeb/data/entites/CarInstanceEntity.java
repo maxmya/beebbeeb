@@ -36,5 +36,6 @@ public class CarInstanceEntity {
     @JoinColumn(name = "branch_id", referencedColumnName = "id")
     private BranchEntity branch;
 
+    private boolean active;
 
 }
