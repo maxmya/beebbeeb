@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-@Api(tags = {"Customer API"})
+@Api(tags = {"All Mobile APIs"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
 @RestController
 @RequestMapping("/api/v1/mobile")
