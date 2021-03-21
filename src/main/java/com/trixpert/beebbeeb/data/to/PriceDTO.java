@@ -15,6 +15,6 @@ import java.time.LocalDate;
 public class PriceDTO {
     private Long id;
     private LocalDate date;
-    private String price;
+    private String amount;
     private boolean active;
 }

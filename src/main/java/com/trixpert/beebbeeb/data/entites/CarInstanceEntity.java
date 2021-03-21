@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "car_instance", schema = "public")
@@ -35,6 +36,9 @@ public class CarInstanceEntity {
     @ManyToOne
     @JoinColumn(name = "branch_id", referencedColumnName = "id")
     private BranchEntity branch;
+
+    @OneToMany(mappedBy = "car")
+    private List<PriceEntity> prices;
 
     private boolean active;
 

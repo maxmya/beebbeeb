@@ -19,13 +19,13 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CarInstanceServiceImpl implements CarInstanceService {
     private final AuditService auditService;
-    private final PriceMapper priceMapper;
     private final PriceRepository priceRepository;
     private final CarInstanceRepository carInstanceRepository;
     private final CarInstanceMapper carInstanceMapper;
@@ -36,10 +36,17 @@ public class CarInstanceServiceImpl implements CarInstanceService {
     private final ReporterService reporterService;
 
 
+    public CarInstanceServiceImpl(AuditService auditService,
+                                  PriceRepository priceRepository,
+                                  CarInstanceRepository carInstanceRepository,
+                                  CarInstanceMapper carInstanceMapper,
+                                  VendorRepository vendorRepository,
+                                  BranchRepository branchRepository,
+                                  CarRepository carRepository,
+                                  UserService userService,
+                                  ReporterService reporterService) {
 
-    public CarInstanceServiceImpl(AuditService auditService, PriceMapper priceMapper, PriceRepository priceRepository, CarInstanceRepository carInstanceRepository, CarInstanceMapper carInstanceMapper, VendorRepository vendorRepository, BranchRepository branchRepository, CarRepository carRepository, UserService userService, ReporterService reporterService) {
         this.auditService = auditService;
-        this.priceMapper = priceMapper;
         this.priceRepository = priceRepository;
         this.carInstanceRepository = carInstanceRepository;
         this.carInstanceMapper = carInstanceMapper;
@@ -52,39 +59,36 @@ public class CarInstanceServiceImpl implements CarInstanceService {
 
 
     @Override
-    public ResponseWrapper<Boolean> addCarInstance(CarInstanceRequest carInstanceRequest , String authHeader) {
+    public ResponseWrapper<Boolean> addCarInstance(CarInstanceRequest carInstanceRequest, String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
             Optional<VendorEntity> optionalVendorEntity = vendorRepository.findById(carInstanceRequest.getVendorId());
-            if (!optionalVendorEntity.isPresent()){
+            if (!optionalVendorEntity.isPresent()) {
                 throw new NotFoundException("This Vendor doesn't exits !");
             }
             Optional<BranchEntity> optionalBranchEntity = branchRepository.findById(carInstanceRequest.getBranchId());
-            if (!optionalBranchEntity.isPresent()){
+            if (!optionalBranchEntity.isPresent()) {
                 throw new NotFoundException("This Branch doesn't exits !");
             }
             Optional<CarEntity> optionalCarEntity = carRepository.findById(carInstanceRequest.getCarId());
-            if (!optionalCarEntity.isPresent()){
+            if (!optionalCarEntity.isPresent()) {
                 throw new NotFoundException("This Car doesn't exits !");
             }
-            PriceEntity originalPriceEntityRecord =  PriceEntity.builder()
-                   .price(carInstanceRequest.getOriginalPrice())
-                   .active(true)
-                   .date(LocalDate.now())
-                   .build();
-            PriceEntity vendorPriceEntityRecord =  PriceEntity.builder()
-                    .price(carInstanceRequest.getVendorPrice())
+
+            PriceEntity vendorPriceEntityRecord = priceRepository.save(PriceEntity.builder()
+                    .amount(carInstanceRequest.getVendorPrice())
                     .active(true)
                     .date(LocalDate.now())
-                    .build();
+                    .build());
 
             CarInstanceEntity carInstanceEntity = CarInstanceEntity.builder()
                     .car(optionalCarEntity.get())
+                    .prices(Collections.singletonList(vendorPriceEntityRecord))
                     .vendor(optionalVendorEntity.get())
                     .branch(optionalBranchEntity.get())
-                    .originalPrice(originalPriceEntityRecord.getPrice())
+                    .originalPrice(carInstanceRequest.getOriginalPrice())
                     .active(true)
                     .build();
 
@@ -101,33 +105,32 @@ public class CarInstanceServiceImpl implements CarInstanceService {
             return reporterService.reportSuccess("Car Instance Registered Successfully");
 
 
-
-        }catch (Exception e){
+        } catch (Exception e) {
             return reporterService.reportError(e);
         }
     }
 
     @Override
-    public ResponseWrapper<List<CarInstanceDTO>> getALLCarInstances(boolean active){
-        try{
+    public ResponseWrapper<List<CarInstanceDTO>> getALLCarInstances(boolean active) {
+        try {
             List<CarInstanceDTO> carInstanceDTOList = new ArrayList<>();
 
             carInstanceRepository.findAllByActive(active).forEach(carInstance -> {
                 carInstanceDTOList.add(carInstanceMapper.convertToDTO(carInstance));
             });
             return reporterService.reportSuccess(carInstanceDTOList);
-        }catch(Exception e){
+        } catch (Exception e) {
             return reporterService.reportError(e);
         }
     }
 
     @Override
-    public ResponseWrapper<List<CarInstanceDTO>> getAllCarInstancesForVendor(long vendorId, boolean active){
-        try{
+    public ResponseWrapper<List<CarInstanceDTO>> getAllCarInstancesForVendor(long vendorId, boolean active) {
+        try {
             List<CarInstanceDTO> carInstanceDTOForVendorList = new ArrayList<>();
 
             Optional<VendorEntity> optionalVendorEntityRecord = vendorRepository.findById(vendorId);
-            if(!optionalVendorEntityRecord.isPresent()){
+            if (!optionalVendorEntityRecord.isPresent()) {
                 throw new NotFoundException("Vendor Entity not found");
             }
             carInstanceRepository.findAllByActiveAndVendor(optionalVendorEntityRecord.get(), active).forEach(carInstance -> {
@@ -135,7 +138,7 @@ public class CarInstanceServiceImpl implements CarInstanceService {
             });
 
             return reporterService.reportSuccess(carInstanceDTOForVendorList);
-        } catch(Exception e){
+        } catch (Exception e) {
             return reporterService.reportError(e);
         }
     }

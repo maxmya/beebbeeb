@@ -53,6 +53,7 @@ public class CarEntity {
     @OneToMany(mappedBy = "car")
     private List<CarInstanceEntity> instances;
 
+
     @Fetch(value = FetchMode.SUBSELECT)
     @ManyToMany(cascade = {
             CascadeType.PERSIST,

@@ -23,7 +23,12 @@ public class PriceEntity {
 
     private LocalDate date;
 
-    private String price;
+    private String amount;
 
     private boolean active;
+
+    @ManyToOne
+    @JoinColumn(name = "car_id", referencedColumnName = "id")
+    private CarInstanceEntity car;
+
 }
