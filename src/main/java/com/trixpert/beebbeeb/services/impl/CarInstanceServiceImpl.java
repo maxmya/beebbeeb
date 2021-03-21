@@ -77,11 +77,14 @@ public class CarInstanceServiceImpl implements CarInstanceService {
                 throw new NotFoundException("This Car doesn't exits !");
             }
 
+
+
             PriceEntity vendorPriceEntityRecord = priceRepository.save(PriceEntity.builder()
                     .amount(carInstanceRequest.getVendorPrice())
                     .active(true)
                     .date(LocalDate.now())
                     .build());
+
 
             CarInstanceEntity carInstanceEntity = CarInstanceEntity.builder()
                     .car(optionalCarEntity.get())
@@ -92,7 +95,9 @@ public class CarInstanceServiceImpl implements CarInstanceService {
                     .active(true)
                     .build();
 
+
             carInstanceRepository.save(carInstanceEntity);
+
             AuditDTO auditDTO =
                     AuditDTO.builder()
                             .user(userService.getUserByUsername(username))
