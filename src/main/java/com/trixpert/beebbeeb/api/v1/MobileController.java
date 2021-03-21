@@ -71,7 +71,7 @@ public class MobileController {
 
         String authHeader = request.getHeader("Authorization");
         String username = auditService.getUsernameForAudit(authHeader);
-        Optional<UserEntity> userEntity = userRepository.findByEmail(username);
+        Optional<UserEntity> userEntity = userRepository.findByPhone(username);
         if (!userEntity.isPresent()) {
             throw new NotFoundException("user not found");
         }
