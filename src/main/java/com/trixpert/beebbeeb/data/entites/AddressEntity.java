@@ -1,15 +1,13 @@
 package com.trixpert.beebbeeb.data.entites;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "address", schema = "public")
-@Data
+@Setter
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,6 +29,25 @@ public class AddressEntity {
     private double latitude;
 
     private boolean active;
+
+    private String governorate;
+
+    private String city;
+
+    private String street;
+
+    private String landmark;
+
+    private String type;
+
+    private String building;
+
+    private String floor;
+
+    @Column(name = "apartment_number")
+    private String apartmentNumber;
+
+    private boolean primary;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")

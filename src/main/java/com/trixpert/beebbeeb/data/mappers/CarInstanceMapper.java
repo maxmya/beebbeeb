@@ -39,6 +39,7 @@ public class CarInstanceMapper {
                 .vendor(vendorMapper.convertToDTO(carInstanceEntity.getVendor()))
                 .id(carInstanceEntity.getId())
                 .prices(prices)
+                .active(carInstanceEntity.isActive())
                 .condition(carInstanceEntity.getCondition())
                 .originalPrice(carInstanceEntity.getOriginalPrice())
                 .build();

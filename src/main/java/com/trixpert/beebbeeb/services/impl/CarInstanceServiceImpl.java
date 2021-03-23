@@ -97,15 +97,7 @@ public class CarInstanceServiceImpl implements CarInstanceService {
 
             carInstanceRepository.save(carInstanceEntity);
 
-            AuditDTO auditDTO =
-                    AuditDTO.builder()
-                            .user(userService.getUserByUsername(username))
-                            .action(AuditActions.INSERT)
-                            .description("adding new Car Instance entity " + carInstanceEntity.toString())
-                            .timestamp(LocalDateTime.now())
-                            .build();
 
-            auditService.logAudit(auditDTO);
             return reporterService.reportSuccess("Car Instance Registered Successfully");
 
 
