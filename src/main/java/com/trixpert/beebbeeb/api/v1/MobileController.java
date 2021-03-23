@@ -14,6 +14,8 @@ import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.AuditService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import io.swagger.annotations.Api;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -128,17 +130,40 @@ public class MobileController {
     }
 
     @GetMapping("/list/cars")
-    public ResponseEntity<ResponseWrapper<List<CarItemResponse>>> listCars() {
+    public ResponseEntity<ResponseWrapper<List<CarItemResponse>>> listCars(
+            @RequestParam(value = "page", required = false) int page,
+            @RequestParam(value = "size", required = false) int size
+    ) {
+
         List<CarItemResponse> carItemResponses = new ArrayList<>();
-        List<CarInstanceEntity> carInstanceEntities = carInstanceRepository.findAllByActive(true);
-        carInstanceEntities.forEach(carInstance -> {
-            String carPhoto = "https://purepng.com/public/uploads/large/purepng.com-yellow-audi-caraudicars-961524670899johme.png";
+
+        List<CarInstanceEntity> carInstanceEntityList;
+        if (page != 0 && size != 0) {
+            PageRequest paging = PageRequest.of(page, size);
+            Page<CarInstanceEntity> carInstances = carInstanceRepository.findAllByActive(true, paging);
+            carInstanceEntityList = carInstances.getContent();
+        } else {
+            carInstanceEntityList = carInstanceRepository.findAllByActive(true);
+        }
+
+        carInstanceEntityList.forEach(carInstance -> {
+            String carPhoto = "";
             for (PhotoEntity photoEntity : carInstance.getCar().getPhotos()) {
                 if (photoEntity.isMainPhoto()) {
                     carPhoto = photoEntity.getPhotoUrl();
                     break;
                 }
             }
+
+            if ("".equals(carPhoto)) {
+                for (PhotoEntity photoEntity : carInstance.getCar().getModel().getPhotos()) {
+                    if (photoEntity.isMainPhoto()) {
+                        carPhoto = photoEntity.getPhotoUrl();
+                        break;
+                    }
+                }
+            }
+
             String carPrice = "0";
             if (carInstance.getPrices() != null && carInstance.getPrices().size() > 1) {
                 carPrice = (carInstance.getPrices().get(carInstance.getPrices().size() - 1)).getAmount();
