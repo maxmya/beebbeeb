@@ -71,10 +71,18 @@ public class MobileController {
             throw new NotFoundException("customer not found");
         }
 
+        List<AddressEntity> addressEntities = addressRepository.findByCustomer(customerEntity.get());
+        AddressEntity addressEntity = null;
+        for (AddressEntity address : addressEntities) {
+            if (address.isPrimary()) {
+                addressEntity = address;
+            }
+        }
+
         CustomerProfileResponse response = CustomerProfileResponse
                 .builder()
                 .id(customerEntity.get().getId())
-                .address(addressMapper.convertToDTO(addressRepository.findByCustomer(customerEntity.get())))
+                .address(addressMapper.convertToDTO(addressEntity))
                 .profileUrl(userEntity.get().getPicUrl())
                 .horoscope(customerEntity.get().getHoroscope())
                 .displayName(userEntity.get().getName())
@@ -82,6 +90,26 @@ public class MobileController {
                 .build();
 
         return ResponseEntity.ok(reporterService.reportSuccess(response));
+    }
+
+    @GetMapping("/address/list")
+    public ResponseEntity<ResponseWrapper<List<AddressDTO>>> getListOfAddresses(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        String username = auditService.getUsernameForAudit(authHeader);
+        Optional<UserEntity> userEntity = userRepository.findByPhone(username);
+        if (!userEntity.isPresent()) {
+            throw new NotFoundException("user not found");
+        }
+        Optional<CustomerEntity> customerEntity = customerRepository.findByUser(userEntity.get());
+        if (!customerEntity.isPresent()) {
+            throw new NotFoundException("customer not found");
+        }
+        List<AddressEntity> addressEntities = addressRepository.findByCustomer(customerEntity.get());
+        List<AddressDTO> addresses = new ArrayList<>();
+        addressEntities.forEach(address -> {
+            addresses.add(addressMapper.convertToDTO(address));
+        });
+        return ResponseEntity.ok(reporterService.reportSuccess(addresses));
     }
 
     @PostMapping("/address/add")

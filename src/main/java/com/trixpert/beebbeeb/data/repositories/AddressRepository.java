@@ -12,5 +12,5 @@ import java.util.List;
 public interface AddressRepository extends JpaRepository<AddressEntity, Long> {
     List<AddressEntity> findAllByActive(boolean active);
 
-    AddressEntity findByCustomer(CustomerEntity customerEntity);
+    List<AddressEntity> findByCustomer(CustomerEntity customerEntity);
 }
