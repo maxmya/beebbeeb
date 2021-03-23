@@ -30,6 +30,25 @@ public class AddressEntity {
 
     private boolean active;
 
+    private String governorate;
+
+    private String city;
+
+    private String street;
+
+    private String landmark;
+
+    private String type;
+
+    private String building;
+
+    private String floor;
+
+    @Column(name = "apartment_number")
+    private String apartmentNumber;
+
+    private boolean primary;
+
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private CustomerEntity customer;

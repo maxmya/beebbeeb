@@ -1,12 +1,7 @@
 package com.trixpert.beebbeeb.api.v1;
 
-import com.trixpert.beebbeeb.data.entites.CarInstanceEntity;
-import com.trixpert.beebbeeb.data.entites.CustomerEntity;
-import com.trixpert.beebbeeb.data.entites.PhotoEntity;
-import com.trixpert.beebbeeb.data.entites.UserEntity;
+import com.trixpert.beebbeeb.data.entites.*;
 import com.trixpert.beebbeeb.data.mappers.AddressMapper;
-import com.trixpert.beebbeeb.data.mappers.CarInstanceMapper;
-import com.trixpert.beebbeeb.data.mappers.CarMapper;
 import com.trixpert.beebbeeb.data.repositories.AddressRepository;
 import com.trixpert.beebbeeb.data.repositories.CarInstanceRepository;
 import com.trixpert.beebbeeb.data.repositories.CustomerRepository;
@@ -14,22 +9,18 @@ import com.trixpert.beebbeeb.data.repositories.UserRepository;
 import com.trixpert.beebbeeb.data.response.CarItemResponse;
 import com.trixpert.beebbeeb.data.response.CustomerProfileResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
+import com.trixpert.beebbeeb.data.to.AddressDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.AuditService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import io.swagger.annotations.Api;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Api(tags = {"All Mobile APIs"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
@@ -93,6 +84,20 @@ public class MobileController {
         return ResponseEntity.ok(reporterService.reportSuccess(response));
     }
 
+    @PostMapping("/address/add")
+    public ResponseEntity<ResponseWrapper<Boolean>> saveAddress(@RequestBody AddressDTO address) {
+
+        Optional<CustomerEntity> customerEntity = customerRepository.findById(address.getCustomerId());
+        if (!customerEntity.isPresent()) {
+            throw new NotFoundException("customer not found !");
+        }
+
+        AddressEntity addressEntity = addressMapper.convertToEntity(address);
+        addressEntity.setCustomer(customerEntity.get());
+        addressRepository.save(addressEntity);
+
+        return ResponseEntity.ok(reporterService.reportSuccess());
+    }
 
     @GetMapping("/list/cars")
     public ResponseEntity<ResponseWrapper<List<CarItemResponse>>> listCars() {
