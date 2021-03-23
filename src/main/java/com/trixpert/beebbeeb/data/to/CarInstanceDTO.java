@@ -15,6 +15,7 @@ public class CarInstanceDTO {
     private long id;
     private String condition;
     private String originalPrice;
+    private boolean active;
     private CarDTO car;
     private VendorDTO vendor;
     private BranchDTO branch;
