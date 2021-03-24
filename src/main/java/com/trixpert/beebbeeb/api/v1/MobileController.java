@@ -131,15 +131,18 @@ public class MobileController {
 
     @GetMapping("/list/cars")
     public ResponseEntity<ResponseWrapper<List<CarItemResponse>>> listCars(
-            @RequestParam(value = "page", required = false) int page,
-            @RequestParam(value = "size", required = false) int size
+            @RequestParam(value = "page", required = false) String page,
+            @RequestParam(value = "size", required = false) String size
     ) {
 
         List<CarItemResponse> carItemResponses = new ArrayList<>();
 
         List<CarInstanceEntity> carInstanceEntityList;
-        if (page != 0 && size != 0) {
-            PageRequest paging = PageRequest.of(page, size);
+        if (page != null) {
+            if (size == null) {
+                size = "5";
+            }
+            PageRequest paging = PageRequest.of(Integer.parseInt(page), Integer.parseInt(size));
             Page<CarInstanceEntity> carInstances = carInstanceRepository.findAllByActive(true, paging);
             carInstanceEntityList = carInstances.getContent();
         } else {
