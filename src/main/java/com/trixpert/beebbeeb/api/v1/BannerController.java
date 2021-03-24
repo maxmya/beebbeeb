@@ -30,6 +30,8 @@ public class BannerController {
     public BannerController(BannerService bannerService) {
         this.bannerService = bannerService;
     }
+
+
     @CrossOrigin(origins = {"*"})
     @ApiOperation("Add New Banner")
     @PostMapping(value = "/add", consumes = {
