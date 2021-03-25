@@ -1,6 +1,5 @@
 package com.trixpert.beebbeeb.api.v1;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.VendorDTO;
@@ -11,11 +10,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.List;
 
 @Api(tags = {"Vendors API"})
@@ -32,7 +29,6 @@ public class VendorController {
     }
 
     @CrossOrigin(origins = {"*"})
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/register", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation("Register Vendor With Email & Password")
     public ResponseEntity<ResponseWrapper<Boolean>> registerVendor(
@@ -43,21 +39,18 @@ public class VendorController {
     }
 
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/list/active")
     @ApiOperation("Get All Active Vendors")
     public ResponseEntity<ResponseWrapper<List<VendorDTO>>> getAllActiveVendors() {
         return ResponseEntity.ok(vendorService.getAllVendors(true));
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/list/inactive")
     @ApiOperation("Get All Inactive Vendors")
     public ResponseEntity<ResponseWrapper<List<VendorDTO>>> getAllInactiveVendors() {
         return ResponseEntity.ok(vendorService.getAllVendors(false));
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/update/{vendorId}")
     @ApiOperation("Updating an existing vendor with new data")
     public ResponseEntity<ResponseWrapper<Boolean>> updateVendor(

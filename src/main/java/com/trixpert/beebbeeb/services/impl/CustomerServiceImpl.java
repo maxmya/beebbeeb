@@ -5,25 +5,20 @@ import com.trixpert.beebbeeb.data.constants.Roles;
 import com.trixpert.beebbeeb.data.entites.CustomerEntity;
 import com.trixpert.beebbeeb.data.entites.RolesEntity;
 import com.trixpert.beebbeeb.data.entites.UserEntity;
-import com.trixpert.beebbeeb.data.mappers.CustomerMapper;
-import com.trixpert.beebbeeb.data.mappers.UserMapper;
 import com.trixpert.beebbeeb.data.repositories.CustomerRepository;
 import com.trixpert.beebbeeb.data.repositories.RolesRepository;
-import com.trixpert.beebbeeb.data.repositories.UserRepository;
-import com.trixpert.beebbeeb.data.repositories.UserRolesRepository;
 import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.RegistrationRequest;
 import com.trixpert.beebbeeb.data.response.CustomerResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
-import com.trixpert.beebbeeb.data.to.CustomerDTO;
 import com.trixpert.beebbeeb.data.to.UserDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,34 +29,28 @@ import java.util.Optional;
 public class CustomerServiceImpl implements CustomerService {
 
     private final UserService userService;
-    private final UserRepository userRepository;
     private final RolesRepository rolesRepository;
-    private final UserRolesRepository userRolesRepository;
     private final CustomerRepository customerRepository;
-    private final CustomerMapper customerMapper;
 
+    private final SMSService smsService;
     private final ReporterService reporterService;
 
     private final AuditService auditService;
 
-    private final UserMapper userMapper;
-    private final CloudStorageService cloudStorageService;
 
+    public CustomerServiceImpl(UserService userService,
+                               RolesRepository rolesRepository,
+                               CustomerRepository customerRepository,
+                               SMSService smsService,
+                               ReporterService reporterService,
+                               AuditService auditService) {
 
-    public CustomerServiceImpl(UserService userService, UserRepository userRepository,
-                               RolesRepository rolesRepository, UserRolesRepository userRolesRepository,
-                               CustomerRepository customerRepository, CustomerMapper customerMapper, ReporterService reporterService, AuditService auditService,
-                               UserMapper userMapper, CloudStorageService cloudStorageService) {
         this.userService = userService;
-        this.userRepository = userRepository;
         this.rolesRepository = rolesRepository;
-        this.userRolesRepository = userRolesRepository;
         this.customerRepository = customerRepository;
-        this.customerMapper = customerMapper;
+        this.smsService = smsService;
         this.reporterService = reporterService;
         this.auditService = auditService;
-        this.userMapper = userMapper;
-        this.cloudStorageService = cloudStorageService;
     }
 
     @Override
