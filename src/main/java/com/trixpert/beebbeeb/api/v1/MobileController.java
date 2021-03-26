@@ -1,28 +1,27 @@
 package com.trixpert.beebbeeb.api.v1;
 
+import com.trixpert.beebbeeb.data.constants.Roles;
 import com.trixpert.beebbeeb.data.entites.*;
 import com.trixpert.beebbeeb.data.mappers.AddressMapper;
-import com.trixpert.beebbeeb.data.repositories.AddressRepository;
-import com.trixpert.beebbeeb.data.repositories.CarInstanceRepository;
-import com.trixpert.beebbeeb.data.repositories.CustomerRepository;
-import com.trixpert.beebbeeb.data.repositories.UserRepository;
+import com.trixpert.beebbeeb.data.repositories.*;
+import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
+import com.trixpert.beebbeeb.data.request.RegistrationRequest;
 import com.trixpert.beebbeeb.data.response.CarItemResponse;
 import com.trixpert.beebbeeb.data.response.CustomerProfileResponse;
+import com.trixpert.beebbeeb.data.response.OtpResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AddressDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
-import com.trixpert.beebbeeb.services.AuditService;
-import com.trixpert.beebbeeb.services.ReporterService;
+import com.trixpert.beebbeeb.services.*;
 import io.swagger.annotations.Api;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Api(tags = {"All Mobile APIs"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
@@ -35,6 +34,16 @@ public class MobileController {
     private final CustomerRepository customerRepository;
     private final AddressRepository addressRepository;
     private final CarInstanceRepository carInstanceRepository;
+    private final RolesRepository rolesRepository;
+
+    private final TypeService typeService;
+    private final BrandService brandService;
+    private final UserService userService;
+    private final SMSService smsService;
+
+    @Qualifier("customers_queue")
+    private final Map<String, CustomerMobileRegistrationRequest> customerEntities;
+
 
     private final ReporterService reporterService;
 
@@ -46,6 +55,12 @@ public class MobileController {
                             CustomerRepository customerRepository,
                             AddressRepository addressRepository,
                             CarInstanceRepository carInstanceRepository,
+                            RolesRepository rolesRepository,
+                            TypeService typeService,
+                            BrandService brandService,
+                            UserService userService,
+                            SMSService smsService,
+                            @Qualifier("customers_queue") Map<String, CustomerMobileRegistrationRequest> customerEntities,
                             ReporterService reporterService,
                             AddressMapper addressMapper) {
 
@@ -54,6 +69,12 @@ public class MobileController {
         this.customerRepository = customerRepository;
         this.addressRepository = addressRepository;
         this.carInstanceRepository = carInstanceRepository;
+        this.rolesRepository = rolesRepository;
+        this.typeService = typeService;
+        this.brandService = brandService;
+        this.userService = userService;
+        this.smsService = smsService;
+        this.customerEntities = customerEntities;
         this.reporterService = reporterService;
         this.addressMapper = addressMapper;
     }
@@ -189,5 +210,67 @@ public class MobileController {
         return ResponseEntity.ok(reporterService.reportSuccess(carItemResponses));
     }
 
+
+    @PostMapping("/register/customer")
+    public ResponseEntity<ResponseWrapper<OtpResponse>> registerUser(@RequestBody CustomerMobileRegistrationRequest customerRegisterRequest) {
+        try {
+            String otp = otpGenerator();
+
+            smsService.sendSMSMessage(" كود تفعيل حساب BeebBeeb هو ".concat(otp), customerRegisterRequest.getPhone());
+
+            this.customerEntities.put(customerRegisterRequest.getPhone(), customerRegisterRequest);
+
+            OtpResponse response = new OtpResponse();
+            response.setOtp(otp);
+
+            return ResponseEntity.ok(reporterService.reportSuccess(response));
+        } catch (Exception e) {
+            return ResponseEntity.ok(reporterService.reportError(e));
+        }
+    }
+
+    @PostMapping("/register/verify/{phone}")
+    public ResponseEntity<ResponseWrapper<Boolean>> verifyUser(@PathVariable("phone") String phone) {
+        try {
+            CustomerMobileRegistrationRequest customerRegisterRequest = this.customerEntities.get(phone);
+            Optional<RolesEntity> customerRole = rolesRepository.findByName(Roles.ROLE_CUSTOMER);
+
+            if (!customerRole.isPresent()) {
+                throw new NotFoundException("Role customer Not Found");
+            }
+
+            RegistrationRequest registrationRequest = new RegistrationRequest();
+            registrationRequest.setName(customerRegisterRequest.getName());
+            registrationRequest.setPhone(customerRegisterRequest.getPhone());
+            registrationRequest.setPassword(customerRegisterRequest.getPassword());
+
+            UserEntity savedUser = userService.registerUser(customerRegisterRequest.getPhone(),
+                    customerRole.get(), registrationRequest, "", true).getData();
+
+            CustomerEntity customerEntityRecord = CustomerEntity.builder()
+                    .horoscope(customerRegisterRequest.getHoroscope())
+                    .active(true)
+                    .user(savedUser).build();
+
+            customerRepository.save(customerEntityRecord);
+
+            return ResponseEntity.ok(reporterService.reportSuccess());
+        } catch (Exception e) {
+            return ResponseEntity.ok(reporterService.reportError(e));
+        }
+    }
+
+
+    private String otpGenerator() {
+        String numbers = "0123456789";
+        StringBuilder x = new StringBuilder();
+        Random random = new Random();
+        char[] otp = new char[5];
+        for (int i = 0; i < 5; i++) {
+            otp[i] = numbers.charAt(random.nextInt(numbers.length()));
+            x.append(otp[i]);
+        }
+        return x.toString();
+    }
 
 }

@@ -1,6 +1,5 @@
 package com.trixpert.beebbeeb.api.v1;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trixpert.beebbeeb.data.request.ModelRegisterRequest;
 import com.trixpert.beebbeeb.data.response.FileUploadResponse;
@@ -10,10 +9,8 @@ import com.trixpert.beebbeeb.data.to.ModelDTO;
 import com.trixpert.beebbeeb.services.ModelService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

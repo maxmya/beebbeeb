@@ -1,24 +1,20 @@
 package com.trixpert.beebbeeb.services.impl;
 
 import com.trixpert.beebbeeb.data.constants.AuditActions;
-import com.trixpert.beebbeeb.data.constants.Roles;
 import com.trixpert.beebbeeb.data.entites.CustomerEntity;
-import com.trixpert.beebbeeb.data.entites.RolesEntity;
-import com.trixpert.beebbeeb.data.entites.UserEntity;
 import com.trixpert.beebbeeb.data.repositories.CustomerRepository;
-import com.trixpert.beebbeeb.data.repositories.RolesRepository;
-import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
-import com.trixpert.beebbeeb.data.request.RegistrationRequest;
 import com.trixpert.beebbeeb.data.response.CustomerResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
 import com.trixpert.beebbeeb.data.to.UserDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
-import com.trixpert.beebbeeb.services.*;
+import com.trixpert.beebbeeb.services.AuditService;
+import com.trixpert.beebbeeb.services.CustomerService;
+import com.trixpert.beebbeeb.services.ReporterService;
+import com.trixpert.beebbeeb.services.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,62 +25,24 @@ import java.util.Optional;
 public class CustomerServiceImpl implements CustomerService {
 
     private final UserService userService;
-    private final RolesRepository rolesRepository;
     private final CustomerRepository customerRepository;
 
-    private final SMSService smsService;
     private final ReporterService reporterService;
 
     private final AuditService auditService;
 
 
     public CustomerServiceImpl(UserService userService,
-                               RolesRepository rolesRepository,
                                CustomerRepository customerRepository,
-                               SMSService smsService,
                                ReporterService reporterService,
                                AuditService auditService) {
 
         this.userService = userService;
-        this.rolesRepository = rolesRepository;
         this.customerRepository = customerRepository;
-        this.smsService = smsService;
         this.reporterService = reporterService;
         this.auditService = auditService;
     }
 
-    @Override
-    public ResponseWrapper<Boolean> registerCustomer(CustomerMobileRegistrationRequest customerRegisterRequest,
-                                                     MultipartFile photoFile) {
-        try {
-
-            Optional<RolesEntity> customerRole = rolesRepository.findByName(Roles.ROLE_CUSTOMER);
-
-            if (!customerRole.isPresent()) {
-                throw new NotFoundException("Role customer Not Found");
-            }
-
-//            String photoUrlRecord ="";
-//            photoUrlRecord = cloudStorageService.uploadFile(photoFile);
-
-            RegistrationRequest registrationRequest = new RegistrationRequest();
-            registrationRequest.setName(customerRegisterRequest.getName());
-            registrationRequest.setPhone(customerRegisterRequest.getPhone());
-            registrationRequest.setPassword(customerRegisterRequest.getPassword());
-
-            UserEntity savedUser = userService.registerUser(customerRegisterRequest.getPhone(),
-                    customerRole.get(), registrationRequest, "", true).getData();
-
-            CustomerEntity customerEntityRecord = CustomerEntity.builder()
-                    .horoscope(customerRegisterRequest.getHoroscope())
-                    .user(savedUser).build();
-
-            customerRepository.save(customerEntityRecord);
-            return reporterService.reportSuccess("A new customer  has been added ");
-        } catch (Exception e) {
-            return reporterService.reportError(e);
-        }
-    }
 
     @Transactional
     @Override
