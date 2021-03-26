@@ -40,6 +40,8 @@ public class CarInstanceEntity {
     @OneToMany(mappedBy = "car")
     private List<PriceEntity> prices;
 
+    private boolean bestSeller;
+
     private boolean active;
 
 }

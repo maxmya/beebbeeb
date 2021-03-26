@@ -6,11 +6,10 @@ import com.trixpert.beebbeeb.data.mappers.AddressMapper;
 import com.trixpert.beebbeeb.data.repositories.*;
 import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.RegistrationRequest;
-import com.trixpert.beebbeeb.data.response.CarItemResponse;
-import com.trixpert.beebbeeb.data.response.CustomerProfileResponse;
-import com.trixpert.beebbeeb.data.response.OtpResponse;
-import com.trixpert.beebbeeb.data.response.ResponseWrapper;
+import com.trixpert.beebbeeb.data.response.*;
 import com.trixpert.beebbeeb.data.to.AddressDTO;
+import com.trixpert.beebbeeb.data.to.BrandDTO;
+import com.trixpert.beebbeeb.data.to.TypeDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
 import io.swagger.annotations.Api;
@@ -35,6 +34,7 @@ public class MobileController {
     private final AddressRepository addressRepository;
     private final CarInstanceRepository carInstanceRepository;
     private final RolesRepository rolesRepository;
+    private final BannerRepository bannerRepository;
 
     private final TypeService typeService;
     private final BrandService brandService;
@@ -56,6 +56,7 @@ public class MobileController {
                             AddressRepository addressRepository,
                             CarInstanceRepository carInstanceRepository,
                             RolesRepository rolesRepository,
+                            BannerRepository bannerRepository,
                             TypeService typeService,
                             BrandService brandService,
                             UserService userService,
@@ -70,6 +71,7 @@ public class MobileController {
         this.addressRepository = addressRepository;
         this.carInstanceRepository = carInstanceRepository;
         this.rolesRepository = rolesRepository;
+        this.bannerRepository = bannerRepository;
         this.typeService = typeService;
         this.brandService = brandService;
         this.userService = userService;
@@ -129,9 +131,7 @@ public class MobileController {
         }
         List<AddressEntity> addressEntities = addressRepository.findByCustomer(customerEntity.get());
         List<AddressDTO> addresses = new ArrayList<>();
-        addressEntities.forEach(address -> {
-            addresses.add(addressMapper.convertToDTO(address));
-        });
+        addressEntities.forEach(address -> addresses.add(addressMapper.convertToDTO(address)));
         return ResponseEntity.ok(reporterService.reportSuccess(addresses));
     }
 
@@ -272,5 +272,83 @@ public class MobileController {
         }
         return x.toString();
     }
+
+
+    @GetMapping("/home")
+    public ResponseEntity<ResponseWrapper<MobileHomeResponse>> getMobileHome() {
+        try {
+            List<TypeDTO> types = typeService.listAllTypes(true).getData();
+            List<BrandDTO> brands = brandService.getAllBrands(true).getData();
+            List<LinkableImage> mainBanners = new ArrayList<>();
+            List<LinkableImage> sliderBanners = new ArrayList<>();
+            bannerRepository.findAllByActive(true)
+                    .forEach(bannerEntity -> {
+                        if (!bannerEntity.isMain()) {
+                            LinkableImage linkableImage = new LinkableImage();
+                            linkableImage.setId(bannerEntity.getId());
+                            linkableImage.setUrl(bannerEntity.getPhoto().getPhotoUrl());
+                            sliderBanners.add(linkableImage);
+                        } else {
+                            LinkableImage linkableImage = new LinkableImage();
+                            linkableImage.setId(bannerEntity.getId());
+                            linkableImage.setUrl(bannerEntity.getPhoto().getPhotoUrl());
+                            mainBanners.add(linkableImage);
+                        }
+                    });
+
+            List<CarItemResponse> carItemResponses = new ArrayList<>();
+            carInstanceRepository.findAllByActive(true)
+                    .forEach(carInstance -> {
+                        if (carInstance.isBestSeller()) {
+                            String carPhoto = "";
+                            for (PhotoEntity photoEntity : carInstance.getCar().getPhotos()) {
+                                if (photoEntity.isMainPhoto()) {
+                                    carPhoto = photoEntity.getPhotoUrl();
+                                    break;
+                                }
+                            }
+
+                            if ("".equals(carPhoto)) {
+                                for (PhotoEntity photoEntity : carInstance.getCar().getModel().getPhotos()) {
+                                    if (photoEntity.isMainPhoto()) {
+                                        carPhoto = photoEntity.getPhotoUrl();
+                                        break;
+                                    }
+                                }
+                            }
+
+                            String carPrice = "0";
+                            if (carInstance.getPrices() != null && carInstance.getPrices().size() > 1) {
+                                carPrice = (carInstance.getPrices().get(carInstance.getPrices().size() - 1)).getAmount();
+                            } else if (carInstance.getPrices() != null && carInstance.getPrices().size() == 1) {
+                                carPrice = carInstance.getPrices().get(0).getAmount();
+                            }
+
+                            carItemResponses.add(CarItemResponse.builder()
+                                    .id(carInstance.getId())
+                                    .image(carPhoto)
+                                    .currency("EGP")
+                                    .name(carInstance.getCar().getModel().getName() + " " + carInstance.getCar().getCategory().getName())
+                                    .price(carPrice)
+                                    .rating(4)
+                                    .build());
+                        }
+                    });
+
+            MobileHomeResponse mobileHomeResponse = MobileHomeResponse
+                    .builder()
+                    .bestSellers(carItemResponses)
+                    .carBrands(brands)
+                    .carTypes(types)
+                    .mainBanners(mainBanners)
+                    .sliderImages(sliderBanners)
+                    .build();
+
+            return ResponseEntity.ok(reporterService.reportSuccess(mobileHomeResponse));
+        } catch (Exception e) {
+            return ResponseEntity.ok(reporterService.reportError(e));
+        }
+    }
+
 
 }
