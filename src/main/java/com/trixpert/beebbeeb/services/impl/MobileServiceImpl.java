@@ -163,7 +163,7 @@ public class MobileServiceImpl implements MobileService {
             List<CarInstanceEntity> carInstanceEntityList;
             if (page != null) {
                 if (size == null) {
-                    size = "5";
+                    size = "10";
                 }
                 PageRequest paging = PageRequest.of(Integer.parseInt(page), Integer.parseInt(size));
                 Page<CarInstanceEntity> carInstances = carInstanceRepository.findAllByActive(true, paging);
