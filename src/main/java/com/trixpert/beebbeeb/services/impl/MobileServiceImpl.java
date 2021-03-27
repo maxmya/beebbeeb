@@ -156,7 +156,7 @@ public class MobileServiceImpl implements MobileService {
     }
 
     @Override
-    public ResponseWrapper<List<CarItemResponse>> listCars(String page, String size) {
+    public ResponseWrapper<List<CarItemResponse>> listCars(String page, String size, String query) {
         try {
             List<CarItemResponse> carItemResponses = new ArrayList<>();
 
@@ -172,7 +172,8 @@ public class MobileServiceImpl implements MobileService {
                 carInstanceEntityList = carInstanceRepository.findAllByActive(true);
             }
 
-            carInstanceEntityList.forEach(carInstance -> {
+            for (CarInstanceEntity carInstance : carInstanceEntityList) {
+
                 String carPhoto = "";
                 for (PhotoEntity photoEntity : carInstance.getCar().getPhotos()) {
                     if (photoEntity.isMainPhoto()) {
@@ -197,6 +198,20 @@ public class MobileServiceImpl implements MobileService {
                     carPrice = carInstance.getPrices().get(0).getAmount();
                 }
 
+                if (query != null) {
+                    // search in type , category , model
+                    query = query.toLowerCase();
+                    boolean desired =
+                            (carInstance.getCar().getModel().getName().toLowerCase().contains(query))
+                                    || (carInstance.getCar().getCategory().getName().toLowerCase().contains(query))
+                                    || (carInstance.getCar().getCategory().getType().getName().toLowerCase().contains(query))
+                                    || (carInstance.getCar().getBrand().getName().toLowerCase().contains(query));
+
+                    if (!desired) {
+                        continue;
+                    }
+                }
+
                 carItemResponses.add(
                         CarItemResponse.builder()
                                 .id(carInstance.getId())
@@ -207,7 +222,7 @@ public class MobileServiceImpl implements MobileService {
                                 .rating(4)
                                 .build()
                 );
-            });
+            }
 
             return reporterService.reportSuccess(carItemResponses);
         } catch (Exception e) {

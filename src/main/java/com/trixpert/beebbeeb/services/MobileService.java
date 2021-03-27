@@ -15,7 +15,7 @@ public interface MobileService {
 
     ResponseWrapper<Boolean> saveAddress(AddressDTO address);
 
-    ResponseWrapper<List<CarItemResponse>> listCars(String page, String size);
+    ResponseWrapper<List<CarItemResponse>> listCars(String page, String size, String query);
 
     ResponseWrapper<OtpResponse> registerUser(CustomerMobileRegistrationRequest customerRegisterRequest);
 

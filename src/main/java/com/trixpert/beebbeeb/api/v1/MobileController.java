@@ -41,8 +41,9 @@ public class MobileController {
     @GetMapping("/list/cars")
     public ResponseEntity<ResponseWrapper<List<CarItemResponse>>> listCars(
             @RequestParam(value = "page", required = false) String page,
-            @RequestParam(value = "size", required = false) String size) {
-        return ResponseEntity.ok(mobileService.listCars(page, size));
+            @RequestParam(value = "size", required = false) String size,
+            @RequestParam(value = "query", required = false) String query) {
+        return ResponseEntity.ok(mobileService.listCars(page, size, query));
     }
 
 
