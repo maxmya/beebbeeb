@@ -17,7 +17,6 @@ import java.util.Date;
 @Builder
 public class PurchasingRequestDTO {
     private Long id;
-    private PriceEntity price;
 
     private String status;
 

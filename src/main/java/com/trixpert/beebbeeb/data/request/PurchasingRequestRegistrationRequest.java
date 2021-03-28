@@ -17,8 +17,6 @@ import java.util.Date;
 @Builder
 public class PurchasingRequestRegistrationRequest {
 
-    private long priceId;
-
     private String status;
 
     private String payment_type;

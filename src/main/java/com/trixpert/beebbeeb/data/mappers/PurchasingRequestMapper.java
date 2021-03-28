@@ -9,7 +9,6 @@ public class PurchasingRequestMapper {
     public PurchasingRequestEntity convertToEntity (PurchasingRequestDTO purchasingRequestDTO){
         return PurchasingRequestEntity.builder()
                 .id(purchasingRequestDTO.getId())
-                .price(purchasingRequestDTO.getPrice())
                 .status(purchasingRequestDTO.getStatus())
                 .payment_type(purchasingRequestDTO.getPayment_type())
                 .comment(purchasingRequestDTO.getComment())
@@ -23,7 +22,6 @@ public class PurchasingRequestMapper {
     public PurchasingRequestDTO convertToDTO(PurchasingRequestEntity purchasingRequestEntity){
         return PurchasingRequestDTO.builder()
                 .id(purchasingRequestEntity.getId())
-                .price(purchasingRequestEntity.getPrice())
                 .status(purchasingRequestEntity.getStatus())
                 .payment_type(purchasingRequestEntity.getPayment_type())
                 .comment(purchasingRequestEntity.getComment())

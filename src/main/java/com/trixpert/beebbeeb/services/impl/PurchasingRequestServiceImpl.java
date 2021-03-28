@@ -17,6 +17,7 @@ import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.PurchasingRequestDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
+import org.checkerframework.checker.nullness.Opt;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -73,7 +74,7 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
             PurchasingRequestRegistrationRequest purchasingRequestRegistrationRequest,
             String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
-        try{
+        try {
             Optional<VendorEntity> optionalVendorEntity = vendorRepository.findById(
                     purchasingRequestRegistrationRequest.getVendorId());
             if (!optionalVendorEntity.isPresent()) {
@@ -95,7 +96,6 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
             }
 
             CarInstanceEntity carInstanceEntityRecord = optionalCarInstanceEntity.get();
-            // we need to check price Service and add it after merge
             PurchasingRequestEntity purchasingRequestEntityRecord = PurchasingRequestEntity.builder()
                     .status(purchasingRequestRegistrationRequest.getStatus())
                     .payment_type(purchasingRequestRegistrationRequest.getPayment_type())
@@ -108,7 +108,7 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
 
             purchasingRequestRepository.save(purchasingRequestEntityRecord);
             return reporterService.reportSuccess("PurchasingRequest Registerd Succesfully");
-        }catch (Exception e){
+        } catch (Exception e) {
             return reporterService.reportError(e);
         }
     }
@@ -123,7 +123,7 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
                     purchasingRequestRepository.findById(
                             purchasingRequestId);
             if (!optionalPurchasingRequestEntity.isPresent()) {
-                throw new NotFoundException("This Vendor doesn't exits !");
+                throw new NotFoundException("This Purcchasing Request doesn't exits !");
             }
             PurchasingRequestEntity purchasingRequestEntityRecord =
                     optionalPurchasingRequestEntity.get();
@@ -146,47 +146,227 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
             return reporterService.reportSuccess(purchasingRequestDTOList);
         } catch (Exception e) {
             return reporterService.reportError(e);
-        }    }
+        }
+    }
 
     @Override
     public ResponseWrapper<Boolean> updatePurchasingRequest(
             PurchasingRequestRegistrationRequest purchasingRequestRegistrationRequest,
-        long purchasingRequstId, String AuthHeader) {
-        return null;
+            long purchasingRequestId, String authHeader) {
+        String username = auditService.getUsernameForAudit(authHeader);
+        try {
+            Optional<PurchasingRequestEntity> optionalPurchasingRequestEntity =
+                    purchasingRequestRepository.findById(purchasingRequestId);
+            if (!optionalPurchasingRequestEntity.isPresent()) {
+                throw new NotFoundException("this purchasing request doesn't exist");
+            }
+            PurchasingRequestEntity purchasingRequestEntityRecord = optionalPurchasingRequestEntity.get();
+            if (purchasingRequestRegistrationRequest.getStatus() != null &&
+                    purchasingRequestRegistrationRequest.getStatus() ==
+                            purchasingRequestEntityRecord.getStatus()) {
+                purchasingRequestEntityRecord.setStatus(
+                        purchasingRequestRegistrationRequest.getStatus());
+            }
+
+            if (purchasingRequestRegistrationRequest.getPayment_type() != null &&
+                    purchasingRequestRegistrationRequest.getPayment_type() ==
+                            purchasingRequestEntityRecord.getPayment_type()) {
+                purchasingRequestEntityRecord.setPayment_type(
+                        purchasingRequestRegistrationRequest.getPayment_type());
+            }
+            if (purchasingRequestRegistrationRequest.getComment() != null &&
+                    purchasingRequestRegistrationRequest.getComment() ==
+                            purchasingRequestEntityRecord.getComment()) {
+                purchasingRequestEntityRecord.setComment(
+                        purchasingRequestRegistrationRequest.getComment());
+            }
+            if (purchasingRequestRegistrationRequest.getDate() != null &&
+                    purchasingRequestRegistrationRequest.getDate() ==
+                            purchasingRequestEntityRecord.getDate()) {
+                purchasingRequestEntityRecord.setDate(
+                        purchasingRequestRegistrationRequest.getDate());
+            }
+            if (vendorRepository.findById(purchasingRequestRegistrationRequest.getVendorId()) != null &&
+                    vendorRepository.findById(purchasingRequestRegistrationRequest.getVendorId())
+                            .equals(purchasingRequestEntityRecord.getVendor())) {
+                purchasingRequestEntityRecord.setVendor(
+                        vendorRepository.getOne(purchasingRequestRegistrationRequest.getVendorId()));
+            }
+            if (customerRepository.findById(purchasingRequestRegistrationRequest.getCustomerId()) != null &&
+                    customerRepository.findById(purchasingRequestRegistrationRequest.getCustomerId())
+                            .equals(purchasingRequestEntityRecord.getCustomer())) {
+                purchasingRequestEntityRecord.setCustomer(
+                        customerRepository.getOne(purchasingRequestRegistrationRequest.getCustomerId()));
+
+            }
+            if (carInstanceRepository.findById(purchasingRequestRegistrationRequest.getCarInstanceId()) != null &&
+                    carInstanceRepository.findById(purchasingRequestRegistrationRequest.getCarInstanceId())
+                            .equals(purchasingRequestEntityRecord.getCarInstanceEntity())) {
+                purchasingRequestEntityRecord.setCarInstanceEntity(
+                        carInstanceRepository.getOne(purchasingRequestRegistrationRequest.getCarInstanceId())
+                );
+            }
+            purchasingRequestRepository.save(purchasingRequestEntityRecord);
+            return reporterService.reportSuccess("Purchasing Request updated successfully");
+
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+
     }
 
     @Override
     public ResponseWrapper<PurchasingRequestDTO> getPurchasingRequest(long purchasingRequestId) {
-        return null;
+        try {
+            Optional<PurchasingRequestEntity> optionalPurchasingRequestEntity =
+                    purchasingRequestRepository.findById(
+                            purchasingRequestId);
+            if (!optionalPurchasingRequestEntity.isPresent()) {
+                throw new NotFoundException("This Purchasing Request doesn't exits !");
+            }
+            PurchasingRequestEntity purchasingRequestEntityRecord =
+                    optionalPurchasingRequestEntity.get();
+            return reporterService.reportSuccess(purchasingRequestMapper.
+                    convertToDTO(purchasingRequestEntityRecord));
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
     }
 
     @Override
-    public ResponseWrapper<List<PurchasingRequestDTO>> listPurchasingRequestsForVendor(long vendorId) {
-        return null;
+    public ResponseWrapper<List<PurchasingRequestDTO>> listPurchasingRequestsForVendor(
+            boolean active, long vendorId) {
+        try {
+            Optional<VendorEntity> optionalVendorEntity = vendorRepository.findById(vendorId);
+            if (!optionalVendorEntity.isPresent()) {
+                throw new NotFoundException("This Vendor doesn't exist");
+            }
+            VendorEntity vendorEntityRecord = optionalVendorEntity.get();
+
+            List<PurchasingRequestDTO> purchasingRequestDTOList = new ArrayList<>();
+            purchasingRequestRepository.findAllByActiveAndVendor(active, vendorEntityRecord)
+                    .forEach(purchasingRequestEntity ->
+                    purchasingRequestDTOList.add(purchasingRequestMapper.
+                            convertToDTO(purchasingRequestEntity)));
+            return reporterService.reportSuccess(purchasingRequestDTOList);
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
     }
 
     @Override
-    public ResponseWrapper<List<PurchasingRequestDTO>> getPurchasingRequestForVendor(long vendorId) {
-        return null;
+    public ResponseWrapper<PurchasingRequestDTO> getPurchasingRequestForVendor(
+            long purchasingRequestId, long vendorId) {
+        try {
+            Optional<VendorEntity> optionalVendorEntity = vendorRepository.findById(vendorId);
+            if (!optionalVendorEntity.isPresent()) {
+                throw new NotFoundException("This Vendor doesn't exist");
+            }
+            VendorEntity vendorEntityRecord = optionalVendorEntity.get();
+            Optional<PurchasingRequestEntity> optionalPurchasingRequestEntity =
+                    purchasingRequestRepository.findByIdAndVendor(
+                            purchasingRequestId, vendorEntityRecord);
+            if (!optionalPurchasingRequestEntity.isPresent()) {
+                throw new NotFoundException("This Purchasing Request doesn't exits !");
+            }
+            PurchasingRequestEntity purchasingRequestEntityRecord =
+                    optionalPurchasingRequestEntity.get();
+            return reporterService.reportSuccess(purchasingRequestMapper.
+                    convertToDTO(purchasingRequestEntityRecord));
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
     }
 
     @Override
-    public ResponseWrapper<List<PurchasingRequestDTO>> listPurchasingRequestsForCustomer(long vendorId) {
-        return null;
+    public ResponseWrapper<List<PurchasingRequestDTO>> listPurchasingRequestsForCustomer(
+            boolean active , long customerId){
+       try {
+        Optional<CustomerEntity> optionalCustomerEntity = customerRepository.findById(customerId);
+        if (!optionalCustomerEntity.isPresent()) {
+            throw new NotFoundException("This Customer doesn't exist");
+        }
+        CustomerEntity customerEntityRecord = optionalCustomerEntity.get();
+
+        List<PurchasingRequestDTO> purchasingRequestDTOList = new ArrayList<>();
+        purchasingRequestRepository.findAllByActiveAndCustomer(active ,customerEntityRecord)
+                .forEach(purchasingRequestEntity ->
+                purchasingRequestDTOList.add(purchasingRequestMapper.
+                        convertToDTO(purchasingRequestEntity)));
+        return reporterService.reportSuccess(purchasingRequestDTOList);
+    } catch (Exception e) {
+        return reporterService.reportError(e);
+    }
     }
 
     @Override
-    public ResponseWrapper<List<PurchasingRequestDTO>> getPurchasingRequestForCustomer(long vendorId) {
-        return null;
+    public ResponseWrapper<PurchasingRequestDTO> getPurchasingRequestForCustomer(
+            long purchasingRequestId, long customerId) {
+        try {
+            Optional<CustomerEntity> optionalCustomerEntity =
+                    customerRepository.findById(customerId);
+            if (!optionalCustomerEntity.isPresent()) {
+                throw new NotFoundException("This Customer doesn't exist");
+            }
+            CustomerEntity customerEntityRecord = optionalCustomerEntity.get();
+            Optional<PurchasingRequestEntity> optionalPurchasingRequestEntity =
+                    purchasingRequestRepository.findByIdAndCustomer(
+                            purchasingRequestId, customerEntityRecord);
+            if (!optionalPurchasingRequestEntity.isPresent()) {
+                throw new NotFoundException("This Purchasing Request doesn't exits !");
+            }
+            PurchasingRequestEntity purchasingRequestEntityRecord =
+                    optionalPurchasingRequestEntity.get();
+            return reporterService.reportSuccess(purchasingRequestMapper.
+                    convertToDTO(purchasingRequestEntityRecord));
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
     }
 
     @Override
-    public ResponseWrapper<List<PurchasingRequestDTO>> listPurchasingRequestsForCar(long vendorId) {
-        return null;
-    }
+    public ResponseWrapper<List<PurchasingRequestDTO>> listPurchasingRequestsForCar(
+            boolean active, long carId) {
+        try {
+            Optional<CarInstanceEntity> optionalCarInstanceEntity =
+                    carInstanceRepository.findById(carId);
+            if (!optionalCarInstanceEntity.isPresent()) {
+                throw new NotFoundException("This Car Instance doesn't exist");
+            }
+            CarInstanceEntity carInstanceEntityRecord = optionalCarInstanceEntity.get();
+
+            List<PurchasingRequestDTO> purchasingRequestDTOList = new ArrayList<>();
+            purchasingRequestRepository.findAllByActiveAndCarInstanceEntity(
+                    active ,carInstanceEntityRecord).forEach(purchasingRequestEntity ->
+                    purchasingRequestDTOList.add(purchasingRequestMapper.
+                            convertToDTO(purchasingRequestEntity)));
+            return reporterService.reportSuccess(purchasingRequestDTOList);
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }    }
 
     @Override
-    public ResponseWrapper<List<PurchasingRequestDTO>> getPurchasingRequestForCar(long vendorId) {
-        return null;
+    public ResponseWrapper<PurchasingRequestDTO> getPurchasingRequestForCar(
+            long purchasingRequestId, long carId) {
+        try {
+            Optional<CarInstanceEntity> optionalCarInstanceEntity =
+                    carInstanceRepository.findById(carId);
+            if (!optionalCarInstanceEntity.isPresent()) {
+                throw new NotFoundException("This Car Instance doesn't exist");
+            }
+            CarInstanceEntity carInstanceEntityRecord = optionalCarInstanceEntity.get();
+            Optional<PurchasingRequestEntity> optionalPurchasingRequestEntity =
+                    purchasingRequestRepository.findByIdANDAndCarInstanceEntity(
+                            purchasingRequestId, carInstanceEntityRecord);
+            if (!optionalPurchasingRequestEntity.isPresent()) {
+                throw new NotFoundException("This Purchasing Request doesn't exits !");
+            }
+            PurchasingRequestEntity purchasingRequestEntityRecord =
+                    optionalPurchasingRequestEntity.get();
+            return reporterService.reportSuccess(purchasingRequestMapper.
+                    convertToDTO(purchasingRequestEntityRecord));
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
     }
 }

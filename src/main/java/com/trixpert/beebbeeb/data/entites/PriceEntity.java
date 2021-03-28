@@ -31,8 +31,5 @@ public class PriceEntity {
     @JoinColumn(name = "car_id", referencedColumnName = "id")
     private CarInstanceEntity car;
 
-    @OneToOne
-    @JoinColumn(name ="purchasing_request")
-    private PurchasingRequestEntity purchasingRequestEntity;
 
 }

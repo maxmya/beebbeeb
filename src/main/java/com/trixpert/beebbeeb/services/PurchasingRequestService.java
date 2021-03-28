@@ -21,18 +21,24 @@ public interface PurchasingRequestService {
                                                      String authHeader);
     ResponseWrapper<PurchasingRequestDTO> getPurchasingRequest(long purchasingRequestId);
 
-    ResponseWrapper<List<PurchasingRequestDTO>> listPurchasingRequestsForVendor(long vendorId);
+    ResponseWrapper<List<PurchasingRequestDTO>> listPurchasingRequestsForVendor(boolean active ,
+                                                                                long vendorId);
 
-    ResponseWrapper<List<PurchasingRequestDTO>> getPurchasingRequestForVendor(long vendorId);
-
-
-    ResponseWrapper<List<PurchasingRequestDTO>> listPurchasingRequestsForCustomer(long vendorId);
-
-    ResponseWrapper<List<PurchasingRequestDTO>> getPurchasingRequestForCustomer(long vendorId);
+    ResponseWrapper<PurchasingRequestDTO> getPurchasingRequestForVendor(long purchasingRequestId ,
+                                                                              long vendorId);
 
 
-    ResponseWrapper<List<PurchasingRequestDTO>> listPurchasingRequestsForCar(long vendorId);
+    ResponseWrapper<List<PurchasingRequestDTO>> listPurchasingRequestsForCustomer(boolean active ,
+                                                                                  long customerId);
 
-    ResponseWrapper<List<PurchasingRequestDTO>> getPurchasingRequestForCar(long vendorId);
+    ResponseWrapper<PurchasingRequestDTO> getPurchasingRequestForCustomer(long purchasingRequestId ,
+                                                                                long customerId);
+
+
+    ResponseWrapper<List<PurchasingRequestDTO>> listPurchasingRequestsForCar(boolean active ,
+                                                                             long carInstanceId);
+
+    ResponseWrapper<PurchasingRequestDTO> getPurchasingRequestForCar(long purchasingRequestId ,
+                                                                           long carInstanceId);
 
 }

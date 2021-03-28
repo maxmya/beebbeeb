@@ -20,9 +20,6 @@ public class PurchasingRequestEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "price_id" , referencedColumnName = "id")
-    private PriceEntity price;
 
     private String status;
 
