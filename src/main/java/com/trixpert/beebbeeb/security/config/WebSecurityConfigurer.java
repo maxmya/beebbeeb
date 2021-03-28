@@ -68,7 +68,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .userDetailsService(this.userDetailsService)
                 .passwordEncoder(passwordEncoder());
     }
-    
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -81,6 +81,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/v1/auth/**").permitAll()
                 .antMatchers("/api/v1/mobile/register/customer").permitAll()
+                .antMatchers("/api/v1/mobile/register/verify/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
