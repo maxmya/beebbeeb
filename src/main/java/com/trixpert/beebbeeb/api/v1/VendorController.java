@@ -28,7 +28,7 @@ public class VendorController {
         this.vendorService = vendorService;
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PostMapping(value = "/register", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation("Register Vendor With Email & Password")
     public ResponseEntity<ResponseWrapper<Boolean>> registerVendor(
@@ -38,21 +38,21 @@ public class VendorController {
         return ResponseEntity.ok(vendorService.registerVendor(vendorRegistrationRequest, authorizationHeader));
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @GetMapping("/list/active")
     @ApiOperation("Get All Active Vendors")
     public ResponseEntity<ResponseWrapper<List<VendorDTO>>> getAllActiveVendors() {
         return ResponseEntity.ok(vendorService.getAllVendors(true));
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @GetMapping("/list/inactive")
     @ApiOperation("Get All Inactive Vendors")
     public ResponseEntity<ResponseWrapper<List<VendorDTO>>> getAllInactiveVendors() {
         return ResponseEntity.ok(vendorService.getAllVendors(false));
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PutMapping("/update/{vendorId}")
     @ApiOperation("Updating an existing vendor with new data")
     public ResponseEntity<ResponseWrapper<Boolean>> updateVendor(
@@ -66,7 +66,7 @@ public class VendorController {
                 , vendorId, authorizationHeader));
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PutMapping("/{vendorId}")
     @ApiOperation("Deleting a vendor with vendor Id")
     public ResponseEntity<ResponseWrapper<Boolean>> deleteVendor(
@@ -79,7 +79,7 @@ public class VendorController {
 
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @GetMapping("/get/{vendorId}")
     @ApiOperation("Get vendor by Id")
     public ResponseEntity<ResponseWrapper<VendorDTO>> getVendor(

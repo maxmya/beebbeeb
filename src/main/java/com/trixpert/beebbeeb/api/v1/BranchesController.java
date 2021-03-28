@@ -29,7 +29,7 @@ public class BranchesController {
     }
 
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PostMapping("/{vendorID}/register")
     @ApiOperation("Add Branches List For Specific Vendor")
     public ResponseEntity<ResponseWrapper<Boolean>> registerBranchForVendor(
@@ -44,7 +44,7 @@ public class BranchesController {
     }
 
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @GetMapping("/{vendorId}/list/active")
     @ApiOperation("Get List Of All Active Branches For Specific Vendor")
     public ResponseEntity<ResponseWrapper<List<BranchDTO>>> getActiveBranchesForVendor(
@@ -53,7 +53,7 @@ public class BranchesController {
         return ResponseEntity.ok(branchService.getAllBranchesForVendor(vendorId, true));
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @GetMapping("/{vendorId}/list/inactive")
     @ApiOperation("Get List Of All Inactive Branches For Specific Vendor")
     public ResponseEntity<ResponseWrapper<List<BranchDTO>>> getInactiveBranchesForVendor(
@@ -62,7 +62,7 @@ public class BranchesController {
         return ResponseEntity.ok(branchService.getAllBranchesForVendor(vendorId, false));
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PutMapping("/update/{branchId}")
     @ApiOperation("Updating an existing branch for specific vendor")
     public ResponseEntity<ResponseWrapper<Boolean>> updateBranchForVendor(
@@ -75,7 +75,7 @@ public class BranchesController {
                 branchId, authorizationHeader));
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PutMapping("/delete/{branchID}")
     @ApiOperation("Deleting an existing branch for a specific vendor")
     public ResponseEntity<ResponseWrapper<Boolean>> deleteBranchForVendor(
@@ -85,7 +85,7 @@ public class BranchesController {
         return ResponseEntity.ok(branchService.deleteBranchForVendor(branchID, authorizationHeader));
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @GetMapping("/cars/list/{branchId}")
     @ApiOperation("Getting list of cars for specific branch")
     public ResponseEntity<ResponseWrapper<List<CarDTO>>> listCarsForBranch(
@@ -93,7 +93,7 @@ public class BranchesController {
         return ResponseEntity.ok(branchService.listCarsForBranch(branchId));
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @GetMapping("/{vendorId}/get/{branchId}")
     @ApiOperation("Get Branch For Specific Vendor")
     public ResponseEntity<ResponseWrapper<BranchDTO>> getBranchForVendor(

@@ -27,7 +27,7 @@ public class CarInstanceController {
     }
 
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PostMapping("/add")
     @ApiOperation("Adding a new Car Instance")
     public ResponseEntity<ResponseWrapper<Boolean>> addCarInstance(
@@ -37,33 +37,33 @@ public class CarInstanceController {
         return ResponseEntity.ok(carInstanceService.addCarInstance(carInstanceRequest, authorizationHeader));
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @GetMapping("/list/active")
     @ApiOperation("Get All Active Car Instances")
-    public ResponseEntity<ResponseWrapper<List<CarInstanceDTO>>> getAllActiveCarInstances(){
+    public ResponseEntity<ResponseWrapper<List<CarInstanceDTO>>> getAllActiveCarInstances() {
         return ResponseEntity.ok(carInstanceService.getALLCarInstances(true));
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @GetMapping("/list/inactive")
     @ApiOperation("Get All Inactive Car Instances")
-    public ResponseEntity<ResponseWrapper<List<CarInstanceDTO>>> getAllInactiveCarInstances(){
+    public ResponseEntity<ResponseWrapper<List<CarInstanceDTO>>> getAllInactiveCarInstances() {
         return ResponseEntity.ok(carInstanceService.getALLCarInstances(false));
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @GetMapping("{vendorId}/list/active")
     @ApiOperation("Get All Active Car Instances for specific vendor")
     public ResponseEntity<ResponseWrapper<List<CarInstanceDTO>>> getAllActiveCarInstancesForVendor(
-            @PathVariable("vendorId") long vendorId){
+            @PathVariable("vendorId") long vendorId) {
         return ResponseEntity.ok(carInstanceService.getAllCarInstancesForVendor(vendorId, true));
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @GetMapping("{vendorId}/list/inactive")
     @ApiOperation("Get All Inactive Car Instances for specific vendor")
     public ResponseEntity<ResponseWrapper<List<CarInstanceDTO>>> getAllInactiveCarInstancesForVendor(
-            @PathVariable("vendorId") long vendorId){
+            @PathVariable("vendorId") long vendorId) {
         return ResponseEntity.ok(carInstanceService.getAllCarInstancesForVendor(vendorId, false));
     }
 }
