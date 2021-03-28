@@ -31,5 +31,4 @@ public class PriceEntity {
     @JoinColumn(name = "car_id", referencedColumnName = "id")
     private CarInstanceEntity car;
 
-
 }

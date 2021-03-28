@@ -41,7 +41,7 @@ public class CustomerEntity {
     private List<AddressEntity> addresses;
 
     @OneToMany(mappedBy ="purchasing_request")
-    private List<PurchasingRequestEntity> purchasingRequestEntityList;
+    private List<PurchasingRequestEntity> purchasingRequests;
 
 
 }

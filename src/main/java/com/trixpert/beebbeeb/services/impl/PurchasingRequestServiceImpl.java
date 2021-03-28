@@ -98,12 +98,12 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
             CarInstanceEntity carInstanceEntityRecord = optionalCarInstanceEntity.get();
             PurchasingRequestEntity purchasingRequestEntityRecord = PurchasingRequestEntity.builder()
                     .status(purchasingRequestRegistrationRequest.getStatus())
-                    .payment_type(purchasingRequestRegistrationRequest.getPayment_type())
+                    .paymentType(purchasingRequestRegistrationRequest.getPaymentType())
                     .comment(purchasingRequestRegistrationRequest.getComment())
                     .date(purchasingRequestRegistrationRequest.getDate())
                     .vendor(vendorEntityRecord)
                     .customer(customerEntityRecord)
-                    .carInstanceEntity(carInstanceEntityRecord)
+                    .carInstance(carInstanceEntityRecord)
                     .build();
 
             purchasingRequestRepository.save(purchasingRequestEntityRecord);
@@ -168,11 +168,11 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
                         purchasingRequestRegistrationRequest.getStatus());
             }
 
-            if (purchasingRequestRegistrationRequest.getPayment_type() != null &&
-                    purchasingRequestRegistrationRequest.getPayment_type() ==
-                            purchasingRequestEntityRecord.getPayment_type()) {
-                purchasingRequestEntityRecord.setPayment_type(
-                        purchasingRequestRegistrationRequest.getPayment_type());
+            if (purchasingRequestRegistrationRequest.getPaymentType() != null &&
+                    purchasingRequestRegistrationRequest.getPaymentType() ==
+                            purchasingRequestEntityRecord.getPaymentType()) {
+                purchasingRequestEntityRecord.setPaymentType(
+                        purchasingRequestRegistrationRequest.getPaymentType());
             }
             if (purchasingRequestRegistrationRequest.getComment() != null &&
                     purchasingRequestRegistrationRequest.getComment() ==
@@ -201,8 +201,8 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
             }
             if (carInstanceRepository.findById(purchasingRequestRegistrationRequest.getCarInstanceId()) != null &&
                     carInstanceRepository.findById(purchasingRequestRegistrationRequest.getCarInstanceId())
-                            .equals(purchasingRequestEntityRecord.getCarInstanceEntity())) {
-                purchasingRequestEntityRecord.setCarInstanceEntity(
+                            .equals(purchasingRequestEntityRecord.getCarInstance())) {
+                purchasingRequestEntityRecord.setCarInstance(
                         carInstanceRepository.getOne(purchasingRequestRegistrationRequest.getCarInstanceId())
                 );
             }
@@ -213,6 +213,31 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
             return reporterService.reportError(e);
         }
 
+    }
+
+    @Override
+    public ResponseWrapper<Boolean> updateStatusForPurchasingRequest(long purchasingRequestId,
+                                                                     String status,
+                                                                     String authHeader) {
+        String username = auditService.getUsernameForAudit(authHeader);
+        try {
+            Optional<PurchasingRequestEntity> optionalPurchasingRequestEntity =
+                    purchasingRequestRepository.findById(purchasingRequestId);
+            if (!optionalPurchasingRequestEntity.isPresent()) {
+                throw new NotFoundException("this purchasing request doesn't exist");
+            }
+            PurchasingRequestEntity purchasingRequestEntityRecord =
+                    optionalPurchasingRequestEntity.get();
+            if (status != null && status == purchasingRequestEntityRecord.getStatus()) {
+                purchasingRequestEntityRecord.setStatus(status);
+            }
+
+            purchasingRequestRepository.save(purchasingRequestEntityRecord);
+            return reporterService.reportSuccess("Status of Purchasing Request updated successfully");
+
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
     }
 
     @Override
@@ -246,8 +271,8 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
             List<PurchasingRequestDTO> purchasingRequestDTOList = new ArrayList<>();
             purchasingRequestRepository.findAllByActiveAndVendor(active, vendorEntityRecord)
                     .forEach(purchasingRequestEntity ->
-                    purchasingRequestDTOList.add(purchasingRequestMapper.
-                            convertToDTO(purchasingRequestEntity)));
+                            purchasingRequestDTOList.add(purchasingRequestMapper.
+                                    convertToDTO(purchasingRequestEntity)));
             return reporterService.reportSuccess(purchasingRequestDTOList);
         } catch (Exception e) {
             return reporterService.reportError(e);
@@ -280,23 +305,23 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
 
     @Override
     public ResponseWrapper<List<PurchasingRequestDTO>> listPurchasingRequestsForCustomer(
-            boolean active , long customerId){
-       try {
-        Optional<CustomerEntity> optionalCustomerEntity = customerRepository.findById(customerId);
-        if (!optionalCustomerEntity.isPresent()) {
-            throw new NotFoundException("This Customer doesn't exist");
-        }
-        CustomerEntity customerEntityRecord = optionalCustomerEntity.get();
+            boolean active, long customerId) {
+        try {
+            Optional<CustomerEntity> optionalCustomerEntity = customerRepository.findById(customerId);
+            if (!optionalCustomerEntity.isPresent()) {
+                throw new NotFoundException("This Customer doesn't exist");
+            }
+            CustomerEntity customerEntityRecord = optionalCustomerEntity.get();
 
-        List<PurchasingRequestDTO> purchasingRequestDTOList = new ArrayList<>();
-        purchasingRequestRepository.findAllByActiveAndCustomer(active ,customerEntityRecord)
-                .forEach(purchasingRequestEntity ->
-                purchasingRequestDTOList.add(purchasingRequestMapper.
-                        convertToDTO(purchasingRequestEntity)));
-        return reporterService.reportSuccess(purchasingRequestDTOList);
-    } catch (Exception e) {
-        return reporterService.reportError(e);
-    }
+            List<PurchasingRequestDTO> purchasingRequestDTOList = new ArrayList<>();
+            purchasingRequestRepository.findAllByActiveAndCustomer(active, customerEntityRecord)
+                    .forEach(purchasingRequestEntity ->
+                            purchasingRequestDTOList.add(purchasingRequestMapper.
+                                    convertToDTO(purchasingRequestEntity)));
+            return reporterService.reportSuccess(purchasingRequestDTOList);
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
     }
 
     @Override
@@ -337,13 +362,14 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
 
             List<PurchasingRequestDTO> purchasingRequestDTOList = new ArrayList<>();
             purchasingRequestRepository.findAllByActiveAndCarInstanceEntity(
-                    active ,carInstanceEntityRecord).forEach(purchasingRequestEntity ->
+                    active, carInstanceEntityRecord).forEach(purchasingRequestEntity ->
                     purchasingRequestDTOList.add(purchasingRequestMapper.
                             convertToDTO(purchasingRequestEntity)));
             return reporterService.reportSuccess(purchasingRequestDTOList);
         } catch (Exception e) {
             return reporterService.reportError(e);
-        }    }
+        }
+    }
 
     @Override
     public ResponseWrapper<PurchasingRequestDTO> getPurchasingRequestForCar(

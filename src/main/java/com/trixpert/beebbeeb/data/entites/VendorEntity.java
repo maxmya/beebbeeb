@@ -59,6 +59,6 @@ public class VendorEntity {
     private List<CarInstanceEntity> instances;
 
     @OneToMany(mappedBy ="purchasing_request")
-    private List<PurchasingRequestEntity> purchasingRequestEntityList;
+    private List<PurchasingRequestEntity> purchasingRequests;
 
 }

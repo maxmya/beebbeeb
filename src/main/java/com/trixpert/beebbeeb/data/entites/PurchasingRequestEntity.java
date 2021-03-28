@@ -20,16 +20,19 @@ public class PurchasingRequestEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
+    @Column(name = "status")
     private String status;
 
-    private String payment_type;
+    @Column(name = "payment_type")
+    private String paymentType;
 
+    @Column(name = "comment")
     private String comment;
 
+    @Column(name = "date")
     private Date date;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name ="vendor_id",referencedColumnName = "id" )
     private VendorEntity vendor;
 
@@ -39,7 +42,7 @@ public class PurchasingRequestEntity {
 
     @ManyToOne
     @JoinColumn (name ="car_instance_id" , referencedColumnName = "id")
-    private CarInstanceEntity carInstanceEntity;
+    private CarInstanceEntity carInstance;
 
     private boolean active;
 

@@ -19,7 +19,7 @@ public class PurchasingRequestRegistrationRequest {
 
     private String status;
 
-    private String payment_type;
+    private String paymentType;
 
     private String comment;
 

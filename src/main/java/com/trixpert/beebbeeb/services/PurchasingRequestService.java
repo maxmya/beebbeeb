@@ -19,6 +19,11 @@ public interface PurchasingRequestService {
                                                      purchasingRequestRegistrationRequest,
                                                      long purchasingRequstId ,
                                                      String authHeader);
+
+    ResponseWrapper<Boolean> updateStatusForPurchasingRequest(long purchasingRequestId ,
+                                                     String status,
+                                                     String authHeader);
+
     ResponseWrapper<PurchasingRequestDTO> getPurchasingRequest(long purchasingRequestId);
 
     ResponseWrapper<List<PurchasingRequestDTO>> listPurchasingRequestsForVendor(boolean active ,

@@ -20,14 +20,14 @@ public class PurchasingRequestDTO {
 
     private String status;
 
-    private String payment_type;
+    private String paymentType;
 
     private String comment;
 
     private Date date;
-    private VendorEntity vendor;
-    private CustomerEntity customer;
-    private CarInstanceEntity carInstanceEntity;
+    private VendorDTO vendor;
+    private CustomerDTO customer;
+    private CarInstanceDTO carInstance;
 
     private boolean active;
 
