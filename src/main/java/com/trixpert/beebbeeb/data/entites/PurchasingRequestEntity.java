@@ -20,16 +20,13 @@ public class PurchasingRequestEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "status")
     private String status;
 
     @Column(name = "payment_type")
     private String paymentType;
 
-    @Column(name = "comment")
     private String comment;
 
-    @Column(name = "date")
     private Date date;
 
     @ManyToOne
