@@ -72,6 +72,7 @@ public class LoanEntity {
     private boolean active;
 
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private CustomerEntity customerEntity;
 }
