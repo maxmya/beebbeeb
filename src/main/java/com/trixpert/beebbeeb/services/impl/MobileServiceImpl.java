@@ -388,8 +388,10 @@ public class MobileServiceImpl implements MobileService {
             carDetailsResponse.setId(carId);
 
             carDetailsResponse.setCarName(
-                    carRecord.getCar().getModel().getName() + " " + carRecord.getCar().getCategory().getName());
+                    carRecord.getCar().getModel().getName());
 
+            carDetailsResponse.setCarCategory(carRecord.getCar().getCategory().getName());
+            carDetailsResponse.setCarType(carRecord.getCar().getCategory().getType().getName());
             carDetailsResponse.setOriginalPrice(carRecord.getOriginalPrice());
 
             List<PriceEntity> carPrices = carRecord.getPrices();

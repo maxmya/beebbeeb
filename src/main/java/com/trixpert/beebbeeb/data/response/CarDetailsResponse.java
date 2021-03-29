@@ -21,6 +21,8 @@ public class CarDetailsResponse {
     private String modelYear;
     private String brandLogo;
     private String brandName;
+    private String carType;
+    private String carCategory;
     private CommercialColorResponse commercialColor;
     private List<LinkableImage> interiorImages;
     private List<LinkableImage> exteriorImages;
