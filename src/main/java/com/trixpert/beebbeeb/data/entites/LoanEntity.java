@@ -1,9 +1,21 @@
 package com.trixpert.beebbeeb.data.entites;
 
 
+import lombok.*;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Date;
+
+
+
+@Entity
+@Table(name = "loan", schema = "public")
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 
 public class LoanEntity {
     @Id
