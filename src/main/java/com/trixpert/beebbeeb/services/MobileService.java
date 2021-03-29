@@ -23,4 +23,5 @@ public interface MobileService {
 
     ResponseWrapper<MobileHomeResponse> getMobileHome();
 
+    ResponseWrapper<CarDetailsResponse> getCarDetails(long carId);
 }

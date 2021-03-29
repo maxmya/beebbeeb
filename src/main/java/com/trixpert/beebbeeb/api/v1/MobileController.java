@@ -3,13 +3,13 @@ package com.trixpert.beebbeeb.api.v1;
 import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.*;
 import com.trixpert.beebbeeb.data.to.AddressDTO;
-import com.trixpert.beebbeeb.services.*;
+import com.trixpert.beebbeeb.services.MobileService;
 import io.swagger.annotations.Api;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.List;
 
 @Api(tags = {"All Mobile APIs"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
@@ -61,6 +61,11 @@ public class MobileController {
     @GetMapping("/home")
     public ResponseEntity<ResponseWrapper<MobileHomeResponse>> getMobileHome() {
         return ResponseEntity.ok(mobileService.getMobileHome());
+    }
+
+    @GetMapping("/car/details/{carId}")
+    public ResponseEntity<ResponseWrapper<CarDetailsResponse>> getCarDetails(@PathVariable("carId") long carId) {
+        return ResponseEntity.ok(mobileService.getCarDetails(carId));
     }
 
 

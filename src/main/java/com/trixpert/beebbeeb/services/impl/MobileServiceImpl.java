@@ -30,6 +30,8 @@ public class MobileServiceImpl implements MobileService {
     private final CarInstanceRepository carInstanceRepository;
     private final RolesRepository rolesRepository;
     private final BannerRepository bannerRepository;
+    private final EssentialCarSpecsRepository essentialCarSpecsRepository;
+    private final ExtraCarSpecsRepository extraCarSpecsRepository;
 
     private final TypeService typeService;
     private final BrandService brandService;
@@ -51,6 +53,8 @@ public class MobileServiceImpl implements MobileService {
                              CarInstanceRepository carInstanceRepository,
                              RolesRepository rolesRepository,
                              BannerRepository bannerRepository,
+                             EssentialCarSpecsRepository essentialCarSpecsRepository,
+                             ExtraCarSpecsRepository extraCarSpecsRepository,
                              TypeService typeService,
                              BrandService brandService,
                              UserService userService,
@@ -66,6 +70,8 @@ public class MobileServiceImpl implements MobileService {
         this.carInstanceRepository = carInstanceRepository;
         this.rolesRepository = rolesRepository;
         this.bannerRepository = bannerRepository;
+        this.essentialCarSpecsRepository = essentialCarSpecsRepository;
+        this.extraCarSpecsRepository = extraCarSpecsRepository;
         this.typeService = typeService;
         this.brandService = brandService;
         this.userService = userService;
@@ -366,4 +372,124 @@ public class MobileServiceImpl implements MobileService {
         }
         return x.toString();
     }
+
+    @Override
+    public ResponseWrapper<CarDetailsResponse> getCarDetails(long carId) {
+        try {
+            Optional<CarInstanceEntity> carInstanceOptional = carInstanceRepository.findById(carId);
+
+            if (!carInstanceOptional.isPresent()) {
+                throw new NotFoundException("car with id " + carId + " not found !");
+            }
+
+            CarInstanceEntity carRecord = carInstanceOptional.get();
+
+            CarDetailsResponse carDetailsResponse = new CarDetailsResponse();
+            carDetailsResponse.setId(carId);
+
+            carDetailsResponse.setCarName(
+                    carRecord.getCar().getModel().getName() + " " + carRecord.getCar().getCategory().getName());
+
+            carDetailsResponse.setOriginalPrice(carRecord.getOriginalPrice());
+
+            List<PriceEntity> carPrices = carRecord.getPrices();
+
+            if (!carPrices.isEmpty())
+                carDetailsResponse.setVendorPrice(carPrices.get(carPrices.size() - 1).getAmount());
+
+
+            carDetailsResponse.setColorFamily(carRecord.getCar().getColor().getParentColor().getName());
+            carDetailsResponse.setModelYear(carRecord.getCar().getModel().getYear());
+            carDetailsResponse.setBrandLogo(carRecord.getCar().getBrand().getLogoUrl());
+            carDetailsResponse.setBrandName(carRecord.getCar().getBrand().getName());
+
+            CommercialColorResponse commercialColorResponse = new CommercialColorResponse();
+            commercialColorResponse.setColorName(carRecord.getCar().getColor().getName());
+            commercialColorResponse.setColorCode(carRecord.getCar().getColor().getCode());
+
+            carDetailsResponse.setCommercialColor(commercialColorResponse);
+
+            LinkableImage mainPhoto = null;
+            List<LinkableImage> exteriorImages = new ArrayList<>();
+            List<LinkableImage> interiorImages = new ArrayList<>();
+            for (PhotoEntity carPhoto : carRecord.getCar().getPhotos()) {
+                if (carPhoto.isMainPhoto()) {
+                    mainPhoto = new LinkableImage();
+                    mainPhoto.setUrl(carPhoto.getPhotoUrl());
+                    mainPhoto.setId(carPhoto.getId());
+                } else if (carPhoto.isInterior()) {
+                    LinkableImage image = new LinkableImage();
+                    image.setId(carPhoto.getId());
+                    image.setUrl(carPhoto.getPhotoUrl());
+                    interiorImages.add(image);
+                } else {
+                    LinkableImage image = new LinkableImage();
+                    image.setId(carPhoto.getId());
+                    image.setUrl(carPhoto.getPhotoUrl());
+                    exteriorImages.add(image);
+                }
+            }
+            for (PhotoEntity carPhoto : carRecord.getCar().getModel().getPhotos()) {
+                if (mainPhoto == null && carPhoto.isMainPhoto()) {
+                    mainPhoto = new LinkableImage();
+                    mainPhoto.setUrl(carPhoto.getPhotoUrl());
+                    mainPhoto.setId(carPhoto.getId());
+                } else if (carPhoto.isInterior()) {
+                    LinkableImage image = new LinkableImage();
+                    image.setId(carPhoto.getId());
+                    image.setUrl(carPhoto.getPhotoUrl());
+                    interiorImages.add(image);
+                } else {
+                    LinkableImage image = new LinkableImage();
+                    image.setId(carPhoto.getId());
+                    image.setUrl(carPhoto.getPhotoUrl());
+                    exteriorImages.add(image);
+                }
+            }
+            carDetailsResponse.setInteriorImages(interiorImages);
+            carDetailsResponse.setExteriorImages(exteriorImages);
+            carDetailsResponse.setMainPhoto(mainPhoto);
+
+            List<EssentialSpecsEntity> essentialSpecs =
+                    essentialCarSpecsRepository.findAllByCarAndActive(carRecord.getCar(), true);
+
+            Map<String, String> essentialSpecsMap = new HashMap<>();
+
+            for (EssentialSpecsEntity specsEntity : essentialSpecs) {
+                essentialSpecsMap.put(specsEntity.getKey(), specsEntity.getValue());
+            }
+
+            List<ExtraSpecsEntity> extraSpecs =
+                    extraCarSpecsRepository.findAllByCarAndActive(carRecord.getCar(), true);
+
+            Map<String, String> extraSpecsMap = new HashMap<>();
+
+            for (ExtraSpecsEntity specsEntity : extraSpecs) {
+                extraSpecsMap.put(specsEntity.getKey(), specsEntity.getValue());
+            }
+
+            carDetailsResponse.setMainSpecs(essentialSpecsMap);
+            carDetailsResponse.setExtraSpecs(extraSpecsMap);
+
+            VendorResponse vendorResponse = new VendorResponse();
+            vendorResponse.setName(carRecord.getVendor().getName());
+            vendorResponse.setAddress(carRecord.getVendor().getMainAddress());
+            carDetailsResponse.setVendor(vendorResponse);
+
+            List<BranchResponse> branches = new ArrayList<>();
+            for (BranchEntity branch : carRecord.getVendor().getBranches()) {
+                BranchResponse branchResponse = new BranchResponse();
+                branchResponse.setName(branch.getName());
+                branchResponse.setAddress(branch.getAddress());
+                branches.add(branchResponse);
+            }
+            carDetailsResponse.setBranches(branches);
+
+            return reporterService.reportSuccess(carDetailsResponse);
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+
 }
