@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @Api(tags = {"Loan API"})
@@ -52,7 +53,7 @@ public class LoanController {
             @RequestParam(name = "file") MultipartFile photoSide2,
             @Valid @RequestParam(name = "body") String regRequest,
             @PathVariable("loanId") long loanId,
-            HttpServletRequest request) throws JsonProcessingException {
+            HttpServletRequest request) throws IOException {
         String authorizationHeader = request.getHeader("Authorization");
         ObjectMapper objectMapper = new ObjectMapper();
         LoanRegistrationRequest loanRegistrationRequest = objectMapper.readValue(
@@ -70,7 +71,7 @@ public class LoanController {
             @RequestParam(name = "file") MultipartFile photoSide1,
             @RequestParam(name = "file") MultipartFile photoSide2,
             @Valid @RequestParam(name = "body") String regRequest,
-            HttpServletRequest request) throws JsonProcessingException {
+            HttpServletRequest request) throws IOException {
 
         String authorizationHeader = request.getHeader("Authorization");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -79,7 +80,7 @@ public class LoanController {
 
 
         return ResponseEntity.ok(loanService.registerLoan(
-                loanRegistrationRequest, authorizationHeader));
+                loanRegistrationRequest, photoSide1 , photoSide2, authorizationHeader));
     }
 
     @PutMapping("/delete/{loanId}")
