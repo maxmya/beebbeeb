@@ -17,10 +17,6 @@ public class LoanRegistrationRequest {
 
     private long idNumber;
 
-    private String photoIdSide1;
-
-    private String photoIdSide2;
-
     private boolean haveCar ;
 
     private String eductionalLevel;
