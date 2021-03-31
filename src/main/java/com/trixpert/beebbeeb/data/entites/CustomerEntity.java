@@ -40,4 +40,8 @@ public class CustomerEntity {
     @OneToMany(mappedBy = "customer")
     private List<AddressEntity> addresses;
 
+    @OneToMany(mappedBy ="purchasing_request")
+    private List<PurchasingRequestEntity> purchasingRequests;
+
+
 }

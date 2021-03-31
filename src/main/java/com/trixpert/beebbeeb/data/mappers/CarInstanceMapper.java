@@ -1,6 +1,7 @@
 package com.trixpert.beebbeeb.data.mappers;
 
 import com.trixpert.beebbeeb.data.entites.CarInstanceEntity;
+import com.trixpert.beebbeeb.data.entites.PriceEntity;
 import com.trixpert.beebbeeb.data.to.CarInstanceDTO;
 import com.trixpert.beebbeeb.data.to.PriceDTO;
 import org.springframework.stereotype.Component;
@@ -44,6 +45,20 @@ public class CarInstanceMapper {
                 .originalPrice(carInstanceEntity.getOriginalPrice())
                 .build();
 
+    }
+    public CarInstanceEntity convertToEntity(CarInstanceDTO carInstanceDTO){
+        List<PriceEntity> prices = new ArrayList<>();
+        carInstanceDTO.getPrices().forEach(price -> prices.add(priceMapper.convertToEntity(price)));
+    return CarInstanceEntity.builder()
+            .car(carMapper.convertToEntity(carInstanceDTO.getCar()))
+            .branch(branchMapper.convertToEntity(carInstanceDTO.getBranch()))
+            .vendor(vendorMapper.convertToEntity(carInstanceDTO.getVendor()))
+            .id(carInstanceDTO.getId())
+            .prices(prices)
+            .active(carInstanceDTO.isActive())
+            .condition(carInstanceDTO.getCondition())
+            .originalPrice(carInstanceDTO.getOriginalPrice())
+            .build();
     }
 
 
