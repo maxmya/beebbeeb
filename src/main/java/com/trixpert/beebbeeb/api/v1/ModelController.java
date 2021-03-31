@@ -72,8 +72,8 @@ public class ModelController {
     @ResponseBody
     public ResponseEntity<ResponseWrapper<Boolean>> updateModel(
             @PathVariable("modelId") long modelId,
-            @RequestParam("file") MultipartFile images,
-            @Valid @RequestParam("body") String modelRegisterRequest
+            @RequestParam(name = "file") MultipartFile images,
+            @Valid @RequestParam(name = "body") String modelRegisterRequest
             , HttpServletRequest request)throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
