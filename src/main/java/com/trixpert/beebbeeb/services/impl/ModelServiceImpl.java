@@ -246,7 +246,7 @@ public class ModelServiceImpl implements ModelService {
 
     @Transactional
     @Override
-    public ResponseWrapper<Boolean> deleteModel(Long modelId, String authHeader) {
+    public ResponseWrapper<Boolean> deleteModel(long modelId, String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
