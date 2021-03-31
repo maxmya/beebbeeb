@@ -22,7 +22,10 @@ public interface ModelService {
 
     ResponseWrapper<FileUploadResponse> uploadExterior(long modelId, MultipartFile file);
 
-    ResponseWrapper<Boolean> updateModel(ModelDTO modelDTO, String authHeader);
+    ResponseWrapper<Boolean> updateModel(long modelId,
+                                         MultipartFile img,
+                                         ModelRegisterRequest modelRegisterRequest,
+                                         String authHeader);
 
     ResponseWrapper<Boolean> deleteModel(Long modelID, String authHeader);
 
