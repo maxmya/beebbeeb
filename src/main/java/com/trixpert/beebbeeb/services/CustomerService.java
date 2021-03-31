@@ -14,7 +14,6 @@ public interface CustomerService {
 
     ResponseWrapper<List<CustomerResponse>> getAllCustomers(boolean active);
 
-    ResponseWrapper<CustomerResponse> getCustomtomer(long customerId, String authHeader);
+    ResponseWrapper<CustomerResponse> getCustomer(long customerId);
 
-    ResponseWrapper<Boolean> updateCuster(long customerId);
 }
