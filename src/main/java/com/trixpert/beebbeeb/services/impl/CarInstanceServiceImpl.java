@@ -139,5 +139,21 @@ public class CarInstanceServiceImpl implements CarInstanceService {
         }
     }
 
+    @Override
+    public ResponseWrapper<Boolean> deleteCarInstance(long carIstanceId) {
+        try {
+            Optional<CarInstanceEntity> carInstanceEntityOptional = carInstanceRepository.findById(carIstanceId);
+            if(!carInstanceEntityOptional.isPresent()){
+                throw new NotFoundException("Car Instance with id : ".concat(Long.toString(carIstanceId)).concat("not Exist"));
+            }
+           CarInstanceEntity carEntityRecord =  carInstanceEntityOptional.get();
+            carEntityRecord.setActive(false);
+            carInstanceRepository.save(carEntityRecord);
+            return reporterService.reportSuccess("Car Instance with id : ".concat(Long.toString(carIstanceId)).concat("deleted successfully"));
+        }catch (Exception e){
+            return reporterService.reportError(e);
+        }
+    }
+
 
 }
