@@ -69,6 +69,7 @@ public class ModelController {
     @CrossOrigin(origins = {"*"})
     @PutMapping(value = "/update/{modelId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation("Update Model")
+    @ResponseBody
     public ResponseEntity<ResponseWrapper<Boolean>> updateModel(
             @PathVariable("modelId") long modelId,
             @RequestParam("file") MultipartFile images,
