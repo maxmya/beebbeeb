@@ -66,15 +66,21 @@ public class ModelController {
         return ResponseEntity.ok(modelService.uploadExterior(modelId, image));
     }
 
-    @PutMapping("/update")
+    @CrossOrigin(origins = {"*"})
+    @PutMapping(value = "/update/{modelId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation("Update Model")
     public ResponseEntity<ResponseWrapper<Boolean>> updateModel(
-            @Valid @RequestBody ModelDTO modelDTO
-            , HttpServletRequest request) {
+            @PathVariable("modelId") long modelId,
+            @RequestParam("file") MultipartFile images,
+            @Valid @RequestParam("body") String modelRegisterRequest
+            , HttpServletRequest request)throws IOException {
 
+        ObjectMapper objectMapper = new ObjectMapper();
+        ModelRegisterRequest registerRequest = objectMapper.readValue(
+                modelRegisterRequest, ModelRegisterRequest.class);
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(modelService.updateModel(modelDTO, authorizationHeader));
+        return ResponseEntity.ok(modelService.updateModel(modelId, images, registerRequest, authorizationHeader));
     }
 
 
