@@ -11,20 +11,24 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PurchasingRequestRepository extends JpaRepository<PurchasingRequestEntity , Long> {
+public interface PurchasingRequestRepository extends JpaRepository<PurchasingRequestEntity, Long> {
     public List<PurchasingRequestEntity> findAllByActive(boolean active);
-    public List<PurchasingRequestEntity> findAllByActiveAndVendor(
-            boolean active , VendorEntity vendorEntity);
-    public List<PurchasingRequestEntity> findAllByActiveAndCarInstanceEntity(
-            boolean active , CarInstanceEntity carInstanceEntity);
-    public List<PurchasingRequestEntity> findAllByActiveAndCustomer(boolean active ,
-                                                                    CustomerEntity customerEntity);
-    public Optional<PurchasingRequestEntity> findByIdAndVendor(long purchasingRequestId ,
-                                                              VendorEntity vendorEntity);
 
-    public Optional<PurchasingRequestEntity> findByIdANDAndCarInstanceEntity(
-            long purchasingRequestId , CarInstanceEntity carInstanceEntity);
+    public List<PurchasingRequestEntity> findAllByActiveAndVendor(
+            boolean active, VendorEntity vendorEntity);
+
+    public List<PurchasingRequestEntity> findAllByActiveAndCarInstance(
+            boolean active, CarInstanceEntity carInstanceEntity);
+
+    public List<PurchasingRequestEntity> findAllByActiveAndCustomer(boolean active,
+                                                                    CustomerEntity customerEntity);
+
+    public Optional<PurchasingRequestEntity> findByIdAndVendor(long purchasingRequestId,
+                                                               VendorEntity vendorEntity);
+
+    public Optional<PurchasingRequestEntity> findByIdAndCarInstance(
+            long purchasingRequestId, CarInstanceEntity carInstanceEntity);
 
     public Optional<PurchasingRequestEntity> findByIdAndCustomer(
-            long purchasingRequestId , CustomerEntity customerEntity);
+            long purchasingRequestId, CustomerEntity customerEntity);
 }

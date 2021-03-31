@@ -45,7 +45,7 @@ public class CarInstanceEntity {
 
     private boolean active;
 
-    @OneToMany(mappedBy ="purchasing_request")
+    @OneToMany(mappedBy ="carInstance")
     private List<PurchasingRequestEntity> purchasingRequests;
 
 

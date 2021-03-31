@@ -17,7 +17,6 @@ import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.PurchasingRequestDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
-import org.checkerframework.checker.nullness.Opt;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -361,7 +360,7 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
             CarInstanceEntity carInstanceEntityRecord = optionalCarInstanceEntity.get();
 
             List<PurchasingRequestDTO> purchasingRequestDTOList = new ArrayList<>();
-            purchasingRequestRepository.findAllByActiveAndCarInstanceEntity(
+            purchasingRequestRepository.findAllByActiveAndCarInstance(
                     active, carInstanceEntityRecord).forEach(purchasingRequestEntity ->
                     purchasingRequestDTOList.add(purchasingRequestMapper.
                             convertToDTO(purchasingRequestEntity)));
@@ -382,7 +381,7 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
             }
             CarInstanceEntity carInstanceEntityRecord = optionalCarInstanceEntity.get();
             Optional<PurchasingRequestEntity> optionalPurchasingRequestEntity =
-                    purchasingRequestRepository.findByIdANDAndCarInstanceEntity(
+                    purchasingRequestRepository.findByIdAndCarInstance(
                             purchasingRequestId, carInstanceEntityRecord);
             if (!optionalPurchasingRequestEntity.isPresent()) {
                 throw new NotFoundException("This Purchasing Request doesn't exits !");

@@ -139,7 +139,7 @@ public class PurchasingRequestController {
                 true, vendorId));
     }
 
-    @GetMapping("/list/active/{vendorId}")
+    @GetMapping("/list/inactive/{vendorId}")
     @ApiOperation("Get all inactive Purchasing Requests List for Vendor ")
     public ResponseEntity<ResponseWrapper<List<PurchasingRequestDTO>>>
     getAllInActivePurchasingRequestsForVendor(
@@ -159,7 +159,7 @@ public class PurchasingRequestController {
                 true, customerId));
     }
 
-    @GetMapping("/list/active/{customerId}")
+    @GetMapping("/list/inactive/{customerId}")
     @ApiOperation("Get all inactive Purchasing Requests List for Customer ")
     public ResponseEntity<ResponseWrapper<List<PurchasingRequestDTO>>>
     getAllInActivePurchasingRequestsForCustomer(
@@ -179,7 +179,7 @@ public class PurchasingRequestController {
                 true, car_instance_id));
     }
 
-    @GetMapping("/list/active/{car_instance_id}")
+    @GetMapping("/list/inactive/{car_instance_id}")
     @ApiOperation("Get all inactive Purchasing Requests List for Vendor ")
     public ResponseEntity<ResponseWrapper<List<PurchasingRequestDTO>>>
     getAllInActivePurchasingRequestsForCar(
