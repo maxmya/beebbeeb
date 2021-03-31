@@ -184,25 +184,43 @@ public class ModelServiceImpl implements ModelService {
 
     @Transactional
     @Override
-    public ResponseWrapper<Boolean> updateModel(ModelDTO modelDTO, String authHeader) {
+    public ResponseWrapper<Boolean> updateModel(long modelId,
+                                                MultipartFile img,
+                                                ModelRegisterRequest modelRegisterRequest,
+                                                String authHeader)  {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
         try {
-            Optional<ModelEntity> optionalModelEntity = modelRepository.findById(modelDTO.getId());
+            Optional<ModelEntity> optionalModelEntity = modelRepository.findById(modelId);
             if (!optionalModelEntity.isPresent()) {
                 throw new NotFoundException("This Model is not Exits !");
             }
             ModelEntity modelEntityRecord = optionalModelEntity.get();
-            if (modelDTO.getName() != null && !modelDTO.getName().equals(modelEntityRecord.getName())) {
-                modelEntityRecord.setName(modelDTO.getName());
+            if (modelRegisterRequest.getName() != null && !modelRegisterRequest.getName().equals(modelEntityRecord.getName())) {
+                modelEntityRecord.setName(modelRegisterRequest.getName());
             }
-            if (modelDTO.getYear() != null && !modelDTO.getYear().equals(modelEntityRecord.getYear())) {
-                modelEntityRecord.setYear(modelDTO.getYear());
+            if (modelRegisterRequest.getYear() != null && !modelRegisterRequest.getYear().equals(modelEntityRecord.getYear())) {
+                modelEntityRecord.setYear(modelRegisterRequest.getYear());
             }
-            if (modelDTO.getBrand() != null &&
-                    !modelDTO.getBrand().equals(brandMapper.convertToDTO(modelEntityRecord.getBrand()))) {
-                modelEntityRecord.setBrand(brandMapper.convertToEntity(modelDTO.getBrand()));
+            if (modelRegisterRequest.getBrandId() != -1 &&
+                    modelRegisterRequest.getBrandId() != modelEntityRecord.getBrand().getId()) {
+                Optional<BrandEntity> optionalBrandEntityRecord = brandRepository
+                        .findById(modelRegisterRequest.getBrandId());
+                if(!optionalBrandEntityRecord.isPresent()){
+                    throw new NotFoundException("Brand entity not found !");
+                }
+                modelEntityRecord.setBrand(optionalBrandEntityRecord.get());
+            }
+            if(img != null){
+                String modelImgUrl = cloudStorageService.uploadFile(img);
+                PhotoEntity mainImagePhotoEntity = photoRepository
+                        .save(PhotoEntity.builder()
+                                .photoUrl(modelImgUrl)
+                                .active(true)
+                                .mainPhoto(true)
+                                .build());
+                modelEntityRecord.setPhotos(Collections.singletonList(mainImagePhotoEntity));
             }
             modelRepository.save(modelEntityRecord);
 
