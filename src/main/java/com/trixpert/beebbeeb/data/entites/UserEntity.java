@@ -45,6 +45,9 @@ public class UserEntity {
     @OneToMany(mappedBy = "user")
     private List<AuditEntity> audits;
 
+    @OneToMany(mappedBy = "user")
+    private List<NotificationEntity> notifications;
+
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE
