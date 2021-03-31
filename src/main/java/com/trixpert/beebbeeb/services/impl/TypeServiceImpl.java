@@ -138,9 +138,8 @@ public class TypeServiceImpl implements TypeService {
                 String logoUrlRecord = cloudStorageService.uploadFile(logoFile);
                 typeEntityRecord.setLogoUrl(logoUrlRecord);
             }
-            if(logoFile==null){
-                typeEntityRecord.setLogoUrl(typeEntityRecord.getLogoUrl());
-            }
+
+            
             typeRepository.save(typeEntityRecord);
 
 
