@@ -1,5 +1,6 @@
 package com.trixpert.beebbeeb.api.v1;
 
+import com.trixpert.beebbeeb.data.request.CarInstanceRequest;
 import com.trixpert.beebbeeb.data.request.CarRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.FileUploadResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
@@ -8,6 +9,7 @@ import com.trixpert.beebbeeb.services.CarService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -55,10 +57,11 @@ public class CarController {
         return ResponseEntity.ok(carService.uploadExterior(modelId, image));
     }
 
-
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PutMapping("/delete/{carId}")
     @ApiOperation("Delete a car")
     public ResponseEntity<ResponseWrapper<Boolean>> deleteCar(@PathVariable("carId") long carId) {
+        System.out.println(carId);
         return ResponseEntity.ok(carService.deleteCar(carId));
     }
 
@@ -79,5 +82,16 @@ public class CarController {
     public ResponseEntity<ResponseWrapper<CarDTO>> getCar(@PathVariable("carId") long carId) {
         return ResponseEntity.ok(carService.getCar(carId));
     }
+
+
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
+    @PutMapping("update/{carId}")
+    @ApiOperation("Update Car ")
+    public ResponseEntity<ResponseWrapper<Boolean>> updateCarInstance(@PathVariable("carId") long carId,
+                                                                      @Valid @RequestBody CarRegistrationRequest carRegistrationRequest){
+
+        return ResponseEntity.ok(carService.updateCar(carId,carRegistrationRequest));
+    }
+
 }
 
