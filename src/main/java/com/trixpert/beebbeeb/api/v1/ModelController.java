@@ -69,10 +69,11 @@ public class ModelController {
     @CrossOrigin(origins = {"*"})
     @PutMapping(value = "/update/{modelId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation("Update Model")
+    @ResponseBody
     public ResponseEntity<ResponseWrapper<Boolean>> updateModel(
             @PathVariable("modelId") long modelId,
-            @RequestParam("file") MultipartFile images,
-            @Valid @RequestParam("body") String modelRegisterRequest
+            @RequestParam(name = "file") MultipartFile images,
+            @Valid @RequestParam(name = "body") String modelRegisterRequest
             , HttpServletRequest request)throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
