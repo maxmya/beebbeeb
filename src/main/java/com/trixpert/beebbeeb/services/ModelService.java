@@ -27,7 +27,7 @@ public interface ModelService {
                                          ModelRegisterRequest modelRegisterRequest,
                                          String authHeader);
 
-    ResponseWrapper<Boolean> deleteModel(long modelID, String authHeader);
+    ResponseWrapper<Boolean> deleteModel(long modelId, String authHeader);
 
     ResponseWrapper<List<ModelDTO>> listAllModels(boolean active);
 
