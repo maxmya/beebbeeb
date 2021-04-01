@@ -266,11 +266,11 @@ public class CarServiceImpl implements CarService {
                 colorEntityRecord.setName(carRegistrationRequest.getColorName());
                 colorRepository.save(colorEntityRecord);
             }
+            if (carRegistrationRequest.getParentColorId()!=carEntityRecord.getColor().getParentColor().getId()){
 
-            if (carRegistrationRequest.getColorCode()!=carEntityRecord.getColor().getCode()){
                 Optional<ColorEntity> colorEntityOptional = colorRepository.findById(carEntityRecord.getColor().getId());
                 if (!colorEntityOptional.isPresent()){
-                    throw new NotFoundException("Color with ID : ".concat(Long.toString(carEntityRecord.getColor().getId())).concat(" Not Exist !"));
+                    throw new NotFoundException("Parent Color with ID : ".concat(Long.toString(carRegistrationRequest.getParentColorId())).concat(" Not Exist !"));
                 }
                 ColorEntity colorEntityRecord  = colorEntityOptional.get();
                 Optional<ParentColorEntity> parentColorEntityOptional = parentColorRepository.findById(carRegistrationRequest.getParentColorId());
@@ -281,10 +281,10 @@ public class CarServiceImpl implements CarService {
                 colorRepository.save(colorEntityRecord);
             }
 
-            if (carRegistrationRequest.getParentColorId()!=carEntityRecord.getColor().getParentColor().getId()){
+            if (carRegistrationRequest.getColorCode()!=carEntityRecord.getColor().getCode()){
                 Optional<ColorEntity> colorEntityOptional = colorRepository.findById(carEntityRecord.getColor().getId());
                 if (!colorEntityOptional.isPresent()){
-                    throw new NotFoundException("Parent color with ID : ".concat(Long.toString(carRegistrationRequest.getParentColorId())).concat(" Not Exist !"));
+                    throw new NotFoundException("Color with ID : ".concat(Long.toString(carEntityRecord.getColor().getId())).concat(" Not Exist !"));
                 }
                 ColorEntity colorEntityRecord  = colorEntityOptional.get();
                 colorEntityRecord.setCode(carRegistrationRequest.getColorCode());
@@ -297,6 +297,7 @@ public class CarServiceImpl implements CarService {
                 }
                 ModelEntity modelEntity  = modelEntityOptional.get();
                 carEntityRecord.setModel(modelEntity);
+
             }
             if (carRegistrationRequest.getTypeId()!=carEntityRecord.getCategory().getType().getId()){
                 Optional<TypeEntity> typeEntityOptional =  typeRepository.findById(carRegistrationRequest.getTypeId());
