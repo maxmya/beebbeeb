@@ -61,7 +61,6 @@ public class CarController {
     @PutMapping("/delete/{carId}")
     @ApiOperation("Delete a car")
     public ResponseEntity<ResponseWrapper<Boolean>> deleteCar(@PathVariable("carId") long carId) {
-        System.out.println(carId);
         return ResponseEntity.ok(carService.deleteCar(carId));
     }
 
