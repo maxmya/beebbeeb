@@ -1,9 +1,6 @@
 package com.trixpert.beebbeeb.data.entites;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -12,7 +9,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "model", schema = "public")
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
