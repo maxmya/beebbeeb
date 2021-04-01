@@ -312,7 +312,7 @@ public class CarServiceImpl implements CarService {
                 }
                 CategoryEntity categoryEntity = categoryEntityOptional.get();
                 categoryEntity.setType(typeEntity);
-
+                categoryRepository.save(categoryEntity);
                 carEntityRecord.setCategory(categoryEntity);
             }
             carRepository.save(carEntityRecord);
