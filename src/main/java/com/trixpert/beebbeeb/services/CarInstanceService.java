@@ -13,4 +13,6 @@ public interface CarInstanceService {
     ResponseWrapper<List<CarInstanceDTO>> getALLCarInstances(boolean active);
 
     ResponseWrapper<List<CarInstanceDTO>> getAllCarInstancesForVendor(long vendorId, boolean active);
+
+    ResponseWrapper<Boolean> deleteCarInstance(long carIstanceId);
 }

@@ -66,4 +66,12 @@ public class CarInstanceController {
             @PathVariable("vendorId") long vendorId) {
         return ResponseEntity.ok(carInstanceService.getAllCarInstancesForVendor(vendorId, false));
     }
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
+    @PutMapping("delete/{carInstanceId}")
+    @ApiOperation("Delete Car Instance By ID")
+    public ResponseEntity<ResponseWrapper<Boolean>> deleteCarInstance(@PathVariable("carInstanceId") long carInstanceId){
+        return ResponseEntity.ok(carInstanceService.deleteCarInstance(carInstanceId));
+    }
+
+
 }
