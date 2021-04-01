@@ -1,12 +1,10 @@
 package com.trixpert.beebbeeb.services.impl;
 
-import com.trixpert.beebbeeb.data.constants.AuditActions;
 import com.trixpert.beebbeeb.data.entites.*;
 import com.trixpert.beebbeeb.data.mappers.CarInstanceMapper;
 import com.trixpert.beebbeeb.data.repositories.*;
 import com.trixpert.beebbeeb.data.request.CarInstanceRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
-import com.trixpert.beebbeeb.data.to.AuditDTO;
 import com.trixpert.beebbeeb.data.to.CarInstanceDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.AuditService;
@@ -14,11 +12,10 @@ import com.trixpert.beebbeeb.services.CarInstanceService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import com.trixpert.beebbeeb.services.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,10 +54,9 @@ public class CarInstanceServiceImpl implements CarInstanceService {
     }
 
 
+    @Transactional
     @Override
-    public ResponseWrapper<Boolean> addCarInstance(CarInstanceRequest carInstanceRequest, String authHeader) {
-
-        String username = auditService.getUsernameForAudit(authHeader);
+    public ResponseWrapper<Boolean> addCarInstance(CarInstanceRequest carInstanceRequest) {
 
         try {
             Optional<VendorEntity> optionalVendorEntity = vendorRepository.findById(carInstanceRequest.getVendorId());
@@ -77,29 +73,24 @@ public class CarInstanceServiceImpl implements CarInstanceService {
             }
 
 
+            CarInstanceEntity carInstanceEntity = carInstanceRepository.save(CarInstanceEntity.builder()
+                    .car(optionalCarEntity.get())
+                    .vendor(optionalVendorEntity.get())
+                    .branch(optionalBranchEntity.get())
+                    .originalPrice(carInstanceRequest.getOriginalPrice())
+                    .active(true)
+                    .build());
 
-            PriceEntity vendorPriceEntityRecord = priceRepository.save(PriceEntity.builder()
+
+           priceRepository.save(PriceEntity.builder()
                     .amount(carInstanceRequest.getVendorPrice())
+                    .car(carInstanceEntity)
                     .active(true)
                     .date(LocalDate.now())
                     .build());
 
 
-            CarInstanceEntity carInstanceEntity = CarInstanceEntity.builder()
-                    .car(optionalCarEntity.get())
-                    .prices(Collections.singletonList(vendorPriceEntityRecord))
-                    .vendor(optionalVendorEntity.get())
-                    .branch(optionalBranchEntity.get())
-                    .originalPrice(carInstanceRequest.getOriginalPrice())
-                    .active(true)
-                    .build();
-
-
-            carInstanceRepository.save(carInstanceEntity);
-
-
             return reporterService.reportSuccess("Car Instance Registered Successfully");
-
 
         } catch (Exception e) {
             return reporterService.reportError(e);
@@ -143,14 +134,14 @@ public class CarInstanceServiceImpl implements CarInstanceService {
     public ResponseWrapper<Boolean> deleteCarInstance(long carIstanceId) {
         try {
             Optional<CarInstanceEntity> carInstanceEntityOptional = carInstanceRepository.findById(carIstanceId);
-            if(!carInstanceEntityOptional.isPresent()){
+            if (!carInstanceEntityOptional.isPresent()) {
                 throw new NotFoundException("Car Instance with id : ".concat(Long.toString(carIstanceId)).concat("not Exist"));
             }
-           CarInstanceEntity carEntityRecord =  carInstanceEntityOptional.get();
+            CarInstanceEntity carEntityRecord = carInstanceEntityOptional.get();
             carEntityRecord.setActive(false);
             carInstanceRepository.save(carEntityRecord);
             return reporterService.reportSuccess("Car Instance with id : ".concat(Long.toString(carIstanceId)).concat("deleted successfully"));
-        }catch (Exception e){
+        } catch (Exception e) {
             return reporterService.reportError(e);
         }
     }

@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -31,10 +30,8 @@ public class CarInstanceController {
     @PostMapping("/add")
     @ApiOperation("Adding a new Car Instance")
     public ResponseEntity<ResponseWrapper<Boolean>> addCarInstance(
-            @Valid @RequestBody CarInstanceRequest carInstanceRequest,
-            HttpServletRequest request) {
-        String authorizationHeader = request.getHeader("Authorization");
-        return ResponseEntity.ok(carInstanceService.addCarInstance(carInstanceRequest, authorizationHeader));
+            @Valid @RequestBody CarInstanceRequest carInstanceRequest) {
+        return ResponseEntity.ok(carInstanceService.addCarInstance(carInstanceRequest));
     }
 
     @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")

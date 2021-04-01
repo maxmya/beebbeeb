@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface CarInstanceService {
 
-    ResponseWrapper<Boolean> addCarInstance(CarInstanceRequest carInstanceRequest , String authHeader);
+    ResponseWrapper<Boolean> addCarInstance(CarInstanceRequest carInstanceRequest );
 
     ResponseWrapper<List<CarInstanceDTO>> getALLCarInstances(boolean active);
 
