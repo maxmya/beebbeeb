@@ -70,5 +70,14 @@ public class CarInstanceController {
         return ResponseEntity.ok(carInstanceService.deleteCarInstance(carInstanceId));
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
+    @PutMapping("update/{carInstanceId}")
+    @ApiOperation("Update Car Instance")
+    public ResponseEntity<ResponseWrapper<Boolean>> updateCarInstance(@PathVariable("carInstanceId") long carInstanceId,
+                                                                      @Valid @RequestBody CarInstanceRequest carInstanceRequest){
+
+        return ResponseEntity.ok(carInstanceService.updateCarInstance(carInstanceId,carInstanceRequest));
+    }
+
 
 }
