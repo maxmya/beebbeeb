@@ -139,7 +139,8 @@ public class TypeServiceImpl implements TypeService {
                 typeEntityRecord.setLogoUrl(logoUrlRecord);
             }
 
-            
+
+
             typeRepository.save(typeEntityRecord);
 
 
