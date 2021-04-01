@@ -131,17 +131,80 @@ public class CarInstanceServiceImpl implements CarInstanceService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> deleteCarInstance(long carIstanceId) {
+    public ResponseWrapper<Boolean> deleteCarInstance(long carInstanceId) {
         try {
-            Optional<CarInstanceEntity> carInstanceEntityOptional = carInstanceRepository.findById(carIstanceId);
+            Optional<CarInstanceEntity> carInstanceEntityOptional = carInstanceRepository.findById(carInstanceId);
             if (!carInstanceEntityOptional.isPresent()) {
-                throw new NotFoundException("Car Instance with id : ".concat(Long.toString(carIstanceId)).concat("not Exist"));
+                throw new NotFoundException("Car Instance with id : ".concat(Long.toString(carInstanceId)).concat("not Exist"));
             }
-            CarInstanceEntity carEntityRecord = carInstanceEntityOptional.get();
-            carEntityRecord.setActive(false);
-            carInstanceRepository.save(carEntityRecord);
-            return reporterService.reportSuccess("Car Instance with id : ".concat(Long.toString(carIstanceId)).concat("deleted successfully"));
+            CarInstanceEntity carInstanceEntityRecord = carInstanceEntityOptional.get();
+            carInstanceEntityRecord.setActive(false);
+            carInstanceRepository.save(carInstanceEntityRecord);
+            return reporterService.reportSuccess("Car Instance with id : ".concat(Long.toString(carInstanceId)).concat("deleted successfully"));
         } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<Boolean> updateCarInstance(long carInstanceId, CarInstanceRequest carInstanceRequest) {
+        try {
+
+            Optional<CarInstanceEntity> carInstanceEntityOptional =  carInstanceRepository.findById(carInstanceId);
+            if (!carInstanceEntityOptional.isPresent()) {
+                throw new NotFoundException("Car Instance with id : ".concat(Long.toString(carInstanceId)).concat("not Exist"));
+            }
+            // Get Car Instance from database by id to check on it changes
+            CarInstanceEntity carInstanceEntityRecord = carInstanceEntityOptional.get();
+
+            //First Check with car changed
+            if (carInstanceRequest.getCarId()!= carInstanceEntityRecord.getCar().getId()){
+                Optional<CarEntity> carEntityOptional = carRepository.findById(carInstanceRequest.getCarId());
+                if (!carEntityOptional.isPresent()) {
+                    throw new NotFoundException("Car with id : ".concat(Long.toString(carInstanceRequest.getCarId())).concat("not Exist"));
+                }
+                carInstanceEntityRecord.setCar(carEntityOptional.get());
+            }
+
+            //Second Check if vendor changed
+            if (carInstanceRequest.getVendorId()!= carInstanceEntityRecord.getVendor().getId()){
+                Optional<VendorEntity> vendorEntityOptional = vendorRepository.findById(carInstanceRequest.getVendorId());
+                if (!vendorEntityOptional.isPresent()) {
+                    throw new NotFoundException("Vendor with id : ".concat(Long.toString(carInstanceRequest.getVendorId())).concat("not Exist"));
+                }
+                carInstanceEntityRecord.setVendor(vendorEntityOptional.get());
+            }
+
+            //Third Check if branch changed
+            if (carInstanceRequest.getBranchId()!= carInstanceEntityRecord.getBranch().getId()){
+                Optional<BranchEntity> branchEntityOptional = branchRepository.findById(carInstanceRequest.getBranchId());
+                if (!branchEntityOptional.isPresent()) {
+                    throw new NotFoundException("Branch with id : ".concat(Long.toString(carInstanceRequest.getBranchId())).concat("not Exist"));
+                }
+                carInstanceEntityRecord.setBranch(branchEntityOptional.get());
+            }
+
+            //Fourth Check if Original price changed
+            if (carInstanceRequest.getOriginalPrice()!= carInstanceEntityRecord.getOriginalPrice()){
+
+                carInstanceEntityRecord.setOriginalPrice(carInstanceRequest.getOriginalPrice());
+            }
+
+            //Fifth Check if Vendor price changed
+            if (carInstanceRequest.getVendorPrice() != carInstanceEntityRecord.getPrices().get((carInstanceEntityRecord.getPrices().size()-1)).getAmount()){
+
+
+               priceRepository.save(PriceEntity.builder()
+                        .active(true)
+                        .amount(carInstanceRequest.getVendorPrice())
+                        .car(carInstanceEntityRecord)
+                        .build());
+            }
+
+            carInstanceRepository.save(carInstanceEntityRecord);
+
+            return reporterService.reportSuccess("Car Instance with ID : ".concat(Long.toString(carInstanceId)).concat(" Updated Successfully !"));
+        }catch (Exception e){
             return reporterService.reportError(e);
         }
     }

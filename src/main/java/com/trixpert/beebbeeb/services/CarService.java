@@ -24,4 +24,6 @@ public interface CarService {
 
     ResponseWrapper<CarDTO> getCar(long carId);
 
+    ResponseWrapper<Boolean> updateCar(long carId , CarRegistrationRequest carRegistrationRequest);
+
 }
