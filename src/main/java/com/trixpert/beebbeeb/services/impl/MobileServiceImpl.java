@@ -466,7 +466,7 @@ public class MobileServiceImpl implements MobileService {
 
             Map<String, String> extraSpecsMap = new HashMap<>();
 
-            for (ExtraSpecsEntity specsEntity : extraSpecs) {
+            for (ExtraSpecsEntity specsEntity : extraSpecs) { 
                 extraSpecsMap.put(specsEntity.getKey(), specsEntity.getValue());
             }
 
@@ -480,6 +480,7 @@ public class MobileServiceImpl implements MobileService {
 
             List<BranchResponse> branches = new ArrayList<>();
             for (BranchEntity branch : carRecord.getVendor().getBranches()) {
+                if (!branch.isActive()) continue;
                 BranchResponse branchResponse = new BranchResponse();
                 branchResponse.setName(branch.getName());
                 branchResponse.setAddress(branch.getAddress());
