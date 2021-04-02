@@ -1,6 +1,7 @@
 package com.trixpert.beebbeeb.services;
 
 import com.trixpert.beebbeeb.data.request.PurchasingRequestRegistrationRequest;
+import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.PurchasingRequestDTO;
 
@@ -13,7 +14,7 @@ public interface PurchasingRequestService {
                                                        String authHeader);
     ResponseWrapper<Boolean> deletePurchasingRequest(long purchasingRequestId , String authHeader);
 
-    ResponseWrapper<List<PurchasingRequestDTO>> listAllPurchasingRequests(boolean active);
+    ResponseWrapper<List<PurchasingRequestResponse>> listAllPurchasingRequests(boolean active);
 
     ResponseWrapper<Boolean> updatePurchasingRequest(PurchasingRequestRegistrationRequest
                                                      purchasingRequestRegistrationRequest,
