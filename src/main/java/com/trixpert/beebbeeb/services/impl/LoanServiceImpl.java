@@ -1,6 +1,5 @@
 package com.trixpert.beebbeeb.services.impl;
 
-import com.trixpert.beebbeeb.data.entites.CustomerEntity;
 import com.trixpert.beebbeeb.data.entites.LoanEntity;
 import com.trixpert.beebbeeb.data.mappers.LoanMapper;
 import com.trixpert.beebbeeb.data.repositories.CustomerRepository;
@@ -56,10 +55,10 @@ public class LoanServiceImpl implements LoanService {
             LoanEntity loanEntityRecord = LoanEntity.builder()
                     .amount(loanRegistrationRequest.getAmount())
                     .idNumber(loanRegistrationRequest.getIdNumber())
-                    .photoIdSide1(loanRegistrationRequest.getPhotoIdSide1())
-                    .photoIdSide2(loanRegistrationRequest.getPhotoIdSide2())
+                    .photoIdSide1(photoIdSide1)
+                    .photoIdSide2(photoIdSide2)
                     .haveCar(loanRegistrationRequest.isHaveCar())
-                    .eductionalLevel(loanRegistrationRequest.getEductionalLevel())
+                    .educationalLevel(loanRegistrationRequest.getEducationalLevel())
                     .graduationDate(loanRegistrationRequest.getGraduationDate())
                     .otherCertificates(loanRegistrationRequest.getOtherCertificates())
                     .companyName(loanRegistrationRequest.getCompanyName())
@@ -74,7 +73,7 @@ public class LoanServiceImpl implements LoanService {
                     .annualIncome(loanRegistrationRequest.getAnnualIncome())
                     .loanAmount(loanRegistrationRequest.getLoanAmount())
                     .noInstallmentYears(loanRegistrationRequest.getNoInstallmentYears())
-                    .customerEntity(customerRepository.getOne(loanRegistrationRequest.getCustomerId()))
+                    .customer(customerRepository.getOne(loanRegistrationRequest.getCustomerId()))
                     .active(true)
                     .build();
             loanRepository.save(loanEntityRecord);
@@ -135,10 +134,9 @@ public class LoanServiceImpl implements LoanService {
             if (loanRegistrationRequest.isHaveCar() != loanEntityRecord.isHaveCar()) {
                 loanEntityRecord.setHaveCar(loanEntityRecord.isHaveCar());
             }
-            if (loanRegistrationRequest.getEductionalLevel() != null &&
-                    !loanRegistrationRequest.getEductionalLevel().
-                            equals(loanEntityRecord.getEductionalLevel())) {
-                loanEntityRecord.setEductionalLevel(loanRegistrationRequest.getEductionalLevel());
+            if (loanRegistrationRequest.getEducationalLevel() != null &&
+                    !loanRegistrationRequest.getEducationalLevel().equals(loanEntityRecord.getEducationalLevel())) {
+                loanEntityRecord.setEducationalLevel(loanRegistrationRequest.getEducationalLevel());
             }
             if (loanRegistrationRequest.getGraduationDate() != null &&
                     !loanRegistrationRequest.getGraduationDate().
@@ -164,7 +162,7 @@ public class LoanServiceImpl implements LoanService {
                 loanEntityRecord.setJobType(
                         loanRegistrationRequest.getJobType());
             }
-            if (loanRegistrationRequest.getYearsOfWork() != -1 && loanRegistrationRequest.getYearsOfWork() !=
+            if (loanRegistrationRequest.getYearsOfWork() != null && loanRegistrationRequest.getYearsOfWork() !=
                     loanEntityRecord.getYearsOfWork()) {
                 loanEntityRecord.setYearsOfWork(loanRegistrationRequest.getYearsOfWork());
             }
@@ -185,7 +183,7 @@ public class LoanServiceImpl implements LoanService {
                             loanEntityRecord.getJobHiringDate())) {
                 loanEntityRecord.setJobHiringDate(loanRegistrationRequest.getJobHiringDate());
             }
-            if (loanRegistrationRequest.getMonthlySalary() != -1 &&
+            if (loanRegistrationRequest.getMonthlySalary() != null &&
                     loanRegistrationRequest.getMonthlySalary() !=
                             loanEntityRecord.getMonthlySalary()) {
                 loanEntityRecord.setMonthlySalary(loanRegistrationRequest.getMonthlySalary());
@@ -199,17 +197,17 @@ public class LoanServiceImpl implements LoanService {
                 loanEntityRecord.setExtraIncomeSource(
                         loanRegistrationRequest.getExtraIncomeSource());
             }
-            if (loanRegistrationRequest.getAnnualIncome() != -1 &&
+            if (loanRegistrationRequest.getAnnualIncome() != null &&
                     loanRegistrationRequest.getAnnualIncome() !=
                             loanEntityRecord.getAnnualIncome()) {
                 loanEntityRecord.setAnnualIncome(loanRegistrationRequest.getAnnualIncome());
             }
-            if (loanRegistrationRequest.getLoanAmount() != -1 &&
+            if (loanRegistrationRequest.getLoanAmount() != null &&
                     loanRegistrationRequest.getLoanAmount() !=
                             loanEntityRecord.getLoanAmount()) {
                 loanEntityRecord.setLoanAmount(loanRegistrationRequest.getLoanAmount());
             }
-            if (loanRegistrationRequest.getNoInstallmentYears() != -1 &&
+            if (loanRegistrationRequest.getNoInstallmentYears() != null &&
                     loanRegistrationRequest.getNoInstallmentYears() !=
                             loanEntityRecord.getNoInstallmentYears()) {
                 loanEntityRecord.setNoInstallmentYears(
@@ -217,8 +215,8 @@ public class LoanServiceImpl implements LoanService {
             }
             if (loanRegistrationRequest.getCustomerId() != -1 &&
                     customerRepository.findById(loanRegistrationRequest.getCustomerId()).equals(
-                            loanEntityRecord.getCustomerEntity())) {
-                loanEntityRecord.setCustomerEntity(
+                            loanEntityRecord.getCustomer())) {
+                loanEntityRecord.setCustomer(
                         customerRepository.getOne(loanRegistrationRequest.getCustomerId()));
             }
 

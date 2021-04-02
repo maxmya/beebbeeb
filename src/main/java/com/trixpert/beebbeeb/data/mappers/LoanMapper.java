@@ -37,7 +37,7 @@ public class LoanMapper {
                 .loanAmount(loanEntity.getLoanAmount())
                 .noInstallmentYears(loanEntity.getNoInstallmentYears())
                 .active(loanEntity.isActive())
-                .customer(customerMapper.convertToDTO(loanEntity.getCustomerEntity()))
+                .customer(customerMapper.convertToDTO(loanEntity.getCustomer()))
                 .build();
     }
 
@@ -66,7 +66,7 @@ public class LoanMapper {
                 .loanAmount(loanDTO.getLoanAmount())
                 .noInstallmentYears(loanDTO.getNoInstallmentYears())
                 .active(loanDTO.isActive())
-                .customerEntity(customerMapper.convertToEntity(loanDTO.getCustomer()))
+                .customer(customerMapper.convertToEntity(loanDTO.getCustomer()))
                 .build();
     }
 }

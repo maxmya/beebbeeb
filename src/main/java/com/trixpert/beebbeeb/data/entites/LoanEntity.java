@@ -82,5 +82,5 @@ public class LoanEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
-    private CustomerEntity customerEntity;
+    private CustomerEntity customer;
 }
