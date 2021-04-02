@@ -22,6 +22,8 @@ public class LoanEntity {
     private LocalDate date;
 
     private String amount;
+
+    @Column(name = "id_number")
     private long idNumber;
 
     @Column(name = "photo_id_side1")
