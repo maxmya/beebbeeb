@@ -99,7 +99,7 @@ public class MobileServiceImpl implements MobileService {
             List<AddressEntity> addressEntities = addressRepository.findByCustomer(customerEntity.get());
             AddressEntity addressEntity = null;
             for (AddressEntity address : addressEntities) {
-                if (address.isPrimary()) {
+                if (address.isMain()) {
                     addressEntity = address;
                 }
             }
@@ -466,7 +466,7 @@ public class MobileServiceImpl implements MobileService {
 
             Map<String, String> extraSpecsMap = new HashMap<>();
 
-            for (ExtraSpecsEntity specsEntity : extraSpecs) { 
+            for (ExtraSpecsEntity specsEntity : extraSpecs) {
                 extraSpecsMap.put(specsEntity.getKey(), specsEntity.getValue());
             }
 
