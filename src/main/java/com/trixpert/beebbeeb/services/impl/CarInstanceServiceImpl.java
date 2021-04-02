@@ -198,6 +198,7 @@ public class CarInstanceServiceImpl implements CarInstanceService {
                         .active(true)
                         .amount(carInstanceRequest.getVendorPrice())
                         .car(carInstanceEntityRecord)
+                        .date(LocalDate.now())
                         .build());
             }
 
