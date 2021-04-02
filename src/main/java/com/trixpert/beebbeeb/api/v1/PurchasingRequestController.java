@@ -1,6 +1,7 @@
 package com.trixpert.beebbeeb.api.v1;
 
 import com.trixpert.beebbeeb.data.request.PurchasingRequestRegistrationRequest;
+import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.PurchasingRequestDTO;
 import com.trixpert.beebbeeb.services.PurchasingRequestService;
@@ -26,14 +27,14 @@ public class PurchasingRequestController {
 
     @GetMapping("/list/active")
     @ApiOperation("Get all active Purchasing Requests List")
-    public ResponseEntity<ResponseWrapper<List<PurchasingRequestDTO>>>
+    public ResponseEntity<ResponseWrapper<List<PurchasingRequestResponse>>>
     getAllActivePurchasingRequests() {
         return ResponseEntity.ok(purchasingRequestService.listAllPurchasingRequests(true));
     }
 
     @GetMapping("/list/Inactive")
     @ApiOperation("Get all Inactive Purchasing Requests List")
-    public ResponseEntity<ResponseWrapper<List<PurchasingRequestDTO>>>
+    public ResponseEntity<ResponseWrapper<List<PurchasingRequestResponse>>>
     getAllIncActivePurchasingRequests() {
         return ResponseEntity.ok(purchasingRequestService.listAllPurchasingRequests(false));
     }

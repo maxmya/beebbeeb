@@ -13,6 +13,7 @@ import com.trixpert.beebbeeb.data.repositories.CustomerRepository;
 import com.trixpert.beebbeeb.data.repositories.PurchasingRequestRepository;
 import com.trixpert.beebbeeb.data.repositories.VendorRepository;
 import com.trixpert.beebbeeb.data.request.PurchasingRequestRegistrationRequest;
+import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.PurchasingRequestDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
@@ -141,14 +142,26 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
     }
 
     @Override
-    public ResponseWrapper<List<PurchasingRequestDTO>> listAllPurchasingRequests(boolean active) {
+    public ResponseWrapper<List<PurchasingRequestResponse>> listAllPurchasingRequests(boolean active) {
 
         try {
-            List<PurchasingRequestDTO> purchasingRequestDTOList = new ArrayList<>();
-            purchasingRequestRepository.findAllByActive(active).forEach(purchasingRequestEntity ->
-                    purchasingRequestDTOList.add(purchasingRequestMapper.
-                            convertToDTO(purchasingRequestEntity)));
-            return reporterService.reportSuccess(purchasingRequestDTOList);
+            List<PurchasingRequestResponse> purchasingRequestResponseList = new ArrayList<>();
+            purchasingRequestRepository.findAllByActive(active).forEach(purchasingRequestEntity ->{
+                PurchasingRequestResponse purchasingRequestResponse = PurchasingRequestResponse.builder()
+                        .id(purchasingRequestEntity.getId())
+                        .status(purchasingRequestEntity.getStatus())
+                        .comment(purchasingRequestEntity.getComment())
+                        .date(purchasingRequestEntity.getDate())
+                        .vendorName(purchasingRequestEntity.getVendor().getName())
+                        .customerName(purchasingRequestEntity.getCustomer().getUser().getName())
+                        .customerPhone(purchasingRequestEntity.getCustomer().getUser().getPhone())
+                        .carBrand(purchasingRequestEntity.getCarInstance().getCar().getBrand().getName())
+                        .carModel(purchasingRequestEntity.getCarInstance().getCar().getModel().getName())
+                        .active(purchasingRequestEntity.isActive())
+                        .build();
+                purchasingRequestResponseList.add(purchasingRequestResponse);
+        });
+            return reporterService.reportSuccess(purchasingRequestResponseList);
         } catch (Exception e) {
             return reporterService.reportError(e);
         }
