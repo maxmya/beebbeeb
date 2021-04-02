@@ -19,7 +19,10 @@ import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,13 +96,16 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
             if (!optionalCarInstanceEntity.isPresent()) {
                 throw new NotFoundException("This Customer doesn't exits !");
             }
+            ZoneId defaultZoneId = ZoneId.systemDefault();
+            LocalDate localDate = LocalDate.now();
+            Date date = Date.from(localDate.atStartOfDay(defaultZoneId).toInstant());
 
             CarInstanceEntity carInstanceEntityRecord = optionalCarInstanceEntity.get();
             PurchasingRequestEntity purchasingRequestEntityRecord = PurchasingRequestEntity.builder()
                     .status(purchasingRequestRegistrationRequest.getStatus())
                     .paymentType(purchasingRequestRegistrationRequest.getPaymentType())
                     .comment(purchasingRequestRegistrationRequest.getComment())
-                    .date(purchasingRequestRegistrationRequest.getDate())
+                    .date(date)
                     .vendor(vendorEntityRecord)
                     .customer(customerEntityRecord)
                     .carInstance(carInstanceEntityRecord)
@@ -161,27 +167,27 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
             }
             PurchasingRequestEntity purchasingRequestEntityRecord = optionalPurchasingRequestEntity.get();
             if (purchasingRequestRegistrationRequest.getStatus() != null &&
-                    purchasingRequestRegistrationRequest.getStatus() ==
-                            purchasingRequestEntityRecord.getStatus()) {
+                    !purchasingRequestRegistrationRequest.getStatus().equals(
+                            purchasingRequestEntityRecord.getStatus())) {
                 purchasingRequestEntityRecord.setStatus(
                         purchasingRequestRegistrationRequest.getStatus());
             }
 
             if (purchasingRequestRegistrationRequest.getPaymentType() != null &&
-                    purchasingRequestRegistrationRequest.getPaymentType() ==
-                            purchasingRequestEntityRecord.getPaymentType()) {
+                    !purchasingRequestRegistrationRequest.getPaymentType().equals(
+                            purchasingRequestEntityRecord.getPaymentType())) {
                 purchasingRequestEntityRecord.setPaymentType(
                         purchasingRequestRegistrationRequest.getPaymentType());
             }
             if (purchasingRequestRegistrationRequest.getComment() != null &&
-                    purchasingRequestRegistrationRequest.getComment() ==
-                            purchasingRequestEntityRecord.getComment()) {
+                   ! purchasingRequestRegistrationRequest.getComment().equals(
+                            purchasingRequestEntityRecord.getComment())) {
                 purchasingRequestEntityRecord.setComment(
                         purchasingRequestRegistrationRequest.getComment());
             }
             if (purchasingRequestRegistrationRequest.getDate() != null &&
-                    purchasingRequestRegistrationRequest.getDate() ==
-                            purchasingRequestEntityRecord.getDate()) {
+                   ! purchasingRequestRegistrationRequest.getDate().equals(
+                            purchasingRequestEntityRecord.getDate())) {
                 purchasingRequestEntityRecord.setDate(
                         purchasingRequestRegistrationRequest.getDate());
             }
@@ -227,7 +233,7 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
             }
             PurchasingRequestEntity purchasingRequestEntityRecord =
                     optionalPurchasingRequestEntity.get();
-            if (status != null && status == purchasingRequestEntityRecord.getStatus()) {
+            if (status != null && !status.equals(purchasingRequestEntityRecord.getStatus())) {
                 purchasingRequestEntityRecord.setStatus(status);
             }
 
