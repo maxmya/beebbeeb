@@ -11,6 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -66,14 +67,14 @@ public class ModelController {
         return ResponseEntity.ok(modelService.uploadExterior(modelId, image));
     }
 
-    @CrossOrigin(origins = {"*"})
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PutMapping(value = "/update/{modelId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation("Update Model")
     @ResponseBody
     public ResponseEntity<ResponseWrapper<Boolean>> updateModel(
             @PathVariable("modelId") long modelId,
-            @RequestParam(name = "file") MultipartFile images,
-            @Valid @RequestParam(name = "body") String modelRegisterRequest
+            @RequestParam("file") MultipartFile images,
+            @Valid @RequestParam("body") String modelRegisterRequest
             , HttpServletRequest request)throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -84,10 +85,11 @@ public class ModelController {
         return ResponseEntity.ok(modelService.updateModel(modelId, images, registerRequest, authorizationHeader));
     }
 
-
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PutMapping("/delete/{modelId}")
     @ApiOperation("Delete Model By Id")
-    public ResponseEntity<ResponseWrapper<Boolean>> deleteModel(@PathVariable("modelId") long modelId
+    public ResponseEntity<ResponseWrapper<Boolean>> deleteModel(
+            @PathVariable("modelId") long modelId
             , HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
