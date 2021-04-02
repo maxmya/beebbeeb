@@ -1,8 +1,6 @@
 package com.trixpert.beebbeeb.api.v1;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.trixpert.beebbeeb.data.request.BannerRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.LoanRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.LoanDTO;
@@ -44,59 +42,45 @@ public class LoanController {
     }
 
     @CrossOrigin(origins = {"*"})
-    @PutMapping(value ="/update/{loanId}" , consumes = {
-            MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PutMapping(value = "/update/{loanId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation("Update an existing Loan with new data")
     @ResponseBody
-    public ResponseEntity<ResponseWrapper<Boolean>> updateloan(
-            @RequestParam(name = "file") MultipartFile photoSide1,
-            @RequestParam(name = "file") MultipartFile photoSide2,
-            @Valid @RequestParam(name = "body") String regRequest,
-            @PathVariable("loanId") long loanId,
-            HttpServletRequest request) throws IOException {
+    public ResponseEntity<ResponseWrapper<Boolean>> updateLoan(@RequestParam(name = "side1") MultipartFile photoSide1,
+                                                               @RequestParam(name = "side2") MultipartFile photoSide2,
+                                                               @Valid @RequestParam(name = "body") String regRequest,
+                                                               @PathVariable("loanId") long loanId,
+                                                               HttpServletRequest request) throws IOException {
         String authorizationHeader = request.getHeader("Authorization");
         ObjectMapper objectMapper = new ObjectMapper();
-        LoanRegistrationRequest loanRegistrationRequest = objectMapper.readValue(
-                regRequest, LoanRegistrationRequest.class);
-
-        return ResponseEntity.ok(loanService.updateLoan(loanRegistrationRequest,loanId
-                ,photoSide1,photoSide2,authorizationHeader));
+        LoanRegistrationRequest loanRegistrationRequest = objectMapper.readValue(regRequest, LoanRegistrationRequest.class);
+        return ResponseEntity.ok(loanService.updateLoan(loanRegistrationRequest, loanId, photoSide1, photoSide2, authorizationHeader));
     }
+
     @CrossOrigin(origins = {"*"})
-    @PostMapping(value="/add" , consumes = {
-            MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/add", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation("Add New Loan")
     @ResponseBody
-    public ResponseEntity<ResponseWrapper<Boolean>> addloan(
-            @RequestParam(name = "file") MultipartFile photoSide1,
-            @RequestParam(name = "file") MultipartFile photoSide2,
-            @Valid @RequestParam(name = "body") String regRequest,
-            HttpServletRequest request) throws IOException {
+    public ResponseEntity<ResponseWrapper<Boolean>> addLoan(@RequestParam(name = "side1") MultipartFile photoSide1,
+                                                            @RequestParam(name = "side2") MultipartFile photoSide2,
+                                                            @Valid @RequestParam(name = "body") String regRequest,
+                                                            HttpServletRequest request) throws IOException {
 
         String authorizationHeader = request.getHeader("Authorization");
         ObjectMapper objectMapper = new ObjectMapper();
-        LoanRegistrationRequest loanRegistrationRequest = objectMapper.readValue(
-                regRequest, LoanRegistrationRequest.class);
-
-
-        return ResponseEntity.ok(loanService.registerLoan(
-                loanRegistrationRequest, photoSide1 , photoSide2, authorizationHeader));
+        LoanRegistrationRequest loanRegistrationRequest = objectMapper.readValue(regRequest, LoanRegistrationRequest.class);
+        return ResponseEntity.ok(loanService.registerLoan(loanRegistrationRequest, photoSide1, photoSide2, authorizationHeader));
     }
 
     @PutMapping("/delete/{loanId}")
     @ApiOperation("Remove  Loan By Id")
-    public ResponseEntity<ResponseWrapper<Boolean>> deleteLoan(
-            @PathVariable("loanId") Long loanId, HttpServletRequest request) {
+    public ResponseEntity<ResponseWrapper<Boolean>> deleteLoan(@PathVariable("loanId") Long loanId, HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
-
         return ResponseEntity.ok(loanService.deleteLoan(loanId, authorizationHeader));
     }
 
     @PutMapping("/Get/{loanId}")
     @ApiOperation("Get  Loan By Id")
-    public ResponseEntity<ResponseWrapper<LoanDTO>> getLoan(
-            @PathVariable("loanId") Long loanId) {
-
+    public ResponseEntity<ResponseWrapper<LoanDTO>> getLoan(@PathVariable("loanId") Long loanId) {
         return ResponseEntity.ok(loanService.getLoan(loanId));
     }
 }

@@ -40,152 +40,116 @@ public class PurchasingRequestController {
 
     @PostMapping("/add")
     @ApiOperation("Add New Purchasing Request")
-    public ResponseEntity<ResponseWrapper<Boolean>> addPurchasingRequest(
-            @RequestBody PurchasingRequestRegistrationRequest
-                    purchasingRequestRegistrationRequest,
-            HttpServletRequest request) {
+    public ResponseEntity<ResponseWrapper<Boolean>> addPurchasingRequest(@RequestBody PurchasingRequestRegistrationRequest purchasingRequestRegistrationRequest,
+                                                                         HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(purchasingRequestService.registerPurchasingRequest(
-                purchasingRequestRegistrationRequest, authorizationHeader));
+        return ResponseEntity.ok(purchasingRequestService.registerPurchasingRequest(purchasingRequestRegistrationRequest, authorizationHeader));
     }
 
-    @PutMapping("/delete/{purchasing_requestId}")
+    @PutMapping("/delete/{purchasingRequestId}")
     @ApiOperation("Remove purchasing Request By Id")
-    public ResponseEntity<ResponseWrapper<Boolean>> deletePurchasingRequest(
-            @PathVariable("purchasing_requestId") Long purchasing_requestId,
-            HttpServletRequest request) {
+    public ResponseEntity<ResponseWrapper<Boolean>> deletePurchasingRequest(@PathVariable("purchasingRequestId") Long purchasingRequestId,
+                                                                            HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
-
-        return ResponseEntity.ok(purchasingRequestService.deletePurchasingRequest(
-                purchasing_requestId, authorizationHeader));
+        return ResponseEntity.ok(purchasingRequestService.deletePurchasingRequest(purchasingRequestId, authorizationHeader));
     }
 
-    @GetMapping("/get/{purchasing_requestId}")
+    @GetMapping("/get/{purchasingRequestId}")
     @ApiOperation("Get purchasing By Id")
-    public ResponseEntity<ResponseWrapper<PurchasingRequestDTO>> getPurchasingRequest(
-            @PathVariable("purchasing_requestId") Long purchasing_requestId) {
-
-        return ResponseEntity.ok(purchasingRequestService.
-                getPurchasingRequest(purchasing_requestId));
+    public ResponseEntity<ResponseWrapper<PurchasingRequestDTO>> getPurchasingRequest(@PathVariable("purchasingRequestId") Long purchasingRequestId) {
+        return ResponseEntity.ok(purchasingRequestService.getPurchasingRequest(purchasingRequestId));
     }
 
 
-    @PutMapping("/update/{purchasing_requestId}")
+    @PutMapping("/update/{purchasingRequestId}")
     @ApiOperation("Update an existing purchasing Request ")
     public ResponseEntity<ResponseWrapper<Boolean>> updatePurchasingRequest(
             @RequestBody PurchasingRequestRegistrationRequest purchasingRequestRegistrationRequest,
-            @PathVariable("purchasing_requestId") long purchasing_requestId,
+            @PathVariable("purchasingRequestId") long purchasingRequestId,
             HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(purchasingRequestService.updatePurchasingRequest(
-                purchasingRequestRegistrationRequest,
-                purchasing_requestId, authorizationHeader));
+        return ResponseEntity.ok(purchasingRequestService.updatePurchasingRequest(purchasingRequestRegistrationRequest,
+                purchasingRequestId, authorizationHeader));
     }
 
-    @PutMapping("/update/{purchasing_requestId}/{status}")
+    @PutMapping("/update/{purchasingRequestId}/{status}")
     @ApiOperation("Update an existing purchasing Request ")
-    public ResponseEntity<ResponseWrapper<Boolean>> updateStatusForPurchasingRequest(
-            @PathVariable("purchasing_requestId") long purchasing_requestId,
-            @PathVariable("status") String status,
-            HttpServletRequest request) {
+    public ResponseEntity<ResponseWrapper<Boolean>> updateStatusForPurchasingRequest(@PathVariable("purchasingRequestId") long purchasingRequestId,
+                                                                                     @PathVariable("status") String status,
+                                                                                     HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(purchasingRequestService.updateStatusForPurchasingRequest(
-                purchasing_requestId, status, authorizationHeader));
+        return ResponseEntity.ok(purchasingRequestService.updateStatusForPurchasingRequest(purchasingRequestId, status, authorizationHeader));
     }
 
-    @GetMapping("/get/{vendorId}/{purchasing_requestId}")
+    @GetMapping("/get/{vendorId}/{purchasingRequestId}")
     @ApiOperation("Get purchasing for Vendor By Id")
-    public ResponseEntity<ResponseWrapper<PurchasingRequestDTO>> getPurchasingRequestForVendor(
-            @PathVariable("purchasing_requestId") long purchasing_requestId,
-            @PathVariable("vendorId") long vendorId) {
+    public ResponseEntity<ResponseWrapper<PurchasingRequestDTO>> getPurchasingRequestForVendor(@PathVariable("purchasingRequestId") long purchasingRequestId,
+                                                                                               @PathVariable("vendorId") long vendorId) {
 
-        return ResponseEntity.ok(purchasingRequestService.
-                getPurchasingRequestForVendor(purchasing_requestId, vendorId));
+        return ResponseEntity.ok(purchasingRequestService.getPurchasingRequestForVendor(purchasingRequestId, vendorId));
     }
 
-    @GetMapping("/get/{customerId}/{purchasing_requestId}")
+    @GetMapping("/get/{customerId}/{purchasingRequestId}")
     @ApiOperation("Get purchasing for customer By Id")
-    public ResponseEntity<ResponseWrapper<PurchasingRequestDTO>> getPurchasingRequestForCustomer(
-            @PathVariable("purchasing_requestId") long purchasing_requestId,
-            @PathVariable("customerId") long customerId) {
+    public ResponseEntity<ResponseWrapper<PurchasingRequestDTO>> getPurchasingRequestForCustomer(@PathVariable("purchasingRequestId") long purchasingRequestId,
+                                                                                                 @PathVariable("customerId") long customerId) {
 
-        return ResponseEntity.ok(purchasingRequestService.
-                getPurchasingRequestForCustomer(purchasing_requestId, customerId));
+        return ResponseEntity.ok(purchasingRequestService.getPurchasingRequestForCustomer(purchasingRequestId, customerId));
     }
 
-    @GetMapping("/get/{car_instance_id}/{purchasing_requestId}")
+    @GetMapping("/get/{carInstanceId}/{purchasingRequestId}")
     @ApiOperation("Get purchasing for Vendor By Id")
-    public ResponseEntity<ResponseWrapper<PurchasingRequestDTO>> getPurchasingRequestForCar(
-            @PathVariable("purchasing_requestId") long purchasing_requestId,
-            @PathVariable("car_instance_id") long car_instance_id) {
+    public ResponseEntity<ResponseWrapper<PurchasingRequestDTO>> getPurchasingRequestForCar(@PathVariable("purchasingRequestId") long purchasingRequestId,
+                                                                                            @PathVariable("carInstanceId") long carInstanceId) {
 
-        return ResponseEntity.ok(purchasingRequestService.
-                getPurchasingRequestForCar(purchasing_requestId, car_instance_id));
+        return ResponseEntity.ok(purchasingRequestService.getPurchasingRequestForCar(purchasingRequestId, carInstanceId));
     }
 
     @GetMapping("/list/active/{vendorId}")
     @ApiOperation("Get all active Purchasing Requests List for Vendor ")
     public ResponseEntity<ResponseWrapper<List<PurchasingRequestDTO>>>
-    getAllActivePurchasingRequestsForVendor(
-            @PathVariable("vendorId") long vendorId) {
-
-        return ResponseEntity.ok(purchasingRequestService.listPurchasingRequestsForVendor(
-                true, vendorId));
+    getAllActivePurchasingRequestsForVendor(@PathVariable("vendorId") long vendorId) {
+        return ResponseEntity.ok(purchasingRequestService.listPurchasingRequestsForVendor(true, vendorId));
     }
 
     @GetMapping("/list/inactive/{vendorId}")
     @ApiOperation("Get all inactive Purchasing Requests List for Vendor ")
     public ResponseEntity<ResponseWrapper<List<PurchasingRequestDTO>>>
-    getAllInActivePurchasingRequestsForVendor(
-            @PathVariable("vendorId") long vendorId) {
-
-        return ResponseEntity.ok(purchasingRequestService.listPurchasingRequestsForVendor(
-                false, vendorId));
+    getAllInActivePurchasingRequestsForVendor(@PathVariable("vendorId") long vendorId) {
+        return ResponseEntity.ok(purchasingRequestService.listPurchasingRequestsForVendor(false, vendorId));
     }
 
     @GetMapping("/list/active/{customerId}")
     @ApiOperation("Get all active Purchasing Requests List for Vendor ")
     public ResponseEntity<ResponseWrapper<List<PurchasingRequestDTO>>>
-    getAllActivePurchasingRequestsForCustomer(
-            @PathVariable("customerId") long customerId) {
-
-        return ResponseEntity.ok(purchasingRequestService.listPurchasingRequestsForCustomer(
-                true, customerId));
+    getAllActivePurchasingRequestsForCustomer(@PathVariable("customerId") long customerId) {
+        return ResponseEntity.ok(purchasingRequestService.listPurchasingRequestsForCustomer(true, customerId));
     }
 
     @GetMapping("/list/inactive/{customerId}")
     @ApiOperation("Get all inactive Purchasing Requests List for Customer ")
     public ResponseEntity<ResponseWrapper<List<PurchasingRequestDTO>>>
-    getAllInActivePurchasingRequestsForCustomer(
-            @PathVariable("customerId") long customerId) {
-
-        return ResponseEntity.ok(purchasingRequestService.listPurchasingRequestsForCustomer(
-                false, customerId));
+    getAllInActivePurchasingRequestsForCustomer(@PathVariable("customerId") long customerId) {
+        return ResponseEntity.ok(purchasingRequestService.listPurchasingRequestsForCustomer(false, customerId));
     }
 
-    @GetMapping("/list/active/{car_instance_id}")
+    @GetMapping("/list/active/{carInstanceId}")
     @ApiOperation("Get all active Purchasing Requests List for Vendor ")
     public ResponseEntity<ResponseWrapper<List<PurchasingRequestDTO>>>
-    getAllActivePurchasingRequestsForCar(
-            @PathVariable("car_instance_id") long car_instance_id) {
-
-        return ResponseEntity.ok(purchasingRequestService.listPurchasingRequestsForCar(
-                true, car_instance_id));
+    getAllActivePurchasingRequestsForCar(@PathVariable("carInstanceId") long carInstanceId) {
+        return ResponseEntity.ok(purchasingRequestService.listPurchasingRequestsForCar(true, carInstanceId));
     }
 
-    @GetMapping("/list/inactive/{car_instance_id}")
+    @GetMapping("/list/inactive/{carInstanceId}")
     @ApiOperation("Get all inactive Purchasing Requests List for Vendor ")
     public ResponseEntity<ResponseWrapper<List<PurchasingRequestDTO>>>
-    getAllInActivePurchasingRequestsForCar(
-            @PathVariable("car_instance_id") long car_instance_id) {
-
-        return ResponseEntity.ok(purchasingRequestService.listPurchasingRequestsForCar(
-                false, car_instance_id));
+    getAllInActivePurchasingRequestsForCar(@PathVariable("carInstanceId") long carInstanceId) {
+        return ResponseEntity.ok(purchasingRequestService.listPurchasingRequestsForCar(false, carInstanceId));
     }
 }

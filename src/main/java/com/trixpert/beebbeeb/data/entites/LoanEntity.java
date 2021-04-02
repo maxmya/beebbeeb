@@ -5,8 +5,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Date;
-
 
 
 @Entity
@@ -16,7 +14,6 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class LoanEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,55 +31,54 @@ public class LoanEntity {
     private String photoIdSide2;
 
     @Column(name = "have_car")
-    private boolean haveCar ;
+    private boolean haveCar;
 
-    @Column(name ="eductiona_level")
-    private String eductionalLevel;
+    @Column(name = "educational_level")
+    private String educationalLevel;
 
-    @Column(name="graduation_date")
-    private Date graduationDate;
+    @Column(name = "graduation_date")
+    private LocalDate graduationDate;
 
-    @Column(name="other_certificates")
+    @Column(name = "other_certificates")
     private String otherCertificates;
 
-    @Column(name="company_name")
+    @Column(name = "company_name")
     private String companyName;
 
-    @Column(name="job_type")
+    @Column(name = "job_type")
     private String jobType;
 
     @Column(name = "years_of_work")
-    private Long yearsOfWork;
+    private String yearsOfWork;
 
-    @Column(name ="work_address")
+    @Column(name = "work_address")
     private String workAddress;
 
-    @Column(name ="work_phone_no")
+    @Column(name = "work_phone_number")
     private String workPhoneNumber;
 
-    @Column(name="job_hiring_Date")
-    private Date jobHiringDate;
+    @Column(name = "job_hiring_Date")
+    private LocalDate jobHiringDate;
 
-    @Column(name="monthly_salary")
-    private Long monthlySalary;
+    @Column(name = "monthly_salary")
+    private String monthlySalary;
 
-    @Column(name="extra_income")
-    private boolean extraIncome ;
+    @Column(name = "extra_income")
+    private boolean extraIncome;
 
-    @Column(name="extra_income_source")
+    @Column(name = "extra_income_source")
     private String extraIncomeSource;
 
-    @Column(name="annual_income")
-    private Long annualIncome;
+    @Column(name = "annual_income")
+    private String annualIncome;
 
     @Column(name = "loan_amount")
-    private Long loanAmount;
+    private String loanAmount;
 
     @Column(name = "no_installment_years")
-    private Long noInstallmentYears ;
+    private String noInstallmentYears;
 
     private boolean active;
-
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
