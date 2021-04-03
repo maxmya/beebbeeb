@@ -29,7 +29,7 @@ public class MobileController {
     }
 
 
-    @PostMapping("/add")
+    @PostMapping("/purchasing/request")
     @ApiOperation("Add New Purchasing Request")
     public ResponseEntity<ResponseWrapper<Boolean>> addPurchasingRequest(
             @RequestBody PurchasingRequestRegistrationRequest purchasingRequestRegistrationRequest,
