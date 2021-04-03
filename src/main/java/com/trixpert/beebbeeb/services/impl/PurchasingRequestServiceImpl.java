@@ -4,10 +4,7 @@ import com.trixpert.beebbeeb.data.entites.CarInstanceEntity;
 import com.trixpert.beebbeeb.data.entites.CustomerEntity;
 import com.trixpert.beebbeeb.data.entites.PurchasingRequestEntity;
 import com.trixpert.beebbeeb.data.entites.VendorEntity;
-import com.trixpert.beebbeeb.data.mappers.CarInstanceMapper;
-import com.trixpert.beebbeeb.data.mappers.CustomerMapper;
 import com.trixpert.beebbeeb.data.mappers.PurchasingRequestMapper;
-import com.trixpert.beebbeeb.data.mappers.VendorMapper;
 import com.trixpert.beebbeeb.data.repositories.CarInstanceRepository;
 import com.trixpert.beebbeeb.data.repositories.CustomerRepository;
 import com.trixpert.beebbeeb.data.repositories.PurchasingRequestRepository;
@@ -17,7 +14,9 @@ import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.PurchasingRequestDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
-import com.trixpert.beebbeeb.services.*;
+import com.trixpert.beebbeeb.services.AuditService;
+import com.trixpert.beebbeeb.services.PurchasingRequestService;
+import com.trixpert.beebbeeb.services.ReporterService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -31,51 +30,31 @@ import java.util.Optional;
 public class PurchasingRequestServiceImpl implements PurchasingRequestService {
 
     private final ReporterService reporterService;
-    private final UserService userService;
     private final AuditService auditService;
     private final PurchasingRequestMapper purchasingRequestMapper;
     private final PurchasingRequestRepository purchasingRequestRepository;
-    private final CarInstanceService carInstanceService;
-    private final CustomerService customerService;
-    private final VendorService vendorService;
     private final VendorRepository vendorRepository;
     private final CustomerRepository customerRepository;
     private final CarInstanceRepository carInstanceRepository;
-    private final VendorMapper vendorMapper;
-    private final CustomerMapper customerMapper;
-    private final CarInstanceMapper carInstanceMapper;
 
-    public PurchasingRequestServiceImpl(ReporterService reporterService, UserService userService,
+    public PurchasingRequestServiceImpl(ReporterService reporterService,
                                         AuditService auditService,
                                         PurchasingRequestMapper purchasingRequestMapper,
                                         PurchasingRequestRepository purchasingRequestRepository,
-                                        CarInstanceService carInstanceService,
-                                        CustomerService customerService,
-                                        VendorService vendorService, VendorRepository vendorRepository,
+                                        VendorRepository vendorRepository,
                                         CustomerRepository customerRepository,
-                                        CarInstanceRepository carInstanceRepository,
-                                        VendorMapper vendorMapper, CustomerMapper customerMapper,
-                                        CarInstanceMapper carInstanceMapper) {
+                                        CarInstanceRepository carInstanceRepository) {
         this.reporterService = reporterService;
-        this.userService = userService;
         this.auditService = auditService;
         this.purchasingRequestMapper = purchasingRequestMapper;
         this.purchasingRequestRepository = purchasingRequestRepository;
-        this.carInstanceService = carInstanceService;
-        this.customerService = customerService;
-        this.vendorService = vendorService;
         this.vendorRepository = vendorRepository;
         this.customerRepository = customerRepository;
         this.carInstanceRepository = carInstanceRepository;
-        this.vendorMapper = vendorMapper;
-        this.customerMapper = customerMapper;
-        this.carInstanceMapper = carInstanceMapper;
     }
 
     @Override
-    public ResponseWrapper<Boolean> registerPurchasingRequest(
-            PurchasingRequestRegistrationRequest purchasingRequestRegistrationRequest,
-            String authHeader) {
+    public ResponseWrapper<Boolean> registerPurchasingRequest(PurchasingRequestRegistrationRequest purchasingRequestRegistrationRequest, String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
         try {
             Optional<VendorEntity> optionalVendorEntity = vendorRepository.findById(
@@ -107,13 +86,14 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
                     .paymentType(purchasingRequestRegistrationRequest.getPaymentType())
                     .comment(purchasingRequestRegistrationRequest.getComment())
                     .date(date)
+                    .active(true)
                     .vendor(vendorEntityRecord)
                     .customer(customerEntityRecord)
                     .carInstance(carInstanceEntityRecord)
                     .build();
 
             purchasingRequestRepository.save(purchasingRequestEntityRecord);
-            return reporterService.reportSuccess("PurchasingRequest Registerd Succesfully");
+            return reporterService.reportSuccess("PurchasingRequest Registered Successfully");
         } catch (Exception e) {
             return reporterService.reportError(e);
         }
@@ -129,13 +109,13 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
                     purchasingRequestRepository.findById(
                             purchasingRequestId);
             if (!optionalPurchasingRequestEntity.isPresent()) {
-                throw new NotFoundException("This Purcchasing Request doesn't exits !");
+                throw new NotFoundException("This Purchasing Request doesn't exits !");
             }
             PurchasingRequestEntity purchasingRequestEntityRecord =
                     optionalPurchasingRequestEntity.get();
             purchasingRequestEntityRecord.setActive(false);
             purchasingRequestRepository.save(purchasingRequestEntityRecord);
-            return reporterService.reportSuccess("PurchasingRequest Registerd Succesfully");
+            return reporterService.reportSuccess("PurchasingRequest Registered Successfully");
         } catch (Exception e) {
             return reporterService.reportError(e);
         }
@@ -146,9 +126,10 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
 
         try {
             List<PurchasingRequestResponse> purchasingRequestResponseList = new ArrayList<>();
-            purchasingRequestRepository.findAllByActive(active).forEach(purchasingRequestEntity ->{
+            purchasingRequestRepository.findAllByActive(active).forEach(purchasingRequestEntity -> {
                 PurchasingRequestResponse purchasingRequestResponse = PurchasingRequestResponse.builder()
                         .id(purchasingRequestEntity.getId())
+                        .paymentType(purchasingRequestEntity.getPaymentType())
                         .status(purchasingRequestEntity.getStatus())
                         .comment(purchasingRequestEntity.getComment())
                         .date(purchasingRequestEntity.getDate())
@@ -160,7 +141,7 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
                         .active(purchasingRequestEntity.isActive())
                         .build();
                 purchasingRequestResponseList.add(purchasingRequestResponse);
-        });
+            });
             return reporterService.reportSuccess(purchasingRequestResponseList);
         } catch (Exception e) {
             return reporterService.reportError(e);
@@ -193,13 +174,13 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
                         purchasingRequestRegistrationRequest.getPaymentType());
             }
             if (purchasingRequestRegistrationRequest.getComment() != null &&
-                   ! purchasingRequestRegistrationRequest.getComment().equals(
+                    !purchasingRequestRegistrationRequest.getComment().equals(
                             purchasingRequestEntityRecord.getComment())) {
                 purchasingRequestEntityRecord.setComment(
                         purchasingRequestRegistrationRequest.getComment());
             }
             if (purchasingRequestRegistrationRequest.getDate() != null &&
-                   ! purchasingRequestRegistrationRequest.getDate().equals(
+                    !purchasingRequestRegistrationRequest.getDate().equals(
                             purchasingRequestEntityRecord.getDate())) {
                 purchasingRequestEntityRecord.setDate(
                         purchasingRequestRegistrationRequest.getDate());

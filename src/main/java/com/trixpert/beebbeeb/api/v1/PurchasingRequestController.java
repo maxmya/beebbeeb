@@ -13,12 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-@Api(tags = {"purchasingRequest API"})
+@Api(tags = {"Purchasing Request API"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
 @RestController
-@RequestMapping("/api/v1/purchasingRequest")
+@RequestMapping("/api/v1/purchasing")
 
 public class PurchasingRequestController {
+
     private final PurchasingRequestService purchasingRequestService;
 
     public PurchasingRequestController(PurchasingRequestService purchasingRequestService) {
