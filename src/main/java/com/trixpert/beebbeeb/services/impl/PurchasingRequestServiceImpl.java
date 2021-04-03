@@ -204,25 +204,32 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
                 purchasingRequestEntityRecord.setDate(
                         purchasingRequestRegistrationRequest.getDate());
             }
-            if (vendorRepository.findById(purchasingRequestRegistrationRequest.getVendorId()) != null &&
-                    vendorRepository.findById(purchasingRequestRegistrationRequest.getVendorId())
-                            .equals(purchasingRequestEntityRecord.getVendor())) {
-                purchasingRequestEntityRecord.setVendor(
-                        vendorRepository.getOne(purchasingRequestRegistrationRequest.getVendorId()));
+            if (purchasingRequestRegistrationRequest.getVendorId() != -1 &&
+                    purchasingRequestRegistrationRequest.getVendorId() != purchasingRequestEntityRecord.getVendor().getId()) {
+                Optional<VendorEntity> optionalVendorRecord = vendorRepository.
+                        findById(purchasingRequestRegistrationRequest.getVendorId());
+                if (!optionalVendorRecord.isPresent()) {
+                    throw new NotFoundException(" Vendor Entity not found");
+                }
+                purchasingRequestEntityRecord.setVendor(optionalVendorRecord.get());
             }
-            if (customerRepository.findById(purchasingRequestRegistrationRequest.getCustomerId()) != null &&
-                    customerRepository.findById(purchasingRequestRegistrationRequest.getCustomerId())
-                            .equals(purchasingRequestEntityRecord.getCustomer())) {
-                purchasingRequestEntityRecord.setCustomer(
-                        customerRepository.getOne(purchasingRequestRegistrationRequest.getCustomerId()));
+            if (purchasingRequestRegistrationRequest.getCustomerId() != -1 &&
+                    purchasingRequestRegistrationRequest.getCustomerId() != purchasingRequestEntityRecord.getCustomer().getId()) {
+                Optional<CustomerEntity> optionalCustomerEntity = customerRepository.findById(purchasingRequestRegistrationRequest.getCustomerId());
+                if(!optionalCustomerEntity.isPresent()){
+                    throw new NotFoundException("Customer Entity not found");
+                }
+                purchasingRequestEntityRecord.setCustomer(optionalCustomerEntity.get());
 
             }
-            if (carInstanceRepository.findById(purchasingRequestRegistrationRequest.getCarInstanceId()) != null &&
-                    carInstanceRepository.findById(purchasingRequestRegistrationRequest.getCarInstanceId())
-                            .equals(purchasingRequestEntityRecord.getCarInstance())) {
-                purchasingRequestEntityRecord.setCarInstance(
-                        carInstanceRepository.getOne(purchasingRequestRegistrationRequest.getCarInstanceId())
-                );
+            if (purchasingRequestRegistrationRequest.getCarInstanceId() != -1 &&
+                    purchasingRequestRegistrationRequest.getCarInstanceId() != purchasingRequestEntityRecord.getCarInstance().getId()) {
+                Optional<CarInstanceEntity> optionalCarInstanceEntity = carInstanceRepository.
+                        findById(purchasingRequestRegistrationRequest.getCarInstanceId());
+                if(!optionalCarInstanceEntity.isPresent()){
+                    throw new NotFoundException("CarInstance Entity not found");
+                }
+                purchasingRequestEntityRecord.setCarInstance(optionalCarInstanceEntity.get());
             }
             purchasingRequestRepository.save(purchasingRequestEntityRecord);
             return reporterService.reportSuccess("Purchasing Request updated successfully");
