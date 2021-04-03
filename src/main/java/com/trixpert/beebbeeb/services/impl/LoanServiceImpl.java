@@ -14,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.NotActiveException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -52,6 +54,10 @@ public class LoanServiceImpl implements LoanService {
             String photoIdSide1 = cloudStorageService.uploadFile(photoSide1file);
             String photoIdSide2 = cloudStorageService.uploadFile(photoSide2file);
 
+            DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate graduationLocalDate = LocalDate.parse(loanRegistrationRequest.getGraduationDate(), pattern);
+            LocalDate hiringLocalDate = LocalDate.parse(loanRegistrationRequest.getJobHiringDate(), pattern);
+
             LoanEntity loanEntityRecord = LoanEntity.builder()
                     .amount(loanRegistrationRequest.getAmount())
                     .idNumber(loanRegistrationRequest.getIdNumber())
@@ -59,14 +65,14 @@ public class LoanServiceImpl implements LoanService {
                     .photoIdSide2(photoIdSide2)
                     .haveCar(loanRegistrationRequest.isHaveCar())
                     .educationalLevel(loanRegistrationRequest.getEducationalLevel())
-                    .graduationDate(loanRegistrationRequest.getGraduationDate())
+                    .graduationDate(graduationLocalDate)
                     .otherCertificates(loanRegistrationRequest.getOtherCertificates())
                     .companyName(loanRegistrationRequest.getCompanyName())
                     .jobType(loanRegistrationRequest.getJobType())
                     .yearsOfWork(loanRegistrationRequest.getYearsOfWork())
                     .workAddress(loanRegistrationRequest.getWorkAddress())
                     .workPhoneNumber(loanRegistrationRequest.getWorkPhoneNumber())
-                    .jobHiringDate(loanRegistrationRequest.getJobHiringDate())
+                    .jobHiringDate(hiringLocalDate)
                     .monthlySalary(loanRegistrationRequest.getMonthlySalary())
                     .extraIncome(loanRegistrationRequest.isExtraIncome())
                     .extraIncomeSource(loanRegistrationRequest.getExtraIncomeSource())
@@ -120,10 +126,7 @@ public class LoanServiceImpl implements LoanService {
                     equals(loanEntityRecord.getAmount())) {
                 loanEntityRecord.setAmount(loanRegistrationRequest.getAmount());
             }
-            if (loanRegistrationRequest.getIdNumber() != -1 && loanRegistrationRequest.getIdNumber() !=
-                    loanEntityRecord.getIdNumber()) {
-                loanEntityRecord.setIdNumber(loanRegistrationRequest.getIdNumber());
-            }
+
 
             if (photoIdSide1 != null && !photoIdSide1.equals(loanEntityRecord.getPhotoIdSide1())) {
                 loanEntityRecord.setPhotoIdSide1(photoIdSide1);
@@ -138,11 +141,7 @@ public class LoanServiceImpl implements LoanService {
                     !loanRegistrationRequest.getEducationalLevel().equals(loanEntityRecord.getEducationalLevel())) {
                 loanEntityRecord.setEducationalLevel(loanRegistrationRequest.getEducationalLevel());
             }
-            if (loanRegistrationRequest.getGraduationDate() != null &&
-                    !loanRegistrationRequest.getGraduationDate().
-                            equals(loanEntityRecord.getGraduationDate())) {
-                loanEntityRecord.setGraduationDate(loanRegistrationRequest.getGraduationDate());
-            }
+
             if (loanRegistrationRequest.getOtherCertificates() != null &&
                     !loanRegistrationRequest.getOtherCertificates().
                             equals(loanEntityRecord.getOtherCertificates())) {
@@ -178,11 +177,7 @@ public class LoanServiceImpl implements LoanService {
                 loanEntityRecord.setWorkPhoneNumber(loanRegistrationRequest.getWorkPhoneNumber());
 
             }
-            if (loanRegistrationRequest.getJobHiringDate() != null &&
-                    loanRegistrationRequest.getJobHiringDate().equals(
-                            loanEntityRecord.getJobHiringDate())) {
-                loanEntityRecord.setJobHiringDate(loanRegistrationRequest.getJobHiringDate());
-            }
+
             if (loanRegistrationRequest.getMonthlySalary() != null &&
                     loanRegistrationRequest.getMonthlySalary() !=
                             loanEntityRecord.getMonthlySalary()) {

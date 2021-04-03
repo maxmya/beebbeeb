@@ -15,7 +15,7 @@ public class LoanDTO {
     private Long id;
     private LocalDate date;
     private String amount;
-    private long idNumber;
+    private String idNumber;
     private String photoIdSide1;
     private String photoIdSide2;
     private boolean haveCar;

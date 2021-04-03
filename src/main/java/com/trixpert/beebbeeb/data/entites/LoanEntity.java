@@ -24,7 +24,7 @@ public class LoanEntity {
     private String amount;
 
     @Column(name = "id_number")
-    private long idNumber;
+    private String idNumber;
 
     @Column(name = "photo_id_side1")
     private String photoIdSide1;
