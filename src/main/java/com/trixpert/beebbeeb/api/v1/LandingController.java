@@ -13,13 +13,4 @@ public class LandingController {
         return "index";
     }
 
-    @RequestMapping("/ms91608829.txt")
-    public String office() {
-        return "{\n" +
-                "  \"Description\": \"Domain ownership verification file for Microsoft 365 - place in the website root\",\n" +
-                "  \"Domain\": \"beebbeeb.info\",\n" +
-                "  \"Id\": \"b33ab60f-fa3f-4a27-afcd-790453a6594a\"\n" +
-                "}";
-    }
-
 }
