@@ -284,7 +284,7 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
 
     @Override
     public ResponseWrapper<PurchasingRequestMobileResponse> getPurchasingRequestStatus(long purchasingRequestId){
-        AtomicReference<PhotoEntity> mainPhotoEntity = null;
+        PhotoEntity mainPhotoEntity = null;
 
         try{
             Optional<PurchasingRequestEntity> optionalPurchasingRequestRecord =
@@ -293,11 +293,11 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
                 throw new NotFoundException("Purchasing request not found");
             }
             PurchasingRequestEntity purchasingRequestRecord = optionalPurchasingRequestRecord.get();
-            purchasingRequestRecord.getCarInstance().getCar().getModel().getPhotos().forEach(photoEntity -> {
-                if(photoEntity.isMainPhoto()){
-                    mainPhotoEntity.set(photoEntity);
+            for (PhotoEntity photoEntity : purchasingRequestRecord.getCarInstance().getCar().getModel().getPhotos()) {
+                if (photoEntity.isMainPhoto()) {
+                    mainPhotoEntity = photoEntity;
                 }
-            });
+            }
 
             PurchasingRequestMobileResponse purchasingRequestMobileResponse = PurchasingRequestMobileResponse.builder()
                     .id(purchasingRequestRecord.getId())
@@ -306,7 +306,7 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
                     .customerName(purchasingRequestRecord.getCustomer().getUser().getName())
                     .carBrand(purchasingRequestRecord.getCarInstance().getCar().getBrand().getName())
                     .carModel(purchasingRequestRecord.getCarInstance().getCar().getModel().getName())
-                    .modelMainPhoto(mainPhotoEntity.get())
+                    .modelMainPhoto(mainPhotoEntity)
                     .build();
 
             return reporterService.reportSuccess(purchasingRequestMobileResponse);
