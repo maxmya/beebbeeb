@@ -10,6 +10,7 @@ import com.trixpert.beebbeeb.data.repositories.CustomerRepository;
 import com.trixpert.beebbeeb.data.repositories.PurchasingRequestRepository;
 import com.trixpert.beebbeeb.data.repositories.VendorRepository;
 import com.trixpert.beebbeeb.data.request.PurchasingRequestRegistrationRequest;
+import com.trixpert.beebbeeb.data.response.LinkableImage;
 import com.trixpert.beebbeeb.data.response.PurchasingRequestMobileResponse;
 import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
@@ -284,7 +285,7 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
 
     @Override
     public ResponseWrapper<PurchasingRequestMobileResponse> getPurchasingRequestStatus(long purchasingRequestId){
-        PhotoEntity mainPhotoEntity = null;
+        LinkableImage mainPhotoEntity = null;
 
         try{
             Optional<PurchasingRequestEntity> optionalPurchasingRequestRecord =
@@ -297,7 +298,8 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
 
             for (PhotoEntity photoEntity : purchasingRequestRecord.getCarInstance().getCar().getModel().getPhotos()) {
                 if (photoEntity.isMainPhoto()) {
-                    mainPhotoEntity = photoEntity;
+                    mainPhotoEntity.setId(photoEntity.getId());
+                    mainPhotoEntity.setUrl(photoEntity.getPhotoUrl());
                 }
             }
 
@@ -309,7 +311,7 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
                     .carBrand(purchasingRequestRecord.getCarInstance().getCar().getBrand().getName())
                     .carModel(purchasingRequestRecord.getCarInstance().getCar().getModel().getName())
                     .modelMainPhoto(mainPhotoEntity)
-                    .price(purchasingRequestRecord.getCarInstance().getPrices().get(priceIndex - 1))
+                    .price(purchasingRequestRecord.getCarInstance().getPrices().get(priceIndex - 1).getAmount())
                     .build();
 
             return reporterService.reportSuccess(purchasingRequestMobileResponse);
