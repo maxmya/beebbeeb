@@ -4,6 +4,7 @@ import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.*;
 import com.trixpert.beebbeeb.data.to.AddressDTO;
 import com.trixpert.beebbeeb.services.MobileService;
+import com.trixpert.beebbeeb.services.PurchasingRequestService;
 import io.swagger.annotations.Api;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +19,11 @@ import java.util.List;
 public class MobileController {
 
     private final MobileService mobileService;
+    private final PurchasingRequestService purchasingRequestService;
 
-    public MobileController(MobileService mobileService) {
+    public MobileController(MobileService mobileService, PurchasingRequestService purchasingRequestService) {
         this.mobileService = mobileService;
+        this.purchasingRequestService = purchasingRequestService;
     }
 
     @GetMapping("/me")
@@ -31,6 +34,12 @@ public class MobileController {
     @GetMapping("/address/list")
     public ResponseEntity<ResponseWrapper<List<AddressDTO>>> getListOfAddresses(HttpServletRequest request) {
         return ResponseEntity.ok(mobileService.getListOfAddresses(request));
+    }
+
+    @GetMapping("/purchasingRequest/status/{purchasingRequestId}")
+    public ResponseEntity<ResponseWrapper<PurchasingRequestMobileResponse>> getStatusForPurchasingRequest(
+            @PathVariable("purchasingRequestId") long purchasingRequestId){
+        return ResponseEntity.ok(purchasingRequestService.getPurchasingRequestStatus(purchasingRequestId));
     }
 
     @PostMapping("/address/add")
