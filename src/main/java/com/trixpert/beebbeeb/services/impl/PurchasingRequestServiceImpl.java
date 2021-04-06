@@ -293,6 +293,8 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
                 throw new NotFoundException("Purchasing request not found");
             }
             PurchasingRequestEntity purchasingRequestRecord = optionalPurchasingRequestRecord.get();
+            int priceIndex = purchasingRequestRecord.getCarInstance().getPrices().size();
+
             for (PhotoEntity photoEntity : purchasingRequestRecord.getCarInstance().getCar().getModel().getPhotos()) {
                 if (photoEntity.isMainPhoto()) {
                     mainPhotoEntity = photoEntity;
@@ -307,6 +309,7 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
                     .carBrand(purchasingRequestRecord.getCarInstance().getCar().getBrand().getName())
                     .carModel(purchasingRequestRecord.getCarInstance().getCar().getModel().getName())
                     .modelMainPhoto(mainPhotoEntity)
+                    .price(purchasingRequestRecord.getCarInstance().getPrices().get(priceIndex - 1))
                     .build();
 
             return reporterService.reportSuccess(purchasingRequestMobileResponse);
