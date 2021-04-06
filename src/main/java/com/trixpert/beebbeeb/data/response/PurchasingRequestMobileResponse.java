@@ -18,6 +18,6 @@ public class PurchasingRequestMobileResponse {
     private String customerName;
     private String carBrand;
     private String carModel;
-    private PhotoEntity modelMainPhoto;
-    private PriceEntity price;
+    private LinkableImage modelMainPhoto;
+    private String price;
 }
