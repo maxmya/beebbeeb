@@ -1,9 +1,6 @@
 package com.trixpert.beebbeeb.services.impl;
 
-import com.trixpert.beebbeeb.data.entites.CarInstanceEntity;
-import com.trixpert.beebbeeb.data.entites.CustomerEntity;
-import com.trixpert.beebbeeb.data.entites.PurchasingRequestEntity;
-import com.trixpert.beebbeeb.data.entites.VendorEntity;
+import com.trixpert.beebbeeb.data.entites.*;
 import com.trixpert.beebbeeb.data.mappers.CarInstanceMapper;
 import com.trixpert.beebbeeb.data.mappers.CustomerMapper;
 import com.trixpert.beebbeeb.data.mappers.PurchasingRequestMapper;
@@ -13,6 +10,7 @@ import com.trixpert.beebbeeb.data.repositories.CustomerRepository;
 import com.trixpert.beebbeeb.data.repositories.PurchasingRequestRepository;
 import com.trixpert.beebbeeb.data.repositories.VendorRepository;
 import com.trixpert.beebbeeb.data.request.PurchasingRequestRegistrationRequest;
+import com.trixpert.beebbeeb.data.response.PurchasingRequestMobileResponse;
 import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.PurchasingRequestDTO;
@@ -26,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class PurchasingRequestServiceImpl implements PurchasingRequestService {
@@ -279,6 +278,39 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
             return reporterService.reportSuccess(purchasingRequestMapper.
                     convertToDTO(purchasingRequestEntityRecord));
         } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<PurchasingRequestMobileResponse> getPurchasingRequestStatus(long purchasingRequestId){
+        AtomicReference<PhotoEntity> mainPhotoEntity = null;
+
+        try{
+            Optional<PurchasingRequestEntity> optionalPurchasingRequestRecord =
+                    purchasingRequestRepository.findById(purchasingRequestId);
+            if(!optionalPurchasingRequestRecord.isPresent()){
+                throw new NotFoundException("Purchasing request not found");
+            }
+            PurchasingRequestEntity purchasingRequestRecord = optionalPurchasingRequestRecord.get();
+            purchasingRequestRecord.getCarInstance().getCar().getModel().getPhotos().forEach(photoEntity -> {
+                if(photoEntity.isMainPhoto()){
+                    mainPhotoEntity.set(photoEntity);
+                }
+            });
+
+            PurchasingRequestMobileResponse purchasingRequestMobileResponse = PurchasingRequestMobileResponse.builder()
+                    .id(purchasingRequestRecord.getId())
+                    .status(purchasingRequestRecord.getStatus())
+                    .vendorName(purchasingRequestRecord.getVendor().getName())
+                    .customerName(purchasingRequestRecord.getCustomer().getUser().getName())
+                    .carBrand(purchasingRequestRecord.getCarInstance().getCar().getBrand().getName())
+                    .carModel(purchasingRequestRecord.getCarInstance().getCar().getModel().getName())
+                    .modelMainPhoto(mainPhotoEntity.get())
+                    .build();
+
+            return reporterService.reportSuccess(purchasingRequestMobileResponse);
+        } catch(Exception e) {
             return reporterService.reportError(e);
         }
     }

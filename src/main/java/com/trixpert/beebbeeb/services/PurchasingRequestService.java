@@ -1,6 +1,7 @@
 package com.trixpert.beebbeeb.services;
 
 import com.trixpert.beebbeeb.data.request.PurchasingRequestRegistrationRequest;
+import com.trixpert.beebbeeb.data.response.PurchasingRequestMobileResponse;
 import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.PurchasingRequestDTO;
@@ -26,6 +27,8 @@ public interface PurchasingRequestService {
                                                      String authHeader);
 
     ResponseWrapper<PurchasingRequestDTO> getPurchasingRequest(long purchasingRequestId);
+
+    ResponseWrapper<PurchasingRequestMobileResponse> getPurchasingRequestStatus(long purchasingRequestId);
 
     ResponseWrapper<List<PurchasingRequestDTO>> listPurchasingRequestsForVendor(boolean active ,
                                                                                 long vendorId);
