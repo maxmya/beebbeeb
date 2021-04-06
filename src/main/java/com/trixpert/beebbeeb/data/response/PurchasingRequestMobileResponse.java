@@ -1,6 +1,7 @@
 package com.trixpert.beebbeeb.data.response;
 
 import com.trixpert.beebbeeb.data.entites.PhotoEntity;
+import com.trixpert.beebbeeb.data.entites.PriceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,4 +19,5 @@ public class PurchasingRequestMobileResponse {
     private String carBrand;
     private String carModel;
     private PhotoEntity modelMainPhoto;
+    private PriceEntity price;
 }
