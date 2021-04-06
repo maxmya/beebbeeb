@@ -76,6 +76,12 @@ public class MobileController {
         return ResponseEntity.ok(mobileService.getListOfAddresses(request));
     }
 
+    @GetMapping("/purchasingRequest/status/{purchasingRequestId}")
+    public ResponseEntity<ResponseWrapper<PurchasingRequestMobileResponse>> getStatusForPurchasingRequest(
+            @PathVariable("purchasingRequestId") long purchasingRequestId){
+        return ResponseEntity.ok(purchasingRequestService.getPurchasingRequestStatus(purchasingRequestId));
+    }
+
     @PostMapping("/address/add")
     @ApiOperation("Add Customer Address")
     public ResponseEntity<ResponseWrapper<Boolean>> saveAddress(@RequestBody AddressDTO address) {

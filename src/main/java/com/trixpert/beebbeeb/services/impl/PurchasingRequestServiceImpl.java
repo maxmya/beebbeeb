@@ -1,15 +1,16 @@
 package com.trixpert.beebbeeb.services.impl;
 
-import com.trixpert.beebbeeb.data.entites.CarInstanceEntity;
-import com.trixpert.beebbeeb.data.entites.CustomerEntity;
-import com.trixpert.beebbeeb.data.entites.PurchasingRequestEntity;
-import com.trixpert.beebbeeb.data.entites.VendorEntity;
+import com.trixpert.beebbeeb.data.entites.*;
+import com.trixpert.beebbeeb.data.mappers.CarInstanceMapper;
+import com.trixpert.beebbeeb.data.mappers.CustomerMapper;
 import com.trixpert.beebbeeb.data.mappers.PurchasingRequestMapper;
 import com.trixpert.beebbeeb.data.repositories.CarInstanceRepository;
 import com.trixpert.beebbeeb.data.repositories.CustomerRepository;
 import com.trixpert.beebbeeb.data.repositories.PurchasingRequestRepository;
 import com.trixpert.beebbeeb.data.repositories.VendorRepository;
 import com.trixpert.beebbeeb.data.request.PurchasingRequestRegistrationRequest;
+import com.trixpert.beebbeeb.data.response.LinkableImage;
+import com.trixpert.beebbeeb.data.response.PurchasingRequestMobileResponse;
 import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.PurchasingRequestDTO;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class PurchasingRequestServiceImpl implements PurchasingRequestService {
@@ -185,25 +187,32 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
                 purchasingRequestEntityRecord.setDate(
                         purchasingRequestRegistrationRequest.getDate());
             }
-            if (vendorRepository.findById(purchasingRequestRegistrationRequest.getVendorId()) != null &&
-                    vendorRepository.findById(purchasingRequestRegistrationRequest.getVendorId())
-                            .equals(purchasingRequestEntityRecord.getVendor())) {
-                purchasingRequestEntityRecord.setVendor(
-                        vendorRepository.getOne(purchasingRequestRegistrationRequest.getVendorId()));
+            if (purchasingRequestRegistrationRequest.getVendorId() != -1 &&
+                    purchasingRequestRegistrationRequest.getVendorId() != purchasingRequestEntityRecord.getVendor().getId()) {
+                Optional<VendorEntity> optionalVendorRecord = vendorRepository.
+                        findById(purchasingRequestRegistrationRequest.getVendorId());
+                if (!optionalVendorRecord.isPresent()) {
+                    throw new NotFoundException(" Vendor Entity not found");
+                }
+                purchasingRequestEntityRecord.setVendor(optionalVendorRecord.get());
             }
-            if (customerRepository.findById(purchasingRequestRegistrationRequest.getCustomerId()) != null &&
-                    customerRepository.findById(purchasingRequestRegistrationRequest.getCustomerId())
-                            .equals(purchasingRequestEntityRecord.getCustomer())) {
-                purchasingRequestEntityRecord.setCustomer(
-                        customerRepository.getOne(purchasingRequestRegistrationRequest.getCustomerId()));
+            if (purchasingRequestRegistrationRequest.getCustomerId() != -1 &&
+                    purchasingRequestRegistrationRequest.getCustomerId() != purchasingRequestEntityRecord.getCustomer().getId()) {
+                Optional<CustomerEntity> optionalCustomerEntity = customerRepository.findById(purchasingRequestRegistrationRequest.getCustomerId());
+                if(!optionalCustomerEntity.isPresent()){
+                    throw new NotFoundException("Customer Entity not found");
+                }
+                purchasingRequestEntityRecord.setCustomer(optionalCustomerEntity.get());
 
             }
-            if (carInstanceRepository.findById(purchasingRequestRegistrationRequest.getCarInstanceId()) != null &&
-                    carInstanceRepository.findById(purchasingRequestRegistrationRequest.getCarInstanceId())
-                            .equals(purchasingRequestEntityRecord.getCarInstance())) {
-                purchasingRequestEntityRecord.setCarInstance(
-                        carInstanceRepository.getOne(purchasingRequestRegistrationRequest.getCarInstanceId())
-                );
+            if (purchasingRequestRegistrationRequest.getCarInstanceId() != -1 &&
+                    purchasingRequestRegistrationRequest.getCarInstanceId() != purchasingRequestEntityRecord.getCarInstance().getId()) {
+                Optional<CarInstanceEntity> optionalCarInstanceEntity = carInstanceRepository.
+                        findById(purchasingRequestRegistrationRequest.getCarInstanceId());
+                if(!optionalCarInstanceEntity.isPresent()){
+                    throw new NotFoundException("CarInstance Entity not found");
+                }
+                purchasingRequestEntityRecord.setCarInstance(optionalCarInstanceEntity.get());
             }
             purchasingRequestRepository.save(purchasingRequestEntityRecord);
             return reporterService.reportSuccess("Purchasing Request updated successfully");
@@ -253,6 +262,43 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
             return reporterService.reportSuccess(purchasingRequestMapper.
                     convertToDTO(purchasingRequestEntityRecord));
         } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<PurchasingRequestMobileResponse> getPurchasingRequestStatus(long purchasingRequestId){
+        LinkableImage mainPhotoEntity = null;
+
+        try{
+            Optional<PurchasingRequestEntity> optionalPurchasingRequestRecord =
+                    purchasingRequestRepository.findById(purchasingRequestId);
+            if(!optionalPurchasingRequestRecord.isPresent()){
+                throw new NotFoundException("Purchasing request not found");
+            }
+            PurchasingRequestEntity purchasingRequestRecord = optionalPurchasingRequestRecord.get();
+            int priceIndex = purchasingRequestRecord.getCarInstance().getPrices().size();
+
+            for (PhotoEntity photoEntity : purchasingRequestRecord.getCarInstance().getCar().getModel().getPhotos()) {
+                if (photoEntity.isMainPhoto()) {
+                    mainPhotoEntity.setId(photoEntity.getId());
+                    mainPhotoEntity.setUrl(photoEntity.getPhotoUrl());
+                }
+            }
+
+            PurchasingRequestMobileResponse purchasingRequestMobileResponse = PurchasingRequestMobileResponse.builder()
+                    .id(purchasingRequestRecord.getId())
+                    .status(purchasingRequestRecord.getStatus())
+                    .vendorName(purchasingRequestRecord.getVendor().getName())
+                    .customerName(purchasingRequestRecord.getCustomer().getUser().getName())
+                    .carBrand(purchasingRequestRecord.getCarInstance().getCar().getBrand().getName())
+                    .carModel(purchasingRequestRecord.getCarInstance().getCar().getModel().getName())
+                    .modelMainPhoto(mainPhotoEntity)
+                    .price(purchasingRequestRecord.getCarInstance().getPrices().get(priceIndex - 1).getAmount())
+                    .build();
+
+            return reporterService.reportSuccess(purchasingRequestMobileResponse);
+        } catch(Exception e) {
             return reporterService.reportError(e);
         }
     }
