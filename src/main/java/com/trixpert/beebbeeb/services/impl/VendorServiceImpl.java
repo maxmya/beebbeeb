@@ -11,6 +11,7 @@ import com.trixpert.beebbeeb.data.repositories.RolesRepository;
 import com.trixpert.beebbeeb.data.repositories.UserRepository;
 import com.trixpert.beebbeeb.data.repositories.VendorRepository;
 import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
+import com.trixpert.beebbeeb.data.request.WokringTimsRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
 import com.trixpert.beebbeeb.data.to.UserDTO;
@@ -273,6 +274,24 @@ public class VendorServiceImpl implements VendorService {
 
         }catch (Exception e){
            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<Boolean> registerVendorWorkingDays(long vendorId, String wokringTimsRegistrationRequest) {
+
+        try {
+            Optional<VendorEntity> vendorEntityOptional = vendorRepository.findById(vendorId);
+            if(!vendorEntityOptional.isPresent()){
+                throw new NotFoundException("This vendor not exist");
+            }
+            VendorEntity vendorEntityRecord = vendorEntityOptional.get();
+            vendorEntityRecord.setWorkingTime(wokringTimsRegistrationRequest);
+            vendorRepository.save(vendorEntityRecord);
+            return reporterService.reportSuccess("Vendor's Photo Added !");
+
+        }catch (Exception e){
+            return reporterService.reportError(e);
         }
     }
 }
