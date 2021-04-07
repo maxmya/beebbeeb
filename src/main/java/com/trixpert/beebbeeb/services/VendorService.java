@@ -1,6 +1,7 @@
 package com.trixpert.beebbeeb.services;
 
 import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
+import com.trixpert.beebbeeb.data.request.WokringTimsRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.VendorDTO;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,5 +25,7 @@ public interface VendorService {
     ResponseWrapper<VendorDTO> getVendor(long vendorId);
 
     ResponseWrapper<Boolean> addVendorPhoto(long vendorId ,MultipartFile vendorPhoto);
+
+    ResponseWrapper<Boolean> registerVendorWorkingDays(long vendorId ,String wokringTimsRegistrationRequest);
 
 }
