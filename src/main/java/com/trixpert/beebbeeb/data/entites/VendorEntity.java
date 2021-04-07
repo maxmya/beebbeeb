@@ -61,4 +61,7 @@ public class VendorEntity {
     @OneToMany(mappedBy ="vendor")
     private List<PurchasingRequestEntity> purchasingRequests;
 
+    @Column(name = "working_time")
+    private String workingTime;
+
 }
