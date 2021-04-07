@@ -38,17 +38,6 @@ public class AddressController {
         return ResponseEntity.ok(addressService.listAllAddresses(false));
     }
 
-    @PutMapping("/update/{addressId}")
-    @ApiOperation("Update an existing address with new data")
-    public ResponseEntity<ResponseWrapper<Boolean>> updateAddress(
-            @Valid @RequestBody AddressRegistrationRequest addressRegistrationRequest,
-            @PathVariable("addressId") long addressId, HttpServletRequest request) {
-
-        String authorizationHeader = request.getHeader("Authorization");
-
-        return ResponseEntity.ok(addressService.updateAddress(addressRegistrationRequest,
-                addressId, authorizationHeader));
-    }
 
     @PostMapping("/add")
     @ApiOperation("Add New  Address")
