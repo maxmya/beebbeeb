@@ -3,6 +3,7 @@ package com.trixpert.beebbeeb.api.v1;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trixpert.beebbeeb.data.request.BrandRegisterRequest;
 import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
+import com.trixpert.beebbeeb.data.request.WokringTimsRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.VendorDTO;
 import com.trixpert.beebbeeb.services.VendorService;
@@ -104,7 +105,16 @@ public class VendorController {
         return ResponseEntity.ok(vendorService.addVendorPhoto(vendorId,logoFile));
     }
 
-
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
+    @PutMapping(value = "/update/working/days/{vendorId}")
+    @ApiOperation("Register Vendor With Email & Password")
+    public ResponseEntity<ResponseWrapper<Boolean>> registerVendorWorkingDays(
+            @PathVariable("vendorId") long vendorId,
+            @Valid @RequestBody String wokringTimesRegistrationRequest,
+            HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(vendorService.registerVendorWorkingDays(vendorId,wokringTimesRegistrationRequest));
+    }
 
 
 }
