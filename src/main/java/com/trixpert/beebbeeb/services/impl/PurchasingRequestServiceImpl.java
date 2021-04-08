@@ -33,11 +33,14 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
 
     private final ReporterService reporterService;
     private final AuditService auditService;
+
     private final PurchasingRequestMapper purchasingRequestMapper;
+
     private final PurchasingRequestRepository purchasingRequestRepository;
     private final VendorRepository vendorRepository;
     private final CustomerRepository customerRepository;
     private final CarInstanceRepository carInstanceRepository;
+
 
     public PurchasingRequestServiceImpl(ReporterService reporterService,
                                         AuditService auditService,
@@ -268,9 +271,14 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
 
     @Override
     public ResponseWrapper<PurchasingRequestMobileResponse> getPurchasingRequestStatus(long purchasingRequestId){
-        LinkableImage mainPhotoEntity = null;
+
 
         try{
+            LinkableImage mainPhotoEntity = LinkableImage.builder()
+                    .id(0)
+                    .url("")
+                    .build();
+
             Optional<PurchasingRequestEntity> optionalPurchasingRequestRecord =
                     purchasingRequestRepository.findById(purchasingRequestId);
             if(!optionalPurchasingRequestRecord.isPresent()){
