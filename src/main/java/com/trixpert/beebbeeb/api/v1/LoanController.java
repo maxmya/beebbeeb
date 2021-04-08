@@ -35,6 +35,7 @@ public class LoanController {
         return ResponseEntity.ok(loanService.getAllLoans(true));
     }
 
+
     @GetMapping("/list/inactive")
     @ApiOperation("Get all in active Loan List")
     public ResponseEntity<ResponseWrapper<List<LoanDTO>>> getAllInActiveLoans() {

@@ -251,4 +251,28 @@ public class VendorServiceImpl implements VendorService {
 
         }
     }
+
+    @Override
+    public ResponseWrapper<Boolean> addVendorPhoto(long vendorId, MultipartFile vendorPhoto) {
+        try {
+            Optional<VendorEntity> vendorEntityOptional = vendorRepository.findById(vendorId);
+            if(!vendorEntityOptional.isPresent()){
+                throw new NotFoundException("This vendor not exist");
+            }
+            VendorEntity vendorEntityRecord = vendorEntityOptional.get();
+            String photoUrlRecord = cloudStorageService.uploadFile(vendorPhoto);
+            Optional<UserEntity> userEntityOptional = userRepository.findById(vendorEntityRecord.getManager().getId());
+            if(!userEntityOptional.isPresent()){
+                throw new NotFoundException("This User not exist");
+            }
+            UserEntity userEntityRecord = userEntityOptional.get();
+            userEntityRecord.setPicUrl(photoUrlRecord);
+            userRepository.save(userEntityRecord);
+            vendorRepository.save(vendorEntityRecord);
+            return reporterService.reportSuccess("Vendor's Photo Added !");
+
+        }catch (Exception e){
+           return reporterService.reportError(e);
+        }
+    }
 }

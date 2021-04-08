@@ -23,4 +23,6 @@ public interface VendorService {
 
     ResponseWrapper<VendorDTO> getVendor(long vendorId);
 
+    ResponseWrapper<Boolean> addVendorPhoto(long vendorId ,MultipartFile vendorPhoto);
+
 }

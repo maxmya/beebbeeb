@@ -1,5 +1,7 @@
 package com.trixpert.beebbeeb.api.v1;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.trixpert.beebbeeb.data.request.BrandRegisterRequest;
 import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.VendorDTO;
@@ -10,9 +12,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @Api(tags = {"Vendors API"})
@@ -86,4 +90,21 @@ public class VendorController {
             @PathVariable("vendorId") long vendorId) {
         return ResponseEntity.ok(vendorService.getVendor(vendorId));
     }
+
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
+    @PutMapping(value = "/update/photo/{vendorId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,
+            MediaType.APPLICATION_JSON_VALUE})
+    @ApiOperation("ADD Photo for vendor")
+    @ResponseBody
+    public ResponseEntity<ResponseWrapper<Boolean>> addVendorPhoto(
+            @PathVariable("vendorId") long vendorId,
+            @RequestParam(name = "file") MultipartFile logoFile,
+            HttpServletRequest request) throws IOException {
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(vendorService.addVendorPhoto(vendorId,logoFile));
+    }
+
+
+
+
 }
