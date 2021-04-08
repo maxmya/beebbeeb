@@ -39,7 +39,6 @@ public class MobileController {
 
     public MobileController(MobileService mobileService,
                             PurchasingRequestService purchasingRequestService,
-                            LoanService loanService,
                             CustomerService customerService,
                             LoanService loanService, AddressService addressService) {
 
@@ -48,7 +47,6 @@ public class MobileController {
         this.loanService = loanService;
         this.addressService = addressService;
         this.customerService = customerService;
-        this.addressService = addressService;
     }
 
     @PostMapping(value = "/loan/request", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -89,7 +87,7 @@ public class MobileController {
 
     @GetMapping("/purchasingRequest/status/{purchasingRequestId}")
     public ResponseEntity<ResponseWrapper<PurchasingRequestMobileResponse>> getStatusForPurchasingRequest(
-            @PathVariable("purchasingRequestId") long purchasingRequestId){
+            @PathVariable("purchasingRequestId") long purchasingRequestId) {
         return ResponseEntity.ok(purchasingRequestService.getPurchasingRequestStatus(purchasingRequestId));
     }
 
