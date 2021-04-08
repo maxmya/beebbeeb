@@ -39,12 +39,14 @@ public class MobileController {
 
     public MobileController(MobileService mobileService,
                             PurchasingRequestService purchasingRequestService,
-                            LoanService loanService, AddressService addressService,
-                            CustomerService customerService) {
+                            LoanService loanService,
+                            CustomerService customerService,
+                            LoanService loanService, AddressService addressService) {
 
         this.mobileService = mobileService;
         this.purchasingRequestService = purchasingRequestService;
         this.loanService = loanService;
+        this.addressService = addressService;
         this.customerService = customerService;
         this.addressService = addressService;
     }
