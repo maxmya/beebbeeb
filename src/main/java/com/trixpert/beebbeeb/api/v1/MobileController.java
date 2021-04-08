@@ -2,10 +2,12 @@ package com.trixpert.beebbeeb.api.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
+import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.LoanRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.PurchasingRequestRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.*;
 import com.trixpert.beebbeeb.data.to.AddressDTO;
+import com.trixpert.beebbeeb.services.CustomerService;
 import com.trixpert.beebbeeb.services.LoanService;
 import com.trixpert.beebbeeb.services.MobileService;
 import com.trixpert.beebbeeb.services.PurchasingRequestService;
@@ -30,14 +32,17 @@ public class MobileController {
     private final MobileService mobileService;
     private final PurchasingRequestService purchasingRequestService;
     private final LoanService loanService;
+    private final CustomerService customerService;
 
     public MobileController(MobileService mobileService,
                             PurchasingRequestService purchasingRequestService,
-                            LoanService loanService) {
+                            LoanService loanService,
+                            CustomerService customerService) {
 
         this.mobileService = mobileService;
         this.purchasingRequestService = purchasingRequestService;
         this.loanService = loanService;
+        this.customerService = customerService;
     }
 
     @PostMapping(value = "/loan/request", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -123,5 +128,15 @@ public class MobileController {
         return ResponseEntity.ok(mobileService.getCarDetails(carId));
     }
 
+    @PutMapping("/me/update/{customerId}")
+    @ApiOperation("Update an existing customer")
+    public ResponseEntity<ResponseWrapper<Boolean>> updateCustomer(
+            @Valid @RequestBody CustomerRegistrationRequest customerRegistrationRequest,
+            @PathVariable("customerId") long customerId, HttpServletRequest request) {
+
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(customerService.updateCustomer(customerRegistrationRequest,
+                customerId, authorizationHeader));
+    }
 
 }
