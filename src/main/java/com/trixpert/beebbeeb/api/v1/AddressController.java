@@ -41,9 +41,8 @@ public class AddressController {
 
     @PostMapping("/add")
     @ApiOperation("Add New  Address")
-    public ResponseEntity<ResponseWrapper<Boolean>> addAddress(
-            @Valid @RequestBody AddressRegistrationRequest addressRegistrationRequest,
-            HttpServletRequest request) {
+    public ResponseEntity<ResponseWrapper<Boolean>> addAddress(@Valid @RequestBody AddressRegistrationRequest addressRegistrationRequest,
+                                                               HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
@@ -52,9 +51,8 @@ public class AddressController {
 
     @PutMapping("/delete/{addressId}")
     @ApiOperation("Remove address By Id")
-    public ResponseEntity<ResponseWrapper<Boolean>> deleteAddress(
-            @PathVariable("addressId") Long addressId,
-            HttpServletRequest request) {
+    public ResponseEntity<ResponseWrapper<Boolean>> deleteAddress(@PathVariable("addressId") Long addressId,
+                                                                  HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
 
         return ResponseEntity.ok(addressService.deleteAddress(addressId, authorizationHeader));

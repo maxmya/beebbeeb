@@ -11,8 +11,7 @@ public class CarInstanceRequest {
     private long vendorId;
     private long branchId;
     private long carId;
-    private String originalPrice;
+    private long quantity;
     private String vendorPrice;
-
 }
 

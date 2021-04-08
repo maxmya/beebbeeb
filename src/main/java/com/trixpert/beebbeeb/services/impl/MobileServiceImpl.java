@@ -392,7 +392,6 @@ public class MobileServiceImpl implements MobileService {
 
             carDetailsResponse.setCarCategory(carRecord.getCar().getCategory().getName());
             carDetailsResponse.setCarType(carRecord.getCar().getCategory().getType().getName());
-            carDetailsResponse.setOriginalPrice(carRecord.getOriginalPrice());
 
             List<PriceEntity> carPrices = carRecord.getPrices();
 

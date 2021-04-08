@@ -96,10 +96,10 @@ public class CarServiceImpl implements CarService {
             }
 
             ColorEntity colorEntity = ColorEntity.builder()
-
                     .name(carRegistrationRequest.getColorName())
                     .code(carRegistrationRequest.getColorCode())
                     .build();
+
             colorEntity.setParentColor(parentColorOptional.get());
             colorRepository.save(colorEntity);
 
@@ -125,6 +125,7 @@ public class CarServiceImpl implements CarService {
                     .creator(optionalUser.get())
                     .category(categoryEntity)
                     .color(colorEntity)
+                    .originalPrice(carRegistrationRequest.getOriginalPrice())
                     .active(true)
                     .build();
 
@@ -242,14 +243,14 @@ public class CarServiceImpl implements CarService {
     public ResponseWrapper<Boolean> updateCar(long carId, CarRegistrationRequest carRegistrationRequest) {
         try {
             Optional<CarEntity> carEntityOptional = carRepository.findById(carId);
-            if(!carEntityOptional.isPresent()){
+            if (!carEntityOptional.isPresent()) {
                 throw new NotFoundException("Car with ID : ".concat(Long.toString(carId)).concat(" Not Exist !"));
             }
             CarEntity carEntityRecord = carEntityOptional.get();
 
-            if (carRegistrationRequest.getCategoryName()!= carEntityRecord.getCategory().getName()){
+            if (carRegistrationRequest.getCategoryName() != carEntityRecord.getCategory().getName()) {
                 Optional<CategoryEntity> categoryEntityOptional = categoryRepository.findById(carEntityRecord.getCategory().getId());
-                if (!categoryEntityOptional.isPresent()){
+                if (!categoryEntityOptional.isPresent()) {
                     throw new NotFoundException("Category with ID : ".concat(Long.toString(carEntityRecord.getCategory().getId())).concat(" Not Exist !"));
                 }
                 CategoryEntity categoryEntity = categoryEntityOptional.get();
@@ -257,57 +258,57 @@ public class CarServiceImpl implements CarService {
                 categoryRepository.save(categoryEntity);
             }
 
-            if (carRegistrationRequest.getColorName()!=carEntityRecord.getColor().getName()){
+            if (!carRegistrationRequest.getColorName().equals(carEntityRecord.getColor().getName())) {
                 Optional<ColorEntity> colorEntityOptional = colorRepository.findById(carEntityRecord.getColor().getId());
-                if (!colorEntityOptional.isPresent()){
+                if (!colorEntityOptional.isPresent()) {
                     throw new NotFoundException("Color with ID : ".concat(Long.toString(carEntityRecord.getColor().getId())).concat(" Not Exist !"));
                 }
-                ColorEntity colorEntityRecord  = colorEntityOptional.get();
+                ColorEntity colorEntityRecord = colorEntityOptional.get();
                 colorEntityRecord.setName(carRegistrationRequest.getColorName());
                 colorRepository.save(colorEntityRecord);
             }
-            if (carRegistrationRequest.getParentColorId()!=carEntityRecord.getColor().getParentColor().getId()){
+            if (carRegistrationRequest.getParentColorId() != carEntityRecord.getColor().getParentColor().getId()) {
 
                 Optional<ColorEntity> colorEntityOptional = colorRepository.findById(carEntityRecord.getColor().getId());
-                if (!colorEntityOptional.isPresent()){
+                if (!colorEntityOptional.isPresent()) {
                     throw new NotFoundException("Parent Color with ID : ".concat(Long.toString(carRegistrationRequest.getParentColorId())).concat(" Not Exist !"));
                 }
-                ColorEntity colorEntityRecord  = colorEntityOptional.get();
+                ColorEntity colorEntityRecord = colorEntityOptional.get();
                 Optional<ParentColorEntity> parentColorEntityOptional = parentColorRepository.findById(carRegistrationRequest.getParentColorId());
-                if (!parentColorEntityOptional.isPresent()){
+                if (!parentColorEntityOptional.isPresent()) {
                     throw new NotFoundException("Color with ID : ".concat(Long.toString(carEntityRecord.getColor().getId())).concat(" Not Exist !"));
                 }
                 colorEntityRecord.setParentColor(parentColorEntityOptional.get());
                 colorRepository.save(colorEntityRecord);
             }
 
-            if (carRegistrationRequest.getColorCode()!=carEntityRecord.getColor().getCode()){
+            if (!carRegistrationRequest.getColorCode().equals(carEntityRecord.getColor().getCode())) {
                 Optional<ColorEntity> colorEntityOptional = colorRepository.findById(carEntityRecord.getColor().getId());
-                if (!colorEntityOptional.isPresent()){
+                if (!colorEntityOptional.isPresent()) {
                     throw new NotFoundException("Color with ID : ".concat(Long.toString(carEntityRecord.getColor().getId())).concat(" Not Exist !"));
                 }
-                ColorEntity colorEntityRecord  = colorEntityOptional.get();
+                ColorEntity colorEntityRecord = colorEntityOptional.get();
                 colorEntityRecord.setCode(carRegistrationRequest.getColorCode());
                 colorRepository.save(colorEntityRecord);
             }
-            if (carRegistrationRequest.getModelId()!=carEntityRecord.getModel().getId()){
-                Optional<ModelEntity> modelEntityOptional =  modelRepository.findById(carRegistrationRequest.getModelId());
-                if (!modelEntityOptional.isPresent()){
+            if (carRegistrationRequest.getModelId() != carEntityRecord.getModel().getId()) {
+                Optional<ModelEntity> modelEntityOptional = modelRepository.findById(carRegistrationRequest.getModelId());
+                if (!modelEntityOptional.isPresent()) {
                     throw new NotFoundException("Model with ID : ".concat(Long.toString(carRegistrationRequest.getModelId())).concat(" Not Exist !"));
                 }
-                ModelEntity modelEntity  = modelEntityOptional.get();
+                ModelEntity modelEntity = modelEntityOptional.get();
                 carEntityRecord.setModel(modelEntity);
 
             }
-            if (carRegistrationRequest.getTypeId()!=carEntityRecord.getCategory().getType().getId()){
-                Optional<TypeEntity> typeEntityOptional =  typeRepository.findById(carRegistrationRequest.getTypeId());
-                if (!typeEntityOptional.isPresent()){
+            if (carRegistrationRequest.getTypeId() != carEntityRecord.getCategory().getType().getId()) {
+                Optional<TypeEntity> typeEntityOptional = typeRepository.findById(carRegistrationRequest.getTypeId());
+                if (!typeEntityOptional.isPresent()) {
                     throw new NotFoundException("Type with ID : ".concat(Long.toString(carRegistrationRequest.getTypeId())).concat(" Not Exist !"));
                 }
-                TypeEntity typeEntity  = typeEntityOptional.get();
+                TypeEntity typeEntity = typeEntityOptional.get();
 
                 Optional<CategoryEntity> categoryEntityOptional = categoryRepository.findById(carEntityRecord.getCategory().getId());
-                if (!categoryEntityOptional.isPresent()){
+                if (!categoryEntityOptional.isPresent()) {
                     throw new NotFoundException("Category with ID : ".concat(Long.toString(carEntityRecord.getCategory().getId())).concat(" Not Exist !"));
                 }
                 CategoryEntity categoryEntity = categoryEntityOptional.get();
@@ -317,7 +318,7 @@ public class CarServiceImpl implements CarService {
             }
             carRepository.save(carEntityRecord);
             return reporterService.reportSuccess("Car With ID : ".concat(Long.toString(carId)).concat(" has been updated Successfully !"));
-        }catch (Exception e){
+        } catch (Exception e) {
             return reporterService.reportError(e);
         }
     }

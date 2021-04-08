@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/api/v1/car/instance")
 public class CarInstanceController {
 
-    private CarInstanceService carInstanceService;
+    private final CarInstanceService carInstanceService;
 
     public CarInstanceController(CarInstanceService carInstanceService) {
         this.carInstanceService = carInstanceService;
@@ -63,10 +63,11 @@ public class CarInstanceController {
             @PathVariable("vendorId") long vendorId) {
         return ResponseEntity.ok(carInstanceService.getAllCarInstancesForVendor(vendorId, false));
     }
+
     @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PutMapping("delete/{carInstanceId}")
     @ApiOperation("Delete Car Instance By ID")
-    public ResponseEntity<ResponseWrapper<Boolean>> deleteCarInstance(@PathVariable("carInstanceId") long carInstanceId){
+    public ResponseEntity<ResponseWrapper<Boolean>> deleteCarInstance(@PathVariable("carInstanceId") long carInstanceId) {
         return ResponseEntity.ok(carInstanceService.deleteCarInstance(carInstanceId));
     }
 
@@ -74,9 +75,9 @@ public class CarInstanceController {
     @PutMapping("update/{carInstanceId}")
     @ApiOperation("Update Car Instance")
     public ResponseEntity<ResponseWrapper<Boolean>> updateCarInstance(@PathVariable("carInstanceId") long carInstanceId,
-                                                                      @Valid @RequestBody CarInstanceRequest carInstanceRequest){
+                                                                      @Valid @RequestBody CarInstanceRequest carInstanceRequest) {
 
-        return ResponseEntity.ok(carInstanceService.updateCarInstance(carInstanceId,carInstanceRequest));
+        return ResponseEntity.ok(carInstanceService.updateCarInstance(carInstanceId, carInstanceRequest));
     }
 
 

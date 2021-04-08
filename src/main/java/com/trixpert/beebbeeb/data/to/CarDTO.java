@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,6 +14,7 @@ import java.util.List;
 @Builder
 public class CarDTO {
     private long id;
+    private String originalPrice;
     private LocalDateTime additionDate;
     private ModelDTO model;
     private CategoryDTO category;

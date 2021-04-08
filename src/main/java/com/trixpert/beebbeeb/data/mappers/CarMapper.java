@@ -36,6 +36,7 @@ public class CarMapper {
                 .additionDate(carDTO.getAdditionDate())
                 .creator(userMapper.convertToEntity(carDTO.getCreator()))
                 .model(modelMapper.convertToEntity(carDTO.getModel()))
+                .originalPrice(carDTO.getOriginalPrice())
                 .category(categoryMapper.convertToEntity(carDTO.getCategory()))
                 .color(colorMapper.convertToEntity(carDTO.getColor()))
                 .active(carDTO.isActive())
@@ -60,6 +61,7 @@ public class CarMapper {
                 .category(categoryMapper.convertToDTO(carEntity.getCategory()))
                 .color(colorMapper.convertToDTO(carEntity.getColor()))
                 .active(carEntity.isActive())
+                .originalPrice(carEntity.getOriginalPrice())
                 .build();
     }
 

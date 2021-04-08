@@ -1,6 +1,5 @@
 package com.trixpert.beebbeeb.api.v1;
 
-import com.trixpert.beebbeeb.data.request.CarInstanceRequest;
 import com.trixpert.beebbeeb.data.request.CarRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.FileUploadResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
@@ -87,9 +86,9 @@ public class CarController {
     @PutMapping("update/{carId}")
     @ApiOperation("Update Car ")
     public ResponseEntity<ResponseWrapper<Boolean>> updateCarInstance(@PathVariable("carId") long carId,
-                                                                      @Valid @RequestBody CarRegistrationRequest carRegistrationRequest){
+                                                                      @Valid @RequestBody CarRegistrationRequest carRegistrationRequest) {
 
-        return ResponseEntity.ok(carService.updateCar(carId,carRegistrationRequest));
+        return ResponseEntity.ok(carService.updateCar(carId, carRegistrationRequest));
     }
 
 }

@@ -20,18 +20,15 @@ public class CarInstanceEntity {
 
     private String condition;
 
-    @Column(name = "original_price")
-    private String originalPrice;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "car_id", referencedColumnName = "id")
     private CarEntity car;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "vendor_id", referencedColumnName = "id")
     private VendorEntity vendor;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "branch_id", referencedColumnName = "id")
     private BranchEntity branch;
 
@@ -41,10 +38,15 @@ public class CarInstanceEntity {
     @Column(name = "best_seller")
     private boolean bestSeller;
 
+    private long quantity;
+
     private boolean active;
 
-    @OneToMany(mappedBy ="carInstance")
+    @OneToMany(mappedBy = "carInstance")
     private List<PurchasingRequestEntity> purchasingRequests;
+
+    @OneToMany(mappedBy = "carInstance")
+    private List<CarSKUHolderEntity> skus;
 
 
 }

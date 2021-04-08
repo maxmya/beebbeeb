@@ -14,10 +14,11 @@ import java.util.List;
 public class CarInstanceDTO {
     private long id;
     private String condition;
-    private String originalPrice;
+    private long quantity;
     private boolean active;
     private CarDTO car;
     private VendorDTO vendor;
     private BranchDTO branch;
     private List<PriceDTO> prices;
+    private List<CarSKUHolderDTO> skus;
 }

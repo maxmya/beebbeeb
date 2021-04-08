@@ -15,6 +15,7 @@ public class CarRegistrationRequest {
     private String categoryName;
     private String colorName;
     private String colorCode;
+    private String originalPrice;
     private long typeId;
     private long parentColorId;
 }
