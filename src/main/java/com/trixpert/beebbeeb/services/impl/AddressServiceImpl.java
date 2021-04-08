@@ -123,6 +123,17 @@ public class AddressServiceImpl implements AddressService {
             addressRegistrationRequest.getLongitude() != addressEntityRecord.getLongitude()){
                 addressEntityRecord.setLongitude(addressRegistrationRequest.getLongitude());
             }
+            if(addressRegistrationRequest.getCustomerId() != -1 &&
+                    addressRegistrationRequest.getCustomerId() != addressEntityRecord.getCustomer().getId()){
+                Optional<CustomerEntity> optionalCustomerRecord = customerRepository.findById(addressRegistrationRequest.getCustomerId());
+                if(!optionalCustomerRecord.isPresent()){
+                    throw new NotFoundException("Customer entity not found");
+                }
+                addressEntityRecord.setCustomer(optionalCustomerRecord.get());
+            }
+
+            addressRepository.save(addressEntityRecord);
+
             AuditDTO auditDTO =
                     AuditDTO.builder()
                             .user(userService.getUserByUsername(username))
@@ -132,7 +143,7 @@ public class AddressServiceImpl implements AddressService {
                             .build();
             auditService.logAudit(auditDTO);
 
-            return reporterService.reportSuccess("A new customer  has been added ");
+            return reporterService.reportSuccess("The address entity has been updated successfully !");
         } catch (Exception e) {
             return reporterService.reportError(e);
         }

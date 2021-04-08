@@ -1,12 +1,14 @@
 package com.trixpert.beebbeeb.api.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.trixpert.beebbeeb.data.request.AddressRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.LoanRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.PurchasingRequestRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.*;
 import com.trixpert.beebbeeb.data.to.AddressDTO;
+import com.trixpert.beebbeeb.services.AddressService;
 import com.trixpert.beebbeeb.services.CustomerService;
 import com.trixpert.beebbeeb.services.LoanService;
 import com.trixpert.beebbeeb.services.MobileService;
@@ -32,17 +34,19 @@ public class MobileController {
     private final MobileService mobileService;
     private final PurchasingRequestService purchasingRequestService;
     private final LoanService loanService;
+    private final AddressService addressService;
     private final CustomerService customerService;
 
     public MobileController(MobileService mobileService,
                             PurchasingRequestService purchasingRequestService,
-                            LoanService loanService,
+                            LoanService loanService, AddressService addressService,
                             CustomerService customerService) {
 
         this.mobileService = mobileService;
         this.purchasingRequestService = purchasingRequestService;
         this.loanService = loanService;
         this.customerService = customerService;
+        this.addressService = addressService;
     }
 
     @PostMapping(value = "/loan/request", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -91,6 +95,18 @@ public class MobileController {
     @ApiOperation("Add Customer Address")
     public ResponseEntity<ResponseWrapper<Boolean>> saveAddress(@RequestBody AddressDTO address) {
         return ResponseEntity.ok(mobileService.saveAddress(address));
+    }
+
+    @PutMapping("/update/{addressId}")
+    @ApiOperation("Update an existing address with new data")
+    public ResponseEntity<ResponseWrapper<Boolean>> updateAddress(
+            @Valid @RequestBody AddressRegistrationRequest addressRegistrationRequest,
+            @PathVariable("addressId") long addressId, HttpServletRequest request) {
+
+        String authorizationHeader = request.getHeader("Authorization");
+
+        return ResponseEntity.ok(addressService.updateAddress(addressRegistrationRequest,
+                addressId, authorizationHeader));
     }
 
     @GetMapping("/list/cars")
