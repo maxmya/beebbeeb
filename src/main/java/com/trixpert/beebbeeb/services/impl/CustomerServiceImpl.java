@@ -5,6 +5,7 @@ import com.trixpert.beebbeeb.data.entites.CustomerEntity;
 import com.trixpert.beebbeeb.data.repositories.CustomerRepository;
 import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.CustomerResponse;
+import com.trixpert.beebbeeb.data.response.LinkableImage;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
 import com.trixpert.beebbeeb.data.to.UserDTO;
@@ -162,12 +163,17 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public ResponseWrapper<CustomerResponse> getCustomer(long customerId) {
         try {
+
             Optional<CustomerEntity> optionalCustomerEntity = customerRepository.findById(customerId);
 
             if (!optionalCustomerEntity.isPresent()) {
                 throw new NotFoundException("customer Not Found");
             }
             CustomerEntity customerEntityRecord = optionalCustomerEntity.get();
+            LinkableImage mainPhotoEntity = LinkableImage.builder()
+                    .id(0)
+                    .url(customerEntityRecord.getUser().getPicUrl())
+                    .build();
             CustomerResponse customerResponse = CustomerResponse.builder()
                     .id(customerEntityRecord.getId())
                     .name(customerEntityRecord.getUser().getName())
@@ -178,6 +184,8 @@ public class CustomerServiceImpl implements CustomerService {
                     .jobTitle(customerEntityRecord.getJobTitle())
                     .jobAddress(customerEntityRecord.getJobAddress())
                     .income(customerEntityRecord.getIncome())
+                    .customerPhoto(mainPhotoEntity)
+                    .addresses(customerEntityRecord.getAddresses())
                     .build();
             return reporterService.reportSuccess(customerResponse);
         } catch (Exception e) {
