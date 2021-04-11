@@ -1,5 +1,6 @@
 package com.trixpert.beebbeeb.data.repositories;
 
+import com.trixpert.beebbeeb.data.entites.CarEntity;
 import com.trixpert.beebbeeb.data.entites.CarInstanceEntity;
 import com.trixpert.beebbeeb.data.entites.VendorEntity;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,8 @@ public interface CarInstanceRepository extends JpaRepository<CarInstanceEntity, 
     Page<CarInstanceEntity> findAllByActive(boolean active, Pageable pageable);
 
     List<CarInstanceEntity> findAllByVendorAndActive(VendorEntity vendor, boolean active);
+
+    int countAllByCarAndActive(CarEntity car , boolean active);
 
     int countAllByActive(boolean active);
 }
