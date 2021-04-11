@@ -18,4 +18,5 @@ public interface CarInstanceRepository extends JpaRepository<CarInstanceEntity, 
     List<CarInstanceEntity> findAllByVendorAndActive(VendorEntity vendor, boolean active);
 
     int countAllByActive(boolean active);
+
 }

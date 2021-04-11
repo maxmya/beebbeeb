@@ -8,11 +8,7 @@ import com.trixpert.beebbeeb.data.request.LoanRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.PurchasingRequestRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.*;
 import com.trixpert.beebbeeb.data.to.AddressDTO;
-import com.trixpert.beebbeeb.services.AddressService;
-import com.trixpert.beebbeeb.services.CustomerService;
-import com.trixpert.beebbeeb.services.LoanService;
-import com.trixpert.beebbeeb.services.MobileService;
-import com.trixpert.beebbeeb.services.PurchasingRequestService;
+import com.trixpert.beebbeeb.services.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
@@ -36,17 +32,21 @@ public class MobileController {
     private final LoanService loanService;
     private final AddressService addressService;
     private final CustomerService customerService;
+    private final CountingService countingService;
 
     public MobileController(MobileService mobileService,
                             PurchasingRequestService purchasingRequestService,
                             CustomerService customerService,
-                            LoanService loanService, AddressService addressService) {
+                            LoanService loanService,
+                            AddressService addressService,
+                            CountingService countingService) {
 
         this.mobileService = mobileService;
         this.purchasingRequestService = purchasingRequestService;
         this.loanService = loanService;
         this.addressService = addressService;
         this.customerService = customerService;
+        this.countingService = countingService;
     }
 
     @PostMapping(value = "/loan/request", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -153,6 +153,11 @@ public class MobileController {
         String authorizationHeader = request.getHeader("Authorization");
         return ResponseEntity.ok(customerService.updateCustomer(customerRegistrationRequest,
                 customerId, authorizationHeader));
+    }
+
+    @GetMapping("/counts")
+    public ResponseEntity<ResponseWrapper<FilterCountingResponse>> countList() {
+        return ResponseEntity.ok(countingService.countPure());
     }
 
 }
