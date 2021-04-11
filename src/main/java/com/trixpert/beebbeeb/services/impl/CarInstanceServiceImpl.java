@@ -11,9 +11,12 @@ import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.CarInstanceService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import com.trixpert.beebbeeb.services.SKUService;
+import org.graalvm.compiler.nodes.calc.IntegerDivRemNode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +34,7 @@ public class CarInstanceServiceImpl implements CarInstanceService {
     private final ReporterService reporterService;
     private final CarSKUHolderRepository carSKUHolderRepository;
     private final SKUService skuService;
-
+    private final CloudStorageServiceImpl cloudStorageService;
 
     public CarInstanceServiceImpl(PriceRepository priceRepository,
                                   CarInstanceRepository carInstanceRepository,
@@ -41,7 +44,7 @@ public class CarInstanceServiceImpl implements CarInstanceService {
                                   CarRepository carRepository,
                                   ReporterService reporterService,
                                   CarSKUHolderRepository carSKUHolderRepository,
-                                  SKUService skuService) {
+                                  SKUService skuService, CloudStorageServiceImpl cloudStorageService) {
 
         this.priceRepository = priceRepository;
         this.carInstanceRepository = carInstanceRepository;
@@ -52,6 +55,7 @@ public class CarInstanceServiceImpl implements CarInstanceService {
         this.reporterService = reporterService;
         this.carSKUHolderRepository = carSKUHolderRepository;
         this.skuService = skuService;
+        this.cloudStorageService = cloudStorageService;
     }
 
 
@@ -213,6 +217,24 @@ public class CarInstanceServiceImpl implements CarInstanceService {
         } catch (Exception e) {
             return reporterService.reportError(e);
         }
+    }
+
+    @Override
+    public ResponseWrapper<Boolean> addBrochure(MultipartFile brochureFile, long carInstanceId) throws IOException {
+        String brochureUrlRecord = cloudStorageService.uploadFile(brochureFile);
+        try {
+            Optional<CarInstanceEntity> carInstanceEntityOptional = carInstanceRepository.findById(carInstanceId);
+            if (!carInstanceEntityOptional.isPresent()){
+                throw new NotFoundException("car Instance with id : ".concat(Long.toString(carInstanceId)).concat( "Not found !"));
+            }
+            CarInstanceEntity carInstanceEntity =carInstanceEntityOptional.get();
+            carInstanceEntity.setBrochureUrl(brochureUrlRecord);
+            carInstanceRepository.save(carInstanceEntity);
+            return reporterService.reportSuccess("Brochure Added to Car Instance with id : ".concat(Long.toString(carInstanceId)).concat("Successfully !"));
+        }catch (Exception e){
+            return reporterService.reportError(e);
+        }
+
     }
 
 
