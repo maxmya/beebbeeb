@@ -48,5 +48,8 @@ public class CarInstanceEntity {
     @OneToMany(mappedBy = "carInstance")
     private List<CarSKUHolderEntity> skus;
 
+    @Column(name = "brochure_url")
+    private String brochureUrl;
+
 
 }
