@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MobileServiceImpl implements MobileService {
@@ -38,6 +39,7 @@ public class MobileServiceImpl implements MobileService {
     private final UserService userService;
     private final SMSService smsService;
 
+
     @Qualifier("customers_queue")
     private final Map<String, CustomerMobileRegistrationRequest> customerEntities;
 
@@ -45,6 +47,14 @@ public class MobileServiceImpl implements MobileService {
     private final ReporterService reporterService;
 
     private final AddressMapper addressMapper;
+
+    private final BrandRepository brandRepository;
+
+    private final CarRepository carRepository ;
+
+    private final ModelRepository modelRepository;
+
+    private final TypeRepository typeRepository;
 
     public MobileServiceImpl(AuditService auditService,
                              UserRepository userRepository,
@@ -61,7 +71,7 @@ public class MobileServiceImpl implements MobileService {
                              SMSService smsService,
                              @Qualifier("customers_queue") Map<String, CustomerMobileRegistrationRequest> customerEntities,
                              ReporterService reporterService,
-                             AddressMapper addressMapper) {
+                             AddressMapper addressMapper, BrandRepository brandRepository, CarRepository carRepository, ModelRepository modelRepository, TypeRepository typeRepository) {
 
         this.auditService = auditService;
         this.userRepository = userRepository;
@@ -79,6 +89,10 @@ public class MobileServiceImpl implements MobileService {
         this.customerEntities = customerEntities;
         this.reporterService = reporterService;
         this.addressMapper = addressMapper;
+        this.brandRepository = brandRepository;
+        this.carRepository = carRepository;
+        this.modelRepository = modelRepository;
+        this.typeRepository = typeRepository;
     }
 
 
@@ -493,6 +507,23 @@ public class MobileServiceImpl implements MobileService {
             return reporterService.reportError(e);
         }
     }
+
+    @Override
+    public ResponseWrapper<Integer> getNumberOfCarByBrand(String brandName) {
+        try {
+            Optional<BrandEntity> brandEntityOptional = brandRepository.findAllByName(brandName);
+            if(!brandEntityOptional.isPresent()){
+                throw new NotFoundException("Brand not Exist");
+            }
+            List<CarEntity> carEntityList = brandEntityOptional.get().getCars().stream().filter(CarEntity::isActive).collect(Collectors.toList());
+            int numOfCarInstance = carEntityList.stream().mapToInt(carEntity -> carInstanceRepository.countAllByCarAndActive(carEntity, true)).sum();
+            return reporterService.reportSuccess(numOfCarInstance);
+        }catch (Exception e){
+            return reporterService.reportError(e);
+        }
+    }
+
+
 
 
 }
