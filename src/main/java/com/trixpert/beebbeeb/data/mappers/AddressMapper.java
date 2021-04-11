@@ -32,6 +32,7 @@ public class AddressMapper {
         if (addressEntity == null) return null;
         return AddressDTO.builder()
                 .id(addressEntity.getId())
+                .customerId(addressEntity.getCustomer().getId())
                 .fullAddress(addressEntity.getFullAddress())
                 .latitude(addressEntity.getLatitude())
                 .longitude(addressEntity.getLongitude())
