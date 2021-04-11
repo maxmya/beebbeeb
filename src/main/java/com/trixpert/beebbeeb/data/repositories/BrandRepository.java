@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface BrandRepository extends JpaRepository<BrandEntity, Long> {
     List<BrandEntity> findAllByActive(boolean isActive);
     Optional<BrandEntity> findByActiveAndId(boolean isActive , long bandId);
+    Optional<BrandEntity> findAllByName(String brandName);
 }

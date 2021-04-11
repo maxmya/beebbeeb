@@ -124,4 +124,10 @@ public class MobileController {
     }
 
 
+    @GetMapping("/car/{brandName}")
+    @ApiOperation("Get Number Of Cars By Brand")
+    public ResponseEntity<ResponseWrapper<Integer>> getNumberOfCarByBrand(@PathVariable("brandName") String brandName) {
+        return ResponseEntity.ok(mobileService.getNumberOfCarByBrand(brandName));
+    }
+
 }
