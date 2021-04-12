@@ -1,16 +1,22 @@
 package com.trixpert.beebbeeb.api.v1;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trixpert.beebbeeb.data.request.CarInstanceRequest;
+import com.trixpert.beebbeeb.data.request.TypeRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.CarInstanceDTO;
 import com.trixpert.beebbeeb.services.CarInstanceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @Api(tags = {"Cars Instance API"})
@@ -78,6 +84,20 @@ public class CarInstanceController {
                                                                       @Valid @RequestBody CarInstanceRequest carInstanceRequest) {
 
         return ResponseEntity.ok(carInstanceService.updateCarInstance(carInstanceId, carInstanceRequest));
+    }
+
+
+    @CrossOrigin(origins = {"*"})
+    @ApiOperation("Add New Brochure File to car instance")
+    @PostMapping(value = "/add/brochure/{carInstanceId}", consumes = {
+            MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @ResponseBody
+    public ResponseEntity<ResponseWrapper<Boolean>> addBrochure(
+            @RequestParam(name = "file") MultipartFile brochureFIle,
+            @PathVariable("carInstanceId") long carInstanceId,
+            HttpServletRequest request) throws IOException {
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(carInstanceService.addBrochure(brochureFIle,carInstanceId));
     }
 
 
