@@ -109,6 +109,15 @@ public class MobileController {
                 addressId, authorizationHeader));
     }
 
+    @PutMapping("/delete/{addressId}")
+    @ApiOperation("Remove address By Id")
+    public ResponseEntity<ResponseWrapper<Boolean>> deleteAddress(@PathVariable("addressId") Long addressId,
+                                                                  HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+
+        return ResponseEntity.ok(addressService.deleteAddress(addressId, authorizationHeader));
+    }
+
     @GetMapping("/list/cars")
     @ApiOperation("Get List Of Cars")
     public ResponseEntity<ResponseWrapper<List<CarItemResponse>>> listCars(
