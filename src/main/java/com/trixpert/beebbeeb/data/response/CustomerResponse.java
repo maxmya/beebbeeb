@@ -1,7 +1,7 @@
 package com.trixpert.beebbeeb.data.response;
 
 
-import com.trixpert.beebbeeb.data.entites.AddressEntity;
+import com.trixpert.beebbeeb.data.to.AddressDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,7 +24,7 @@ public class CustomerResponse {
     private String jobTitle;
     private String jobAddress;
     private long income;
-    private List<AddressEntity> addresses;
+    private List<AddressDTO> addresses;
     private boolean active;
 }
 
