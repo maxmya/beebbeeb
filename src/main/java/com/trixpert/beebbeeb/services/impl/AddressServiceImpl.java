@@ -96,7 +96,7 @@ public class AddressServiceImpl implements AddressService {
     @Transactional
     @Override
     public ResponseWrapper<Boolean> updateAddress(
-            AddressRegistrationRequest addressRegistrationRequest
+            AddressDTO address
             , long addressId, String authHeader) {
         String username = auditService.getUsernameForAudit(authHeader);
 
@@ -107,25 +107,60 @@ public class AddressServiceImpl implements AddressService {
             }
             AddressEntity addressEntityRecord = optionalAddressEntity.get();
 
-            if(addressRegistrationRequest.getTitle() != null && addressRegistrationRequest.getTitle().equals(
+            if(address.getTitle() != null && !address.getTitle().equals(
                     addressEntityRecord.getTitle())){
-                addressEntityRecord.setTitle(addressRegistrationRequest.getTitle());
+                addressEntityRecord.setTitle(address.getTitle());
             }
-            if(addressRegistrationRequest.getFullAddress() != null && addressRegistrationRequest.getFullAddress().equals(
+            if(address.getFullAddress() != null && !address.getFullAddress().equals(
                     addressEntityRecord.getFullAddress())){
-                addressEntityRecord.setFullAddress(addressRegistrationRequest.getFullAddress());
+                addressEntityRecord.setFullAddress(address.getFullAddress());
             }
-            if(addressRegistrationRequest.getLatitude() != -1 &&
-            addressRegistrationRequest.getLatitude() != addressEntityRecord.getLatitude()){
-             addressEntityRecord.setLatitude(addressRegistrationRequest.getLatitude());
+            if(address.getGovernorate() != null && !address.getGovernorate().equals(
+                    addressEntityRecord.getGovernorate())){
+                addressEntityRecord.setGovernorate(address.getGovernorate());
             }
-            if(addressRegistrationRequest.getLongitude() != -1 &&
-            addressRegistrationRequest.getLongitude() != addressEntityRecord.getLongitude()){
-                addressEntityRecord.setLongitude(addressRegistrationRequest.getLongitude());
+            if(address.getCity() != null && !address.getCity().equals(
+                    addressEntityRecord.getCity())){
+                addressEntityRecord.setCity(address.getCity());
             }
-            if(addressRegistrationRequest.getCustomerId() != -1 &&
-                    addressRegistrationRequest.getCustomerId() != addressEntityRecord.getCustomer().getId()){
-                Optional<CustomerEntity> optionalCustomerRecord = customerRepository.findById(addressRegistrationRequest.getCustomerId());
+            if(address.getStreet() != null && !address.getStreet().equals(
+                    addressEntityRecord.getStreet())){
+                addressEntityRecord.setStreet(address.getStreet());
+            }
+            if(address.getLandmark() != null && !address.getLandmark().equals(
+                    addressEntityRecord.getLandmark())){
+                addressEntityRecord.setLandmark(address.getLandmark());
+            }
+            if(address.getType() != null && !address.getType().equals(
+                    addressEntityRecord.getType())){
+                addressEntityRecord.setType(address.getType());
+            }
+            if(address.getBuilding() != null && !address.getBuilding().equals(
+                    addressEntityRecord.getBuilding())){
+                addressEntityRecord.setBuilding(address.getBuilding());
+            }
+            if(address.getFloor() != null && !address.getFloor().equals(
+                    addressEntityRecord.getFloor())){
+                addressEntityRecord.setFloor(address.getFloor());
+            }
+            if(address.getApartmentNumber() != null && !address.getApartmentNumber().equals(
+                    addressEntityRecord.getApartmentNumber())){
+                addressEntityRecord.setApartmentNumber(address.getApartmentNumber());
+            }
+            if(address.isPrimary() != addressEntityRecord.isMain()){
+                addressEntityRecord.setMain(address.isPrimary());
+            }
+            if(address.getLatitude() != -1 &&
+            address.getLatitude() != addressEntityRecord.getLatitude()){
+             addressEntityRecord.setLatitude(address.getLatitude());
+            }
+            if(address.getLongitude() != -1 &&
+            address.getLongitude() != addressEntityRecord.getLongitude()){
+                addressEntityRecord.setLongitude(address.getLongitude());
+            }
+            if(address.getCustomerId() != -1 &&
+                    address.getCustomerId() != addressEntityRecord.getCustomer().getId()){
+                Optional<CustomerEntity> optionalCustomerRecord = customerRepository.findById(address.getCustomerId());
                 if(!optionalCustomerRecord.isPresent()){
                     throw new NotFoundException("Customer entity not found");
                 }
