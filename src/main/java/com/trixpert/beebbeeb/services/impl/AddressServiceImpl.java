@@ -168,13 +168,13 @@ public class AddressServiceImpl implements AddressService {
                     AuditDTO.builder()
                             .user(userService.getUserByUsername(username))
                             .action(AuditActions.DELETE)
-                            .description("Deleting new Address entity " + addressEntityRecord.toString())
+                            .description("Deleting Address entity " + addressEntityRecord.toString())
                             .timestamp(LocalDateTime.now())
                             .build();
 
             auditService.logAudit(auditDTO);
 
-            return reporterService.reportSuccess("Model Deleted Success !");
+            return reporterService.reportSuccess("Address Deleted Successfully !");
 
         } catch (Exception e) {
             return reporterService.reportError(e);
