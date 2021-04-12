@@ -13,7 +13,7 @@ public interface AddressService {
 
     ResponseWrapper<List<AddressDTO>> listAllAddresses(boolean active);
 
-    ResponseWrapper<Boolean> updateAddress(AddressRegistrationRequest addressRegistrationRequest, long addressId, String authHeader);
+    ResponseWrapper<Boolean> updateAddress(AddressDTO address, long addressId, String authHeader);
 
     ResponseWrapper<Boolean> deleteAddress(long addressId, String authHeader);
 
