@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trixpert.beebbeeb.data.request.BrandRegisterRequest;
 import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.WokringTimsRegistrationRequest;
+import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.VendorDTO;
 import com.trixpert.beebbeeb.services.VendorService;
@@ -55,6 +56,22 @@ public class VendorController {
     @ApiOperation("Get All Inactive Vendors")
     public ResponseEntity<ResponseWrapper<List<VendorDTO>>> getAllInactiveVendors() {
         return ResponseEntity.ok(vendorService.getAllVendors(false));
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_VENDOR')")
+    @GetMapping("/purchasing/list/active")
+    @ApiOperation("Get All active orders for specific vendor")
+    public ResponseEntity<ResponseWrapper<List<PurchasingRequestResponse>>> getAllActivePurchasingRequestForVendors(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(vendorService.listPurchasingRequestsForVendor(true, authorizationHeader));
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_VENDOR')")
+    @GetMapping("/purchasing/list/inactive")
+    @ApiOperation("Get All inactive orders for specific vendor")
+    public ResponseEntity<ResponseWrapper<List<PurchasingRequestResponse>>> getAllInactivePurchasingRequestForVendors(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(vendorService.listPurchasingRequestsForVendor(false, authorizationHeader));
     }
 
     @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
