@@ -2,11 +2,13 @@ package com.trixpert.beebbeeb.services.impl;
 
 import com.trixpert.beebbeeb.data.constants.AuditActions;
 import com.trixpert.beebbeeb.data.entites.CustomerEntity;
+import com.trixpert.beebbeeb.data.mappers.AddressMapper;
 import com.trixpert.beebbeeb.data.repositories.CustomerRepository;
 import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.CustomerResponse;
 import com.trixpert.beebbeeb.data.response.LinkableImage;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
+import com.trixpert.beebbeeb.data.to.AddressDTO;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
 import com.trixpert.beebbeeb.data.to.UserDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
@@ -29,19 +31,21 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
 
     private final ReporterService reporterService;
-
     private final AuditService auditService;
+
+    private final AddressMapper addressMapper;
 
 
     public CustomerServiceImpl(UserService userService,
                                CustomerRepository customerRepository,
                                ReporterService reporterService,
-                               AuditService auditService) {
+                               AuditService auditService, AddressMapper addressMapper) {
 
         this.userService = userService;
         this.customerRepository = customerRepository;
         this.reporterService = reporterService;
         this.auditService = auditService;
+        this.addressMapper = addressMapper;
     }
 
 
@@ -163,7 +167,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public ResponseWrapper<CustomerResponse> getCustomer(long customerId) {
         try {
-
+            List<AddressDTO> addressList = new ArrayList<>();
             Optional<CustomerEntity> optionalCustomerEntity = customerRepository.findById(customerId);
 
             if (!optionalCustomerEntity.isPresent()) {
@@ -174,6 +178,10 @@ public class CustomerServiceImpl implements CustomerService {
                     .id(0)
                     .url(customerEntityRecord.getUser().getPicUrl())
                     .build();
+            customerEntityRecord.getAddresses().forEach(addressEntity ->
+                    addressList.add(addressMapper.convertToDTO(addressEntity))
+            );
+
             CustomerResponse customerResponse = CustomerResponse.builder()
                     .id(customerEntityRecord.getId())
                     .name(customerEntityRecord.getUser().getName())
@@ -185,7 +193,7 @@ public class CustomerServiceImpl implements CustomerService {
                     .jobAddress(customerEntityRecord.getJobAddress())
                     .income(customerEntityRecord.getIncome())
                     .customerPhoto(mainPhotoEntity)
-                    .addresses(customerEntityRecord.getAddresses())
+                    .addresses(addressList)
                     .build();
             return reporterService.reportSuccess(customerResponse);
         } catch (Exception e) {

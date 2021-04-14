@@ -18,8 +18,8 @@ public class PurchasingRequestResponse {
     private String comment;
     private Date date;
     private String vendorName;
+    private long customerId;
     private String customerName;
-    private String customerPhone;
     private String carBrand;
     private String carModel;
     private boolean active;

@@ -31,4 +31,5 @@ public class CarDetailsResponse {
     private Map<String, String> extraSpecs;
     private VendorResponse vendor;
     private List<BranchResponse> branches;
+    private String carBrochureURL;
 }

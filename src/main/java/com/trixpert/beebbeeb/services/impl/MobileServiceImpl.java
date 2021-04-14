@@ -487,6 +487,8 @@ public class MobileServiceImpl implements MobileService {
             }
             carDetailsResponse.setBranches(branches);
 
+            carDetailsResponse.setCarBrochureURL(carRecord.getBrochureUrl());
+
             return reporterService.reportSuccess(carDetailsResponse);
         } catch (Exception e) {
             return reporterService.reportError(e);
