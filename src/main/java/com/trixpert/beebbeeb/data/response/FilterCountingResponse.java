@@ -14,4 +14,5 @@ public class FilterCountingResponse {
     private List<CountingResponse> carsOfBrand;
     private List<CountingResponse> carsOfModel;
     private List<CountingResponse> carsOfColor;
+
 }

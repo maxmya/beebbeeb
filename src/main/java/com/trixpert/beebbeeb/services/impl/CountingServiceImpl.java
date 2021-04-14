@@ -1,6 +1,7 @@
 package com.trixpert.beebbeeb.services.impl;
 
 import com.trixpert.beebbeeb.data.entites.CarEntity;
+import com.trixpert.beebbeeb.data.entites.CarInstanceEntity;
 import com.trixpert.beebbeeb.data.repositories.CarInstanceRepository;
 import com.trixpert.beebbeeb.data.response.CountingResponse;
 import com.trixpert.beebbeeb.data.response.FilterCountingResponse;
@@ -28,34 +29,58 @@ public class CountingServiceImpl implements CountingService {
     }
 
     @Override
-    public ResponseWrapper<FilterCountingResponse> countPure() {
+    public ResponseWrapper<FilterCountingResponse> countPure(
+            String type,
+            String model,
+            String brand,
+            String color
+    ) {
         try {
             Map<String, Integer> typesCount = new HashMap<>();
             Map<String, Integer> modelCount = new HashMap<>();
             Map<String, Integer> brandCount = new HashMap<>();
             Map<String, Integer> colorCount = new HashMap<>();
 
-            carInstanceRepository.findAllByActive(true).forEach(
-                    carInstanceEntity -> {
-                        CarEntity currentCar = carInstanceEntity.getCar();
-                        increaseCountByOne(typesCount, currentCar.getCategory().getType().getName());
-                        increaseCountByOne(modelCount, currentCar.getModel().getYear());
-                        increaseCountByOne(brandCount, currentCar.getBrand().getName());
-                        increaseCountByOne(colorCount, currentCar.getColor().getParentColor().getName());
-                    }
-            );
+            for (CarInstanceEntity carInstanceEntity : carInstanceRepository.findAllByActive(true)) {
+                CarEntity currentCar = carInstanceEntity.getCar();
+                String carType = currentCar.getCategory().getType().getName();
+                String carModel = currentCar.getModel().getYear();
+                String carBrand = currentCar.getBrand().getName();
+                String carColor = currentCar.getColor().getParentColor().getName();
+
+                if (type != null) {
+                    if (!carType.equals(type)) continue;
+                }
+
+                if (model != null) {
+                    if (!carModel.equals(model)) continue;
+                }
+
+                if (brand != null) {
+                    if (!carBrand.equals(brand)) continue;
+                }
+
+                if (color != null) {
+                    if (!carColor.equals(color)) continue;
+                }
+
+                increaseCountByOne(typesCount, carType);
+                increaseCountByOne(modelCount, carModel);
+                increaseCountByOne(brandCount, carBrand);
+                increaseCountByOne(colorCount, carColor);
+            }
 
             List<CountingResponse> typesCountList = new ArrayList<>();
-            typesCount.keySet().forEach(type -> typesCountList.add(new CountingResponse(type, typesCount.get(type))));
+            typesCount.keySet().forEach(currentType -> typesCountList.add(new CountingResponse(currentType, typesCount.get(currentType))));
 
             List<CountingResponse> modelsCountList = new ArrayList<>();
-            modelCount.keySet().forEach(model -> modelsCountList.add(new CountingResponse(model, modelCount.get(model))));
+            modelCount.keySet().forEach(currentModel -> modelsCountList.add(new CountingResponse(currentModel, modelCount.get(currentModel))));
 
             List<CountingResponse> brandsCountList = new ArrayList<>();
-            brandCount.keySet().forEach(brand -> brandsCountList.add(new CountingResponse(brand, brandCount.get(brand))));
+            brandCount.keySet().forEach(currentBrand -> brandsCountList.add(new CountingResponse(currentBrand, brandCount.get(currentBrand))));
 
             List<CountingResponse> colorsCountList = new ArrayList<>();
-            colorCount.keySet().forEach(color -> colorsCountList.add(new CountingResponse(color, colorCount.get(color))));
+            colorCount.keySet().forEach(currentColor -> colorsCountList.add(new CountingResponse(currentColor, colorCount.get(currentColor))));
 
             return reporterService.reportSuccess(new FilterCountingResponse(
                     typesCountList, brandsCountList, modelsCountList, colorsCountList
