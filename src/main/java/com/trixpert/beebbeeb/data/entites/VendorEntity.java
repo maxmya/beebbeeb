@@ -1,6 +1,8 @@
 package com.trixpert.beebbeeb.data.entites;
 
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.List;
@@ -63,5 +65,16 @@ public class VendorEntity {
 
     @Column(name = "working_time")
     private String workingTime;
+//
+//    @Fetch(value = FetchMode.SUBSELECT)
+//    @ManyToMany(cascade = {
+//            CascadeType.PERSIST,
+//            CascadeType.MERGE
+//    }, fetch = FetchType.EAGER)
+//    @JoinTable(name = "vendor_banks",
+//            joinColumns = @JoinColumn(name = "vendor_id"),
+//            inverseJoinColumns = @JoinColumn(name = "bank_id")
+//    )
+//    private List<BankEntity> banks;
 
 }
