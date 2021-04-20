@@ -5,6 +5,11 @@ import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 
 public interface CountingService {
 
-    ResponseWrapper<FilterCountingResponse> countPure();
+    ResponseWrapper<FilterCountingResponse> countPure(
+            String type,
+            String model,
+            String brand,
+            String color
+    );
 
 }

@@ -2,6 +2,7 @@ package com.trixpert.beebbeeb.services;
 
 import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.WokringTimsRegistrationRequest;
+import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.VendorDTO;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +17,8 @@ public interface VendorService {
                 VendorRegistrationRequest vendorRegistrationRequest, String authHeader);
 
     ResponseWrapper<List<VendorDTO>> getAllVendors(boolean active);
+
+    ResponseWrapper<List<PurchasingRequestResponse>> listPurchasingRequestsForVendor(boolean active, String authHeader);
 
     ResponseWrapper<Boolean> deleteVendor(long vendorId , String authHeader);
 

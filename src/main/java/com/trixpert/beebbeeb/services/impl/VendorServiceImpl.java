@@ -12,6 +12,7 @@ import com.trixpert.beebbeeb.data.repositories.UserRepository;
 import com.trixpert.beebbeeb.data.repositories.VendorRepository;
 import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.WokringTimsRegistrationRequest;
+import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
 import com.trixpert.beebbeeb.data.to.UserDTO;
@@ -182,6 +183,45 @@ public class VendorServiceImpl implements VendorService {
                 return reporterService.reportSuccess("Vendor soft deleted(deActivated) successfully");
             }
         } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<List<PurchasingRequestResponse>> listPurchasingRequestsForVendor(boolean active, String authHeader){
+        try{
+            List<PurchasingRequestResponse> purchasingRequestResponseList = new ArrayList<>();
+            String username = auditService.getUsernameForAudit(authHeader);
+
+            Optional<UserEntity> optionalUserEntityRecord = userRepository.findByName(username);
+            if(!optionalUserEntityRecord.isPresent()){
+                throw new NotFoundException("User Entity not found");
+            }
+            UserEntity userEntityRecord = optionalUserEntityRecord.get();
+
+            Optional<VendorEntity> optionalVendorEntityRecord = vendorRepository.findAllByManager(userEntityRecord);
+            if(!optionalVendorEntityRecord.isPresent()){
+                throw new NotFoundException("This user doesn't represent a vendor");
+            }
+
+            optionalVendorEntityRecord.get().getPurchasingRequests().forEach(purchasingRequestEntity -> {
+                PurchasingRequestResponse purchasingRequestResponse = PurchasingRequestResponse.builder()
+                        .id(purchasingRequestEntity.getId())
+                        .paymentType(purchasingRequestEntity.getPaymentType())
+                        .status(purchasingRequestEntity.getStatus())
+                        .comment(purchasingRequestEntity.getComment())
+                        .date(purchasingRequestEntity.getDate())
+                        .customerId(purchasingRequestEntity.getCustomer().getId())
+                        .customerName(purchasingRequestEntity.getCustomer().getUser().getName())
+                        .carBrand(purchasingRequestEntity.getCarInstance().getCar().getBrand().getName())
+                        .carModel(purchasingRequestEntity.getCarInstance().getCar().getModel().getName())
+                        .active(purchasingRequestEntity.isActive())
+                        .build();
+
+                purchasingRequestResponseList.add(purchasingRequestResponse);
+            });
+            return reporterService.reportSuccess(purchasingRequestResponseList);
+        } catch(Exception e){
             return reporterService.reportError(e);
         }
     }

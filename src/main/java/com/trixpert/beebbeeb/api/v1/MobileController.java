@@ -164,8 +164,26 @@ public class MobileController {
     }
 
     @GetMapping("/counts")
-    public ResponseEntity<ResponseWrapper<FilterCountingResponse>> countList() {
-        return ResponseEntity.ok(countingService.countPure());
+    public ResponseEntity<ResponseWrapper<FilterCountingResponse>> countList(
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "model", required = false) String model,
+            @RequestParam(value = "brand", required = false) String brand,
+            @RequestParam(value = "color", required = false) String color
+    ) {
+        return ResponseEntity.ok(countingService.countPure(type, model, brand, color));
+    }
+
+    @GetMapping("/cars/filter")
+    public ResponseEntity<ResponseWrapper<FilterCountingResponse>> getFilterResult(
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "model", required = false) String model,
+            @RequestParam(value = "brand", required = false) String brand,
+            @RequestParam(value = "color", required = false) String color,
+            @RequestParam(value = "vendor", required = false) String vendor,
+            @RequestParam(value = "priceFrom", required = false) String from,
+            @RequestParam(value = "priceTo", required = false) String to
+    ) {
+        return ResponseEntity.ok(countingService.countPure(type, model, brand, color));
     }
 
 }

@@ -8,9 +8,7 @@ import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.time.Instant;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Transactional
 @Component
@@ -30,12 +28,15 @@ public class JwtProvider {
         String token = "";
 
         if (jwtSecret != null) {
+            List<String> roles = new ArrayList<>();
+            principle.getUser().getRoles().forEach(role -> roles.add(role.getName()));
 
             Map<String, Object> claims = new HashMap<>();
             claims.put("iat", new Date());
             claims.put("name", principle.getUser().getName());
             claims.put("exp", new Date().getTime() + jwtExpiration);
             claims.put("username", principle.getUsername());
+            claims.put("roles", roles);
 
             token = Jwts.builder()
                     .setSubject(principle.getUsername())
