@@ -186,4 +186,10 @@ public class MobileController {
         return ResponseEntity.ok(countingService.countPure(type, model, brand, color));
     }
 
+    @GetMapping("/customer/profile/score/{customerId}")
+    @ApiOperation("Get Customer Profile Score")
+    public ResponseEntity<ResponseWrapper<ProfileScoreResponse>> getProfileScore(@PathVariable("customerId") long customerId) {
+        return ResponseEntity.ok(customerService.getProfileScore(customerId));
+    }
+
 }
