@@ -11,7 +11,6 @@ import com.trixpert.beebbeeb.data.repositories.RolesRepository;
 import com.trixpert.beebbeeb.data.repositories.UserRepository;
 import com.trixpert.beebbeeb.data.repositories.VendorRepository;
 import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
-import com.trixpert.beebbeeb.data.request.WokringTimsRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
@@ -23,10 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -193,7 +191,7 @@ public class VendorServiceImpl implements VendorService {
             List<PurchasingRequestResponse> purchasingRequestResponseList = new ArrayList<>();
             String username = auditService.getUsernameForAudit(authHeader);
 
-            Optional<UserEntity> optionalUserEntityRecord = userRepository.findByName(username);
+            Optional<UserEntity> optionalUserEntityRecord = userRepository.findByEmail(username);
             if(!optionalUserEntityRecord.isPresent()){
                 throw new NotFoundException("User Entity not found");
             }
