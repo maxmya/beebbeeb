@@ -2,6 +2,7 @@ package com.trixpert.beebbeeb.services;
 
 import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.CustomerResponse;
+import com.trixpert.beebbeeb.data.response.ProfileScoreResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 
 import java.util.List;
@@ -15,5 +16,7 @@ public interface CustomerService {
     ResponseWrapper<List<CustomerResponse>> getAllCustomers(boolean active);
 
     ResponseWrapper<CustomerResponse> getCustomer(long customerId);
+
+    ResponseWrapper<ProfileScoreResponse> getProfileScore(long customerId);
 
 }
