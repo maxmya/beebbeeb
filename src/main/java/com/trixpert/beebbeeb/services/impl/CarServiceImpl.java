@@ -152,6 +152,7 @@ public class CarServiceImpl implements CarService {
                 EssentialSpecsEntity essentialSpecsEntity = new EssentialSpecsEntity(); // x 60 ....
                 essentialSpecsEntity.setKey(spec);
                 essentialSpecsEntity.setValue("N/A");
+                essentialSpecsEntity.setActive(true);
                 essentialSpecsEntity.setCar(savedCar);
                 essentialCarSpecsRepository.save(essentialSpecsEntity);
             }
