@@ -7,11 +7,12 @@ import com.trixpert.beebbeeb.data.entites.UserEntity;
 import com.trixpert.beebbeeb.data.entites.VendorEntity;
 import com.trixpert.beebbeeb.data.mappers.UserMapper;
 import com.trixpert.beebbeeb.data.mappers.VendorMapper;
+import com.trixpert.beebbeeb.data.repositories.PurchasingRequestRepository;
 import com.trixpert.beebbeeb.data.repositories.RolesRepository;
 import com.trixpert.beebbeeb.data.repositories.UserRepository;
 import com.trixpert.beebbeeb.data.repositories.VendorRepository;
 import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
-import com.trixpert.beebbeeb.data.request.WokringTimsRegistrationRequest;
+import com.trixpert.beebbeeb.data.response.CustomerResponse;
 import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
@@ -26,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +40,7 @@ public class VendorServiceImpl implements VendorService {
     private final UserRepository userRepository;
     private final VendorRepository vendorRepository;
     private final RolesRepository rolesRepository;
+    private final PurchasingRequestRepository purchasingRequestRepository;
 
     private final ReporterService reporterService;
     private final UserService userService;
@@ -54,6 +55,7 @@ public class VendorServiceImpl implements VendorService {
     public VendorServiceImpl(UserRepository userRepository,
                              VendorRepository vendorRepository,
                              RolesRepository rolesRepository,
+                             PurchasingRequestRepository purchasingRequestRepository,
                              ReporterService reporterService,
                              UserService userService,
                              UserMapper userMapper,
@@ -61,6 +63,7 @@ public class VendorServiceImpl implements VendorService {
         this.userRepository = userRepository;
         this.vendorRepository = vendorRepository;
         this.rolesRepository = rolesRepository;
+        this.purchasingRequestRepository = purchasingRequestRepository;
         this.reporterService = reporterService;
         this.userService = userService;
         this.userMapper = userMapper;
@@ -204,7 +207,8 @@ public class VendorServiceImpl implements VendorService {
                 throw new NotFoundException("This user doesn't represent a vendor");
             }
 
-            optionalVendorEntityRecord.get().getPurchasingRequests().forEach(purchasingRequestEntity -> {
+            purchasingRequestRepository.findAllByActiveAndVendor(active, optionalVendorEntityRecord.get())
+                    .forEach(purchasingRequestEntity -> {
                 PurchasingRequestResponse purchasingRequestResponse = PurchasingRequestResponse.builder()
                         .id(purchasingRequestEntity.getId())
                         .paymentType(purchasingRequestEntity.getPaymentType())
@@ -221,6 +225,44 @@ public class VendorServiceImpl implements VendorService {
                 purchasingRequestResponseList.add(purchasingRequestResponse);
             });
             return reporterService.reportSuccess(purchasingRequestResponseList);
+        } catch(Exception e){
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<List<CustomerResponse>> listCustomersForVendor(boolean active, String authHeader){
+        try {
+            List<CustomerResponse> customersList = new ArrayList<>();
+            String username = auditService.getUsernameForAudit(authHeader);
+
+            Optional<UserEntity> optionalUserEntityRecord = userRepository.findByName(username);
+            if (!optionalUserEntityRecord.isPresent()) {
+                throw new NotFoundException("User Entity not found");
+            }
+            UserEntity userEntityRecord = optionalUserEntityRecord.get();
+
+            Optional<VendorEntity> optionalVendorEntityRecord = vendorRepository.findAllByManager(userEntityRecord);
+            if (!optionalVendorEntityRecord.isPresent()) {
+                throw new NotFoundException("This user doesn't represent a vendor");
+            }
+
+            purchasingRequestRepository.findAllByActiveAndVendor(active, optionalVendorEntityRecord.get())
+                    .forEach(purchasingRequestEntity -> {
+                        CustomerResponse customerResponse = CustomerResponse.builder()
+                                .id(purchasingRequestEntity.getCustomer().getId())
+                                .name(purchasingRequestEntity.getCustomer().getUser().getName())
+                                .email(purchasingRequestEntity.getCustomer().getUser().getEmail())
+                                .phone(purchasingRequestEntity.getCustomer().getUser().getPhone())
+                                .active(purchasingRequestEntity.getCustomer().isActive())
+                                .preferredBank(purchasingRequestEntity.getCustomer().getPreferredBank())
+                                .jobTitle(purchasingRequestEntity.getCustomer().getJobTitle())
+                                .jobAddress(purchasingRequestEntity.getCustomer().getJobAddress())
+                                .income(purchasingRequestEntity.getCustomer().getIncome())
+                                .build();
+                        customersList.add(customerResponse);
+                    });
+            return reporterService.reportSuccess(customersList);
         } catch(Exception e){
             return reporterService.reportError(e);
         }
