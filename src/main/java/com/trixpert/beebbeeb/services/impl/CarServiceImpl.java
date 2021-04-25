@@ -33,6 +33,7 @@ public class CarServiceImpl implements CarService {
     private final TypeRepository typeRepository;
     private final UserRepository userRepository;
     private final PhotoRepository photoRepository;
+    private final EssentialCarSpecsRepository essentialCarSpecsRepository;
 
     private final CarMapper carMapper;
     private final PhotoMapper photoMapper;
@@ -49,7 +50,7 @@ public class CarServiceImpl implements CarService {
                           TypeRepository typeRepository,
                           UserRepository userRepository,
                           PhotoRepository photoRepository,
-                          CarMapper carMapper,
+                          EssentialCarSpecsRepository essentialCarSpecsRepository, CarMapper carMapper,
                           PhotoMapper photoMapper,
                           CloudStorageService cloudStorageService,
                           ReporterService reporterService,
@@ -63,6 +64,7 @@ public class CarServiceImpl implements CarService {
         this.typeRepository = typeRepository;
         this.userRepository = userRepository;
         this.photoRepository = photoRepository;
+        this.essentialCarSpecsRepository = essentialCarSpecsRepository;
         this.carMapper = carMapper;
         this.photoMapper = photoMapper;
         this.cloudStorageService = cloudStorageService;
@@ -129,7 +131,31 @@ public class CarServiceImpl implements CarService {
                     .active(true)
                     .build();
 
-            carRepository.save(carEntityRecord);
+            CarEntity savedCar = carRepository.save(carEntityRecord);
+
+            String[] specs = new String[]{
+                    "Has Sun Roof",
+                    "Bla Bla Bla1",
+                    "Bla Bla Bla2",
+                    "Bla Bla Bla3",
+                    "Bla Bla Bla4",
+                    "Bla Bla Bla5",
+                    "Bla Bla Bla6",
+                    "Bla Bla Bla7",
+                    "Bla Bla Bla8",
+                    "Bla Bla Bla9",
+                    "Bla Bla Bla10",
+                    "bla bla lba11"
+            };
+            for (String spec : specs) {
+                // TODO : set default car specs
+                EssentialSpecsEntity essentialSpecsEntity = new EssentialSpecsEntity(); // x 60 ....
+                essentialSpecsEntity.setKey(spec);
+                essentialSpecsEntity.setValue("N/A");
+                essentialSpecsEntity.setActive(true);
+                essentialSpecsEntity.setCar(savedCar);
+                essentialCarSpecsRepository.save(essentialSpecsEntity);
+            }
             return reporterService.reportSuccess("A new Car has been added successfully");
         } catch (Exception e) {
             return reporterService.reportError(e);
