@@ -54,6 +54,7 @@ public class CarInstanceMapper {
                 .prices(prices)
                 .skus(carSKUHolderDTOS)
                 .active(carInstanceEntity.isActive())
+                .bestSeller(carInstanceEntity.isBestSeller())
                 .quantity(carInstanceEntity.getQuantity())
                 .condition(carInstanceEntity.getCondition())
                 .build();
@@ -73,6 +74,7 @@ public class CarInstanceMapper {
                 .id(carInstanceDTO.getId())
                 .prices(prices)
                 .active(carInstanceDTO.isActive())
+                .bestSeller(carInstanceDTO.isBestSeller())
                 .condition(carInstanceDTO.getCondition())
                 .quantity(carInstanceDTO.getQuantity())
                 .build();

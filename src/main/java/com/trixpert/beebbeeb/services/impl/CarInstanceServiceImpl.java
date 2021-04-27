@@ -82,6 +82,7 @@ public class CarInstanceServiceImpl implements CarInstanceService {
                     .vendor(optionalVendorEntity.get())
                     .branch(optionalBranchEntity.get())
                     .quantity(carInstanceRequest.getQuantity())
+                    .bestSeller(carInstanceRequest.isBestSeller())
                     .active(true)
                     .build());
 
@@ -208,6 +209,9 @@ public class CarInstanceServiceImpl implements CarInstanceService {
                         .car(carInstanceEntityRecord)
                         .date(LocalDate.now())
                         .build());
+            }
+            if(carInstanceRequest.isBestSeller() != carInstanceEntityRecord.isBestSeller() ){
+                carInstanceEntityRecord.setBestSeller(carInstanceRequest.isBestSeller());
             }
 
             carInstanceRepository.save(carInstanceEntityRecord);
