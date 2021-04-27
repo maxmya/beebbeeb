@@ -1,12 +1,14 @@
 package com.trixpert.beebbeeb.services.impl;
 
 import com.trixpert.beebbeeb.data.constants.AuditActions;
+import com.trixpert.beebbeeb.data.entites.AddressEntity;
 import com.trixpert.beebbeeb.data.entites.CustomerEntity;
 import com.trixpert.beebbeeb.data.mappers.AddressMapper;
 import com.trixpert.beebbeeb.data.repositories.CustomerRepository;
 import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.CustomerResponse;
 import com.trixpert.beebbeeb.data.response.LinkableImage;
+import com.trixpert.beebbeeb.data.response.ProfileScoreResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.AddressDTO;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
@@ -23,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -200,5 +203,96 @@ public class CustomerServiceImpl implements CustomerService {
             return reporterService.reportError(e);
         }
 
+    }
+
+    @Override
+    public ResponseWrapper<ProfileScoreResponse> getProfileScore(long customerId) {
+        try {
+
+            Optional<CustomerEntity> customerEntityOptional = customerRepository.findById(customerId);
+            if(!customerEntityOptional.isPresent()){
+                throw new NotFoundException("customer Not Found");
+            }
+            CustomerEntity customerEntity = customerEntityOptional.get();
+            int score = 0 ;
+            if(customerEntity.getPreferredBank()!=null){
+                score++;
+            }
+            if (customerEntity.getJobTitle()!=null){
+                score++;
+            }
+            if (customerEntity.getJobAddress()!=null){
+                score++;
+            }
+            if (customerEntity.getIncome()%1==0){
+                score++;
+            }
+
+            if (customerEntity.getHoroscope()!=null){
+                score++;
+            }
+            if (customerEntity.getAddresses().size()!=0){
+                for (AddressEntity addressEntity : customerEntity.getAddresses()) {
+                    if (addressEntity.isMain()) {
+                        if (addressEntity.getTitle() != null) {
+                            score++;
+                        }
+                        if (addressEntity.getFullAddress() != null) {
+                            score++;
+                        }
+                        if (addressEntity.getGovernorate() != null) {
+                            score++;
+                        }
+                        if (addressEntity.getCity() != null) {
+                            score++;
+                        }
+                        if (addressEntity.getStreet() != null) {
+                            score++;
+                        }
+                        if (addressEntity.getLandmark()!=null){
+                            score++;
+                        }
+                        if (addressEntity.getType()!=null){
+                            score++;
+                        }
+                        if (addressEntity.getBuilding()!= null){
+                            score++;
+                        }
+                        if (addressEntity.getFloor()!=null){
+                            score++;
+                        }
+                        if (addressEntity.getApartmentNumber()!=null){
+                            score++;
+                        }
+                        break;
+                    }
+                }
+
+            }
+
+            if(customerEntity.getUser().getName()!=null){
+                score++;
+            }
+            if(customerEntity.getUser().getEmail()!=null){
+                score++;
+            }
+            if (customerEntity.getUser().getPhone()!=null){
+                score++;
+            }
+            if (customerEntity.getUser().getPicUrl()!=null){
+                score++;
+            }
+
+
+
+            ProfileScoreResponse profileScore = ProfileScoreResponse.builder()
+                    .customerId(customerId)
+                    .score(score)
+                    .totalScore(20)
+                    .build();
+            return reporterService.reportSuccess(profileScore);
+        }catch (Exception e){
+            return reporterService.reportError(e);
+        }
     }
 }
