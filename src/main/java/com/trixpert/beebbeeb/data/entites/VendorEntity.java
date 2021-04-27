@@ -39,7 +39,7 @@ public class VendorEntity {
     @Column(name = "gm_id_document_face_url")
     private String generalManagerIdDocumentFaceUrl;
 
-    @Column(name = "gm_id_document_back_url")
+    @Column(name = "gm_id_document_back_url ")
     private String generalManagerIdDocumentBackUrl;
 
     @Column(name = "acc_manager_name")
@@ -48,7 +48,7 @@ public class VendorEntity {
     @Column(name = "acc_manager_phone")
     private String accountManagerPhone;
 
-    @Column(name = "acc_manager_id_document_face_url")
+    @Column(name = "acc_manager_id_document_face_url ")
     private String accountManagerIdDocumentFaceUrl;
 
     @Column(name = "acc_manager_id_document_back_url")
@@ -108,7 +108,7 @@ public class VendorEntity {
     @Column(name = "bank_account_number")
     private String bankAccountNumber;
 
-    @Column(name = "contract_document_url")
+    @Column(name = "contract_doc_url")
     private String contractDocumentUrl;
 
     @OneToMany(mappedBy = "vendor")
