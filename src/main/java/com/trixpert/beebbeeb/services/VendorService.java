@@ -14,7 +14,15 @@ import java.util.List;
 public interface VendorService {
 
     ResponseWrapper<Boolean> registerVendor(
-                VendorRegistrationRequest vendorRegistrationRequest, String authHeader);
+                VendorRegistrationRequest vendorRegistrationRequest,
+                MultipartFile generalManagerIdDocumentFace,
+                MultipartFile generalManagerIdDocumentBack,
+                MultipartFile accountManagerIdDocumentFace,
+                MultipartFile accountManagerIdDocumentBack,
+                MultipartFile taxRecordDocument,
+                MultipartFile commercialRegisterDocument,
+                MultipartFile contractDocument,
+                String authHeader);
 
     ResponseWrapper<List<VendorDTO>> getAllVendors(boolean active);
 
