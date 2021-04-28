@@ -194,7 +194,7 @@ public class VendorServiceImpl implements VendorService {
                     .accountManagerPhone(vendorRegistrationRequest.getAccManagerPhone())
                     .salesMen(salesManEntities)
                     .homeTelephones(homeTelephoneEntities)
-                    .active(vendorRegistrationRequest.isActive())
+                    .active(true)
                     .build();
 
             vendorRepository.save(vendorEntityRecord);
