@@ -1,5 +1,8 @@
 package com.trixpert.beebbeeb.api.v1;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.trixpert.beebbeeb.data.request.BannerRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
@@ -32,13 +35,32 @@ public class VendorController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
-    @PostMapping(value = "/register", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/register",  consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
     @ApiOperation("Register Vendor With Email & Password")
     public ResponseEntity<ResponseWrapper<Boolean>> registerVendor(
-            @Valid @RequestBody VendorRegistrationRequest vendorRegistrationRequest,
-            HttpServletRequest request) {
+            @RequestParam(name = "body") String vendorRegistrationRequest,
+            @RequestParam(name = "generalManagerIdDocumentFace") MultipartFile generalManagerIdDocumentFace,
+            @RequestParam(name = "generalManagerIdDocumentBack") MultipartFile generalManagerIdDocumentBack,
+            @RequestParam(name = "accountManagerIdDocumentFace") MultipartFile accountManagerIdDocumentFace,
+            @RequestParam(name = "accountManagerIdDocumentBack") MultipartFile accountManagerIdDocumentBack,
+            @RequestParam(name = "taxRecordDocument") MultipartFile taxRecordDocument,
+            @RequestParam(name = "commercialRegisterDocument") MultipartFile commercialRegisterDocument,
+            @RequestParam(name = "contractDocument") MultipartFile contractDocument,
+            HttpServletRequest request) throws JsonProcessingException {
+
         String authorizationHeader = request.getHeader("Authorization");
-        return ResponseEntity.ok(vendorService.registerVendor(vendorRegistrationRequest, authorizationHeader));
+        ObjectMapper objectMapper = new ObjectMapper();
+        VendorRegistrationRequest vendorRegistrationRequest1 = objectMapper.readValue(vendorRegistrationRequest, VendorRegistrationRequest.class);
+
+        return ResponseEntity.ok(vendorService.registerVendor(vendorRegistrationRequest1,
+                generalManagerIdDocumentFace,
+                generalManagerIdDocumentBack,
+                accountManagerIdDocumentFace,
+                accountManagerIdDocumentBack,
+                taxRecordDocument,
+                commercialRegisterDocument,
+                contractDocument,
+                authorizationHeader));
     }
 
     @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
@@ -124,10 +146,10 @@ public class VendorController {
     @ApiOperation("Register Vendor With Email & Password")
     public ResponseEntity<ResponseWrapper<Boolean>> registerVendorWorkingDays(
             @PathVariable("vendorId") long vendorId,
-            @Valid @RequestBody String wokringTimesRegistrationRequest,
+            @Valid @RequestBody String workingTimesRegistrationRequest,
             HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
-        return ResponseEntity.ok(vendorService.registerVendorWorkingDays(vendorId,wokringTimesRegistrationRequest));
+        return ResponseEntity.ok(vendorService.registerVendorWorkingDays(vendorId,workingTimesRegistrationRequest));
     }
 
 
