@@ -186,4 +186,22 @@ public class MobileController {
         return ResponseEntity.ok(countingService.countPure(type, model, brand, color));
     }
 
+    @GetMapping("/customer/purchasing/list/active")
+    @ApiOperation("Get all active customer's purchasing requests")
+    public ResponseEntity<ResponseWrapper<List<PurchasingRequestMobileResponse>>> listActivePurchasingRequestForCustomer(
+            HttpServletRequest request
+    ){
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(mobileService.listPurchasingRequestForCustomer(true, authorizationHeader));
+    }
+
+    @GetMapping("/customer/purchasing/list/inactive")
+    @ApiOperation("Get all inactive customer's purchasing requests")
+    public ResponseEntity<ResponseWrapper<List<PurchasingRequestMobileResponse>>> listInactivePurchasingRequestForCustomer(
+            HttpServletRequest request
+    ){
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(mobileService.listPurchasingRequestForCustomer(false, authorizationHeader));
+    }
+
 }
