@@ -2,20 +2,15 @@ package com.trixpert.beebbeeb.services.impl;
 
 import com.trixpert.beebbeeb.data.constants.AuditActions;
 import com.trixpert.beebbeeb.data.constants.Roles;
-import com.trixpert.beebbeeb.data.entites.RolesEntity;
-import com.trixpert.beebbeeb.data.entites.UserEntity;
-import com.trixpert.beebbeeb.data.entites.VendorEntity;
+import com.trixpert.beebbeeb.data.entites.*;
+import com.trixpert.beebbeeb.data.mappers.BrandMapper;
 import com.trixpert.beebbeeb.data.mappers.UserMapper;
 import com.trixpert.beebbeeb.data.mappers.VendorMapper;
-import com.trixpert.beebbeeb.data.repositories.RolesRepository;
-import com.trixpert.beebbeeb.data.repositories.UserRepository;
-import com.trixpert.beebbeeb.data.repositories.VendorRepository;
+import com.trixpert.beebbeeb.data.repositories.*;
 import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
-import com.trixpert.beebbeeb.data.to.AuditDTO;
-import com.trixpert.beebbeeb.data.to.UserDTO;
-import com.trixpert.beebbeeb.data.to.VendorDTO;
+import com.trixpert.beebbeeb.data.to.*;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
 import org.slf4j.Logger;
@@ -42,6 +37,11 @@ public class VendorServiceImpl implements VendorService {
     private final ReporterService reporterService;
     private final UserService userService;
 
+    private final BrandRepository brandRepository;
+    private final HomeTelephoneRepository homeTelephoneRepository;
+    private final SalesManRepository salesManRepository;
+    private final BrandMapper brandMapper;
+
     private final UserMapper userMapper;
     private final VendorMapper vendorMapper;
 
@@ -54,13 +54,17 @@ public class VendorServiceImpl implements VendorService {
                              RolesRepository rolesRepository,
                              ReporterService reporterService,
                              UserService userService,
-                             UserMapper userMapper,
+                             BrandRepository brandRepository, HomeTelephoneRepository homeTelephoneRepository, SalesManRepository salesManRepository, BrandMapper brandMapper, UserMapper userMapper,
                              VendorMapper vendorMapper, AuditService auditService, CloudStorageService cloudStorageService) {
         this.userRepository = userRepository;
         this.vendorRepository = vendorRepository;
         this.rolesRepository = rolesRepository;
         this.reporterService = reporterService;
         this.userService = userService;
+        this.brandRepository = brandRepository;
+        this.homeTelephoneRepository = homeTelephoneRepository;
+        this.salesManRepository = salesManRepository;
+        this.brandMapper = brandMapper;
         this.userMapper = userMapper;
         this.vendorMapper = vendorMapper;
         this.auditService = auditService;
@@ -68,9 +72,14 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> registerVendor(
-            VendorRegistrationRequest vendorRegistrationRequest,
-            String authHeader){
+    public ResponseWrapper<Boolean> registerVendor(VendorRegistrationRequest vendorRegistrationRequest,
+                                                   MultipartFile generalManagerIdDocumentFace,
+                                                   MultipartFile generalManagerIdDocumentBack,
+                                                   MultipartFile accountManagerIdDocumentFace,
+                                                   MultipartFile accountManagerIdDocumentBack,
+                                                   MultipartFile taxRecordDocument,
+                                                   MultipartFile commercialRegisterDocument,
+                                                   MultipartFile contractDocument, String authHeader){
 
         String username = auditService.getUsernameForAudit(authHeader);
 
@@ -84,9 +93,7 @@ public class VendorServiceImpl implements VendorService {
         }
 
         try {
-
             Optional<RolesEntity> vendorRole = rolesRepository.findByName(Roles.ROLE_VENDOR);
-
             if (!vendorRole.isPresent()) {
                 throw new NotFoundException("Vendor Roles Not Found");
             }
@@ -99,8 +106,85 @@ public class VendorServiceImpl implements VendorService {
                     false
             ).getData();
 
+            /**********Uploading Files**********/
+            String generalManagerIdDocumentFaceUrl = cloudStorageService.uploadFile(generalManagerIdDocumentFace);
+            String generalManagerIdDocumentBackUrl = cloudStorageService.uploadFile(generalManagerIdDocumentBack);
+            String accountManagerIdDocumentFaceUrl = cloudStorageService.uploadFile(accountManagerIdDocumentFace);
+            String accountManagerIdDocumentBackUrl = cloudStorageService.uploadFile(accountManagerIdDocumentBack);
+            String taxRecordDocumentUrl = cloudStorageService.uploadFile(taxRecordDocument);
+            String commercialRegisterDocumentUrl = cloudStorageService.uploadFile(commercialRegisterDocument);
+            String contractDocumentUrl = cloudStorageService.uploadFile(contractDocument);
+
+            /*********List of brands for agent*******/
+
+            List<BrandEntity> brandsAgent = new ArrayList<>();
+            if(vendorRegistrationRequest.getBrandsAgent()!=null){
+                for(BrandDTO brandDTO : vendorRegistrationRequest.getBrandsAgent()){
+                    Optional<BrandEntity> optionalBrandEntity = brandRepository.findById(brandDTO.getId());
+                    if(!optionalBrandEntity.isPresent()){
+                        throw new NotFoundException("This Brand is not exist!");
+                    }
+                    brandsAgent.add(optionalBrandEntity.get());
+                }
+            }
+
+
+            /*********List of brands for Distributor*******/
+            List<BrandEntity> brandsDistributor = new ArrayList<>();
+            if(vendorRegistrationRequest.getBrandsDistributor()!=null){
+                for(BrandDTO brandDTO : vendorRegistrationRequest.getBrandsDistributor()){
+                    Optional<BrandEntity> optionalBrandEntity = brandRepository.findById(brandDTO.getId());
+                    if(!optionalBrandEntity.isPresent()){
+                        throw new NotFoundException("This Brand is not exist!");
+                    }
+                    brandsDistributor.add(optionalBrandEntity.get());
+                }
+            }
+
+
+            /******Building HomePhone Entities****/
+            List<HomeTelephoneEntity> homeTelephoneEntities  = new ArrayList<>();
+            if(vendorRegistrationRequest.getTaxRecordNumber()!=null){
+                for(String homeTelephone : vendorRegistrationRequest.getHomeTelephones()){
+                    HomeTelephoneEntity homeTelephoneEntity =HomeTelephoneEntity.builder()
+                            .telephoneNumber(homeTelephone)
+                            .active(true).build();
+                    homeTelephoneEntities.add(homeTelephoneEntity);
+                    homeTelephoneRepository.save(homeTelephoneEntity);
+                }
+            }
+
+
+            /******Building SalesMan Entities****/
+            List<SalesManEntity> salesManEntities  = new ArrayList<>();
+            if(vendorRegistrationRequest.getSalesMen()!=null){
+                for(SalesManDTO salesManDTO : vendorRegistrationRequest.getSalesMen()){
+                    SalesManEntity salesManEntity =SalesManEntity.builder()
+                            .name(salesManDTO.getName())
+                            .phone(salesManDTO.getPhone())
+                            .active(true).build();
+                    salesManEntities.add(salesManEntity);
+                    salesManRepository.save(salesManEntity);
+                }
+            }
+
 
             VendorEntity vendorEntityRecord = VendorEntity.builder()
+                    .generalManagerIdDocumentFaceUrl(generalManagerIdDocumentFaceUrl)
+                    .generalManagerIdDocumentBackUrl(generalManagerIdDocumentBackUrl)
+                    .accountManagerIdDocumentFaceUrl(accountManagerIdDocumentFaceUrl)
+                    .accountManagerIdDocumentBackUrl(accountManagerIdDocumentBackUrl)
+                    .taxRecordDocumentUrl(taxRecordDocumentUrl)
+                    .commercialRegisterDocumentUrl(commercialRegisterDocumentUrl)
+                    .contractDocumentUrl(contractDocumentUrl)
+                    .bankAccountNumber(vendorRegistrationRequest.getBankAccountNumber())
+                    .taxRecordNumber(vendorRegistrationRequest.getTaxRecordNumber())
+                    .commercialRegisterNumber(vendorRegistrationRequest.getCommercialRegisterNumber())
+                    .importer(vendorRegistrationRequest.isImporter())
+                    .homeDelivery(vendorRegistrationRequest.isHomeDelivery())
+                    .salesPerMonth(vendorRegistrationRequest.getSalesPerMonth())
+                    .brandsAgent(brandsAgent)
+                    .brandDistributor(brandsDistributor)
                     .name(vendorRegistrationRequest.getVendorName())
                     .manager(userEntityRecord)
                     .mainAddress(vendorRegistrationRequest.getMainAddress())
@@ -108,7 +192,9 @@ public class VendorServiceImpl implements VendorService {
                     .generalManagerPhone(vendorRegistrationRequest.getGmPhone())
                     .accountManagerName(vendorRegistrationRequest.getAccManagerName())
                     .accountManagerPhone(vendorRegistrationRequest.getAccManagerPhone())
-                    .active(vendorRegistrationRequest.isActive())
+                    .salesMen(salesManEntities)
+                    .homeTelephones(homeTelephoneEntities)
+                    .active(true)
                     .build();
 
             vendorRepository.save(vendorEntityRecord);
@@ -130,6 +216,8 @@ public class VendorServiceImpl implements VendorService {
             return reporterService.reportError(e);
         }
     }
+
+
 
     @Override
     public ResponseWrapper<List<VendorDTO>> getAllVendors(boolean active) {
