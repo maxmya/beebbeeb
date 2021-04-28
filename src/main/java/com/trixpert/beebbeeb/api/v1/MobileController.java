@@ -192,4 +192,10 @@ public class MobileController {
         return ResponseEntity.ok(customerService.getProfileScore(customerId));
     }
 
+    @GetMapping("vendor/details/{vendorId}")
+    @ApiOperation("Get Vendor Details")
+    public ResponseEntity<ResponseWrapper<VendorResponse>> getVendorDetails(@PathVariable("vendorId") long vendorId){
+        return ResponseEntity.ok(null);
+    }
+
 }
