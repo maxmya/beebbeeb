@@ -18,7 +18,7 @@ public class VendorResponse {
     private String workingHours;
     private LinkableImage logo;
     private List<BrandDTO> brandsAgent;
-    private List<BrandDTO> brandsDistributer;
+    private List<BrandDTO> brandsDistributor;
     private List<CarItemResponse> latestCars;
     private boolean importer;
     private boolean homeDelivery;
