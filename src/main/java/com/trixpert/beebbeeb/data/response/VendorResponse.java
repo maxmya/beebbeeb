@@ -1,8 +1,15 @@
 package com.trixpert.beebbeeb.data.response;
 
-import lombok.Data;
+import com.trixpert.beebbeeb.data.to.BrandDTO;
+import lombok.*;
 
-@Data
+import java.util.List;
+
+@Setter
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class VendorResponse {
     private String name;
     private String address;
@@ -10,4 +17,9 @@ public class VendorResponse {
     private double longitude;
     private String workingHours;
     private LinkableImage logo;
+    private List<BrandDTO> brandsAgent;
+    private List<BrandDTO> brandsDistributer;
+    private List<CarItemResponse> latestCars;
+    private boolean importer;
+    private boolean homeDelivery;
 }
