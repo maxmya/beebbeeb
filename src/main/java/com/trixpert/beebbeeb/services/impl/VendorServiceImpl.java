@@ -116,37 +116,58 @@ public class VendorServiceImpl implements VendorService {
             String contractDocumentUrl = cloudStorageService.uploadFile(contractDocument);
 
             /*********List of brands for agent*******/
+
             List<BrandEntity> brandsAgent = new ArrayList<>();
-            for(BrandDTO brandDTO : vendorRegistrationRequest.getBrandsAgent()){
-                brandsAgent.add(brandMapper.convertToEntity(brandDTO));
+            if(vendorRegistrationRequest.getBrandsAgent()!=null){
+                for(BrandDTO brandDTO : vendorRegistrationRequest.getBrandsAgent()){
+                    Optional<BrandEntity> optionalBrandEntity = brandRepository.findById(brandDTO.getId());
+                    if(!optionalBrandEntity.isPresent()){
+                        throw new NotFoundException("This Brand is not exist!");
+                    }
+                    brandsAgent.add(optionalBrandEntity.get());
+                }
             }
+
 
             /*********List of brands for Distributor*******/
             List<BrandEntity> brandsDistributor = new ArrayList<>();
-            for(BrandDTO brandDTO : vendorRegistrationRequest.getBrandsDistributor()){
-                brandsDistributor.add(brandMapper.convertToEntity(brandDTO));
+            if(vendorRegistrationRequest.getBrandsDistributor()!=null){
+                for(BrandDTO brandDTO : vendorRegistrationRequest.getBrandsDistributor()){
+                    Optional<BrandEntity> optionalBrandEntity = brandRepository.findById(brandDTO.getId());
+                    if(!optionalBrandEntity.isPresent()){
+                        throw new NotFoundException("This Brand is not exist!");
+                    }
+                    brandsDistributor.add(optionalBrandEntity.get());
+                }
             }
+
 
             /******Building HomePhone Entities****/
             List<HomeTelephoneEntity> homeTelephoneEntities  = new ArrayList<>();
-            for(String homeTelephone : vendorRegistrationRequest.getHomeTelephones()){
-                HomeTelephoneEntity homeTelephoneEntity =HomeTelephoneEntity.builder()
-                        .telephoneNumber(homeTelephone)
-                        .active(true).build();
-                homeTelephoneEntities.add(homeTelephoneEntity);
-                homeTelephoneRepository.save(homeTelephoneEntity);
+            if(vendorRegistrationRequest.getTaxRecordNumber()!=null){
+                for(String homeTelephone : vendorRegistrationRequest.getHomeTelephones()){
+                    HomeTelephoneEntity homeTelephoneEntity =HomeTelephoneEntity.builder()
+                            .telephoneNumber(homeTelephone)
+                            .active(true).build();
+                    homeTelephoneEntities.add(homeTelephoneEntity);
+                    homeTelephoneRepository.save(homeTelephoneEntity);
+                }
             }
+
 
             /******Building SalesMan Entities****/
             List<SalesManEntity> salesManEntities  = new ArrayList<>();
-            for(SalesManDTO salesManDTO : vendorRegistrationRequest.getSalesMen()){
-                SalesManEntity salesManEntity =SalesManEntity.builder()
-                        .name(salesManDTO.getName())
-                        .phone(salesManDTO.getPhone())
-                        .active(true).build();
-                salesManEntities.add(salesManEntity);
-                salesManRepository.save(salesManEntity);
+            if(vendorRegistrationRequest.getSalesMen()!=null){
+                for(SalesManDTO salesManDTO : vendorRegistrationRequest.getSalesMen()){
+                    SalesManEntity salesManEntity =SalesManEntity.builder()
+                            .name(salesManDTO.getName())
+                            .phone(salesManDTO.getPhone())
+                            .active(true).build();
+                    salesManEntities.add(salesManEntity);
+                    salesManRepository.save(salesManEntity);
+                }
             }
+
 
             VendorEntity vendorEntityRecord = VendorEntity.builder()
                     .generalManagerIdDocumentFaceUrl(generalManagerIdDocumentFaceUrl)
