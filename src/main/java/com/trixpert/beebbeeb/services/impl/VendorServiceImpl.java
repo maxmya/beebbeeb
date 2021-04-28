@@ -424,32 +424,88 @@ public class VendorServiceImpl implements VendorService {
 
     @Override
     public ResponseWrapper<VendorResponse> getVendorDetails(long vendorId) {
-//        try {
-//            Optional<VendorEntity> optionalVendorEntity = vendorRepository.findById(vendorId);
-//            if(!optionalVendorEntity.isPresent()){
-//                throw new NotFoundException("This Vendor with id "+Long.toString(vendorId)+" Is not Exist !");
-//            }
-//
-//            VendorEntity vendorEntityRecord = optionalVendorEntity.get();
-//            LinkableImage linkableImage = LinkableImage.builder()
-//                    .url(vendorEntityRecord.getManager().getPicUrl())
-//                    .build();
-//            List<CarInstanceEntity> carInstanceEntityList = carInstanceRepository.findAllByVendorAndActive(vendorEntityRecord,true);
-//            System.out.println();
-//            VendorResponse vendorResponse = new VendorResponse();
-////            VendorResponse vendorResponse =VendorResponse.builder()
-////                    .name(vendorEntityRecord.getName())
-////                    .address(vendorEntityRecord.getMainAddress())
-////                    .importer(vendorEntityRecord.isImporter())
-////                    .homeDelivery(vendorEntityRecord.isHomeDelivery())
-////                    .logo(linkableImage)
-////                    .workingHours(vendorEntityRecord.getWorkingTime()
-////                    .build();
-//
-//            return reporterService.reportSuccess(vendorResponse);
-//        }catch (Exception e){
-//            return reporterService.reportError(e);
-//        }
-        return null;
+        try {
+            Optional<VendorEntity> optionalVendorEntity = vendorRepository.findById(vendorId);
+            if(!optionalVendorEntity.isPresent()){
+                throw new NotFoundException("This Vendor with id "+Long.toString(vendorId)+" Is not Exist !");
+            }
+
+            VendorEntity vendorEntityRecord = optionalVendorEntity.get();
+            LinkableImage linkableImage = LinkableImage.builder()
+                    .url(vendorEntityRecord.getManager().getPicUrl())
+                    .build();
+            List<CarInstanceEntity> carInstanceEntityList = carInstanceRepository.findAllByVendorAndActive(vendorEntityRecord,true);
+            List<CarItemResponse> carItemResponseList = new ArrayList<>();
+            carInstanceEntityList = carInstanceEntityList.subList(carInstanceEntityList.size()-3, carInstanceEntityList.size());
+
+            for (CarInstanceEntity carInstance : carInstanceEntityList) {
+
+                String carPhoto = "";
+                for (PhotoEntity photoEntity : carInstance.getCar().getPhotos()) {
+                    if (photoEntity.isMainPhoto()) {
+                        carPhoto = photoEntity.getPhotoUrl();
+                        break;
+                    }
+                }
+
+                if ("".equals(carPhoto)) {
+                    for (PhotoEntity photoEntity : carInstance.getCar().getModel().getPhotos()) {
+                        if (photoEntity.isMainPhoto()) {
+                            carPhoto = photoEntity.getPhotoUrl();
+                            break;
+                        }
+                    }
+                }
+
+                String carPrice = "0";
+                if (carInstance.getPrices() != null && carInstance.getPrices().size() > 1) {
+                    carPrice = (carInstance.getPrices().get(carInstance.getPrices().size() - 1)).getAmount();
+                } else if (carInstance.getPrices() != null && carInstance.getPrices().size() == 1) {
+                    carPrice = carInstance.getPrices().get(0).getAmount();
+                }
+
+                carItemResponseList.add(
+                        CarItemResponse.builder()
+                                .id(carInstance.getId())
+                                .image(carPhoto)
+                                .currency("EGP")
+                                .name(carInstance.getCar().getModel().getName() + " " + carInstance.getCar().getCategory().getName())
+                                .price(carPrice)
+                                .rating(4)
+                                .build()
+                );
+            }
+            List<BrandDTO> brandsAgentList = new ArrayList<>();
+            if(vendorEntityRecord.getBrandsAgent()!=null || vendorEntityRecord.getBrandsAgent().size()!=0){
+                for(BrandEntity brandEntity : vendorEntityRecord.getBrandsAgent()){
+                    brandsAgentList.add(brandMapper.convertToDTO(brandEntity));
+                }
+            }
+
+
+            List<BrandDTO> brandsDistributorList = new ArrayList<>();
+            if(vendorEntityRecord.getBrandsAgent()!=null || vendorEntityRecord.getBrandsAgent().size()!=0){
+                for(BrandEntity brandEntity : vendorEntityRecord.getBrandsAgent()){
+                    brandsDistributorList.add(brandMapper.convertToDTO(brandEntity));
+                }
+            }
+
+            VendorResponse vendorResponse =VendorResponse.builder()
+                    .name(vendorEntityRecord.getName())
+                    .address(vendorEntityRecord.getMainAddress())
+                    .importer(vendorEntityRecord.isImporter())
+                    .homeDelivery(vendorEntityRecord.isHomeDelivery())
+                    .logo(linkableImage)
+                    .workingHours(vendorEntityRecord.getWorkingTime())
+                    .latestCars(carItemResponseList)
+                    .brandsAgent(brandsAgentList)
+                    .brandsDistributor(brandsDistributorList)
+                    .build();
+
+            return reporterService.reportSuccess(vendorResponse);
+        }catch (Exception e){
+            return reporterService.reportError(e);
+        }
+
     }
 }
