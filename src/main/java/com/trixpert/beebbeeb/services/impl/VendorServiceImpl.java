@@ -8,8 +8,7 @@ import com.trixpert.beebbeeb.data.mappers.UserMapper;
 import com.trixpert.beebbeeb.data.mappers.VendorMapper;
 import com.trixpert.beebbeeb.data.repositories.*;
 import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
-import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
-import com.trixpert.beebbeeb.data.response.ResponseWrapper;
+import com.trixpert.beebbeeb.data.response.*;
 import com.trixpert.beebbeeb.data.to.*;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
@@ -36,6 +35,7 @@ public class VendorServiceImpl implements VendorService {
 
     private final ReporterService reporterService;
     private final UserService userService;
+    private final CarInstanceRepository carInstanceRepository;
 
     private final BrandRepository brandRepository;
     private final HomeTelephoneRepository homeTelephoneRepository;
@@ -54,13 +54,14 @@ public class VendorServiceImpl implements VendorService {
                              RolesRepository rolesRepository,
                              ReporterService reporterService,
                              UserService userService,
-                             BrandRepository brandRepository, HomeTelephoneRepository homeTelephoneRepository, SalesManRepository salesManRepository, BrandMapper brandMapper, UserMapper userMapper,
+                             CarInstanceRepository carInstanceRepository, BrandRepository brandRepository, HomeTelephoneRepository homeTelephoneRepository, SalesManRepository salesManRepository, BrandMapper brandMapper, UserMapper userMapper,
                              VendorMapper vendorMapper, AuditService auditService, CloudStorageService cloudStorageService) {
         this.userRepository = userRepository;
         this.vendorRepository = vendorRepository;
         this.rolesRepository = rolesRepository;
         this.reporterService = reporterService;
         this.userService = userService;
+        this.carInstanceRepository = carInstanceRepository;
         this.brandRepository = brandRepository;
         this.homeTelephoneRepository = homeTelephoneRepository;
         this.salesManRepository = salesManRepository;
@@ -419,5 +420,36 @@ public class VendorServiceImpl implements VendorService {
         }catch (Exception e){
             return reporterService.reportError(e);
         }
+    }
+
+    @Override
+    public ResponseWrapper<VendorResponse> getVendorDetails(long vendorId) {
+//        try {
+//            Optional<VendorEntity> optionalVendorEntity = vendorRepository.findById(vendorId);
+//            if(!optionalVendorEntity.isPresent()){
+//                throw new NotFoundException("This Vendor with id "+Long.toString(vendorId)+" Is not Exist !");
+//            }
+//
+//            VendorEntity vendorEntityRecord = optionalVendorEntity.get();
+//            LinkableImage linkableImage = LinkableImage.builder()
+//                    .url(vendorEntityRecord.getManager().getPicUrl())
+//                    .build();
+//            List<CarInstanceEntity> carInstanceEntityList = carInstanceRepository.findAllByVendorAndActive(vendorEntityRecord,true);
+//            System.out.println();
+//            VendorResponse vendorResponse = new VendorResponse();
+////            VendorResponse vendorResponse =VendorResponse.builder()
+////                    .name(vendorEntityRecord.getName())
+////                    .address(vendorEntityRecord.getMainAddress())
+////                    .importer(vendorEntityRecord.isImporter())
+////                    .homeDelivery(vendorEntityRecord.isHomeDelivery())
+////                    .logo(linkableImage)
+////                    .workingHours(vendorEntityRecord.getWorkingTime()
+////                    .build();
+//
+//            return reporterService.reportSuccess(vendorResponse);
+//        }catch (Exception e){
+//            return reporterService.reportError(e);
+//        }
+        return null;
     }
 }
