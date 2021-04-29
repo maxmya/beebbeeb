@@ -26,6 +26,8 @@ public interface CarService {
 
     ResponseWrapper<List<CarDTO>> listCarsForBrand(boolean active, long brandId);
 
+    ResponseWrapper<List<CarDTO>> listCarsForBrandAndModel(boolean active, long brandId, long modelId);
+
     ResponseWrapper<List<CarDTO>> listCarsForModel(boolean active, long modelId);
 
     ResponseWrapper<CarDTO> getCar(long carId);
