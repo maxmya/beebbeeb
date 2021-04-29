@@ -423,7 +423,7 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
-    public ResponseWrapper<VendorResponse> getVendorDetails(long vendorId) {
+    public ResponseWrapper<VendorDetailsResponse> getVendorDetails(long vendorId) {
         try {
             Optional<VendorEntity> optionalVendorEntity = vendorRepository.findById(vendorId);
             if(!optionalVendorEntity.isPresent()){
@@ -490,7 +490,7 @@ public class VendorServiceImpl implements VendorService {
                 }
             }
 
-            VendorResponse vendorResponse =VendorResponse.builder()
+            VendorDetailsResponse vendorDetailsResponse =VendorDetailsResponse.builder()
                     .name(vendorEntityRecord.getName())
                     .address(vendorEntityRecord.getMainAddress())
                     .importer(vendorEntityRecord.isImporter())
@@ -502,7 +502,7 @@ public class VendorServiceImpl implements VendorService {
                     .brandsDistributor(brandsDistributorList)
                     .build();
 
-            return reporterService.reportSuccess(vendorResponse);
+            return reporterService.reportSuccess(vendorDetailsResponse);
         }catch (Exception e){
             return reporterService.reportError(e);
         }
