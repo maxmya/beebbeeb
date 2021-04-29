@@ -92,6 +92,14 @@ public class CarController {
         return ResponseEntity.ok(carService.listCarsForYear(false, year));
     }
 
+    @GetMapping("/list/active/{brandId}/{modelId}")
+    @ApiOperation("Get list of active cars for specific brand and model")
+    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getActiveCarsForBrandAndModel(
+            @PathVariable("brandId") long brandId,
+            @PathVariable("modelId") long modelId){
+        return ResponseEntity.ok(carService.listCarsForBrandAndModel(true, brandId, modelId));
+    }
+
     @GetMapping("/list/active/{brandId}")
     @ApiOperation("Get list of active cars for specific brand")
     public ResponseEntity<ResponseWrapper<List<CarDTO>>> getActiveCarsForBrand(
