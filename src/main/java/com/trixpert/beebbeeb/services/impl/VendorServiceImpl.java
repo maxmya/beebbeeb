@@ -436,45 +436,49 @@ public class VendorServiceImpl implements VendorService {
                     .build();
             List<CarInstanceEntity> carInstanceEntityList = carInstanceRepository.findAllByVendorAndActive(vendorEntityRecord,true);
             List<CarItemResponse> carItemResponseList = new ArrayList<>();
-            carInstanceEntityList = carInstanceEntityList.subList(carInstanceEntityList.size()-3, carInstanceEntityList.size());
+            if(carItemResponseList.size()>3){
+                carInstanceEntityList = carInstanceEntityList.subList(carInstanceEntityList.size()-3, carInstanceEntityList.size());
+            }
+            if(carInstanceEntityList!=null && carInstanceEntityList.size()!=0){
+                for (CarInstanceEntity carInstance : carInstanceEntityList) {
 
-            for (CarInstanceEntity carInstance : carInstanceEntityList) {
-
-                String carPhoto = "";
-                for (PhotoEntity photoEntity : carInstance.getCar().getPhotos()) {
-                    if (photoEntity.isMainPhoto()) {
-                        carPhoto = photoEntity.getPhotoUrl();
-                        break;
-                    }
-                }
-
-                if ("".equals(carPhoto)) {
-                    for (PhotoEntity photoEntity : carInstance.getCar().getModel().getPhotos()) {
+                    String carPhoto = "";
+                    for (PhotoEntity photoEntity : carInstance.getCar().getPhotos()) {
                         if (photoEntity.isMainPhoto()) {
                             carPhoto = photoEntity.getPhotoUrl();
                             break;
                         }
                     }
-                }
 
-                String carPrice = "0";
-                if (carInstance.getPrices() != null && carInstance.getPrices().size() > 1) {
-                    carPrice = (carInstance.getPrices().get(carInstance.getPrices().size() - 1)).getAmount();
-                } else if (carInstance.getPrices() != null && carInstance.getPrices().size() == 1) {
-                    carPrice = carInstance.getPrices().get(0).getAmount();
-                }
+                    if ("".equals(carPhoto)) {
+                        for (PhotoEntity photoEntity : carInstance.getCar().getModel().getPhotos()) {
+                            if (photoEntity.isMainPhoto()) {
+                                carPhoto = photoEntity.getPhotoUrl();
+                                break;
+                            }
+                        }
+                    }
 
-                carItemResponseList.add(
-                        CarItemResponse.builder()
-                                .id(carInstance.getId())
-                                .image(carPhoto)
-                                .currency("EGP")
-                                .name(carInstance.getCar().getModel().getName() + " " + carInstance.getCar().getCategory().getName())
-                                .price(carPrice)
-                                .rating(4)
-                                .build()
-                );
+                    String carPrice = "0";
+                    if (carInstance.getPrices() != null && carInstance.getPrices().size() > 1) {
+                        carPrice = (carInstance.getPrices().get(carInstance.getPrices().size() - 1)).getAmount();
+                    } else if (carInstance.getPrices() != null && carInstance.getPrices().size() == 1) {
+                        carPrice = carInstance.getPrices().get(0).getAmount();
+                    }
+
+                    carItemResponseList.add(
+                            CarItemResponse.builder()
+                                    .id(carInstance.getId())
+                                    .image(carPhoto)
+                                    .currency("EGP")
+                                    .name(carInstance.getCar().getModel().getName() + " " + carInstance.getCar().getCategory().getName())
+                                    .price(carPrice)
+                                    .rating(4)
+                                    .build()
+                    );
+                }
             }
+
             List<BrandDTO> brandsAgentList = new ArrayList<>();
             if(vendorEntityRecord.getBrandsAgent()!=null || vendorEntityRecord.getBrandsAgent().size()!=0){
                 for(BrandEntity brandEntity : vendorEntityRecord.getBrandsAgent()){
