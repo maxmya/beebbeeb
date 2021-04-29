@@ -267,6 +267,28 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
+    public ResponseWrapper<List<CarDTO>> listCarsForBrandAndModel(boolean active, long brandId, long modelId){
+        try{
+            List<CarDTO> carList = new ArrayList<>();
+            Optional<ModelEntity> optionalModelEntityRecord = modelRepository.findById(modelId);
+            if (!optionalModelEntityRecord.isPresent()) {
+                throw new NotFoundException("Model entity not found");
+            }
+            Optional<BrandEntity> optionalBrandEntityRecord = brandRepository.findById(brandId);
+            if (!optionalBrandEntityRecord.isPresent()) {
+                throw new NotFoundException("brand entity not found");
+            }
+            carRepository.findAllByActiveAndBrandAndModel(active, optionalBrandEntityRecord.get(),
+                    optionalModelEntityRecord.get()).forEach(carEntity -> {
+                carList.add(carMapper.convertToDTO(carEntity));
+            });
+            return reporterService.reportSuccess(carList);
+        } catch(Exception e){
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
     public ResponseWrapper<List<CarDTO>> listCarsForModel(boolean active, long modelId){
         try {
             List<CarDTO> carList = new ArrayList<>();
