@@ -18,10 +18,10 @@ import java.util.List;
 public class VendorRegistrationRequest extends RegistrationRequest{
     private String vendorName;
     private String mainAddress;
-    private String gmName;
-    private String gmPhone;
-    private String accManagerName;
-    private String accManagerPhone;
+    private String generalManagerName;
+    private String generalManagerPhone;
+    private String accountManagerName;
+    private String accountManagerPhone;
     private String bankAccountNumber;
     private int salesPerMonth;
     private List<String> homeTelephones;
