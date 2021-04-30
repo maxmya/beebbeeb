@@ -11,4 +11,5 @@ import java.util.List;
 public interface ModelRepository extends JpaRepository<ModelEntity, Long> {
     List<ModelEntity> findAllByActive(boolean isActive);
     List<ModelEntity> findAllByActiveAndBrand(boolean isActive , BrandEntity brand);
+    List<ModelEntity> findAllByActiveAndYear(boolean active, String year);
 }
