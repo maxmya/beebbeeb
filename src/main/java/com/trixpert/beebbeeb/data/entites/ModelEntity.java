@@ -26,6 +26,9 @@ public class ModelEntity {
 
     private String name;
 
+    @Column(name = "name_en")
+    private String englishName;
+
     private String year;
 
     private boolean active;

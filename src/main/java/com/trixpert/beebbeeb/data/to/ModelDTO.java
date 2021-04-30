@@ -17,6 +17,7 @@ public class ModelDTO {
     private BrandDTO brand;
     private List<PhotoDTO> photos;
     private String name;
+    private String englishName;
     private String year;
     private boolean active;
 }
