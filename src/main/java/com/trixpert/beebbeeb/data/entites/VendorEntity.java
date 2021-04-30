@@ -100,10 +100,10 @@ public class VendorEntity {
     private List<BrandEntity> brandDistributor;
 
     @Column(name = "importer")
-    private boolean importer;
+    private Boolean importer;
 
     @Column(name = "home_delivery")
-    private boolean homeDelivery;
+    private Boolean homeDelivery;
 
     @Column(name = "bank_account_number")
     private String bankAccountNumber;
