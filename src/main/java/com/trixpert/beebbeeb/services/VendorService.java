@@ -4,6 +4,8 @@ import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.WokringTimsRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
+import com.trixpert.beebbeeb.data.response.VendorDetailsResponse;
+import com.trixpert.beebbeeb.data.response.VendorResponse;
 import com.trixpert.beebbeeb.data.to.VendorDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,5 +40,7 @@ public interface VendorService {
     ResponseWrapper<Boolean> addVendorPhoto(long vendorId ,MultipartFile vendorPhoto);
 
     ResponseWrapper<Boolean> registerVendorWorkingDays(long vendorId ,String wokringTimsRegistrationRequest);
+
+    ResponseWrapper<VendorDetailsResponse> getVendorDetails(long vendorId);
 
 }

@@ -1,8 +1,13 @@
 package com.trixpert.beebbeeb.data.response;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+
+@Setter
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class VendorResponse {
     private String name;
     private String address;

@@ -32,13 +32,14 @@ public class MobileController {
     private final AddressService addressService;
     private final CustomerService customerService;
     private final CountingService countingService;
+    private final VendorService vendorService;
 
     public MobileController(MobileService mobileService,
                             PurchasingRequestService purchasingRequestService,
                             CustomerService customerService,
                             LoanService loanService,
                             AddressService addressService,
-                            CountingService countingService) {
+                            CountingService countingService, VendorService vendorService) {
 
         this.mobileService = mobileService;
         this.purchasingRequestService = purchasingRequestService;
@@ -46,6 +47,7 @@ public class MobileController {
         this.addressService = addressService;
         this.customerService = customerService;
         this.countingService = countingService;
+        this.vendorService = vendorService;
     }
 
     @PostMapping(value = "/loan/request", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -190,6 +192,12 @@ public class MobileController {
     @ApiOperation("Get Customer Profile Score")
     public ResponseEntity<ResponseWrapper<ProfileScoreResponse>> getProfileScore(@PathVariable("customerId") long customerId) {
         return ResponseEntity.ok(customerService.getProfileScore(customerId));
+    }
+
+    @GetMapping("/vendor/details/{vendorId}")
+    @ApiOperation("Get Vendor Details")
+    public ResponseEntity<ResponseWrapper<VendorDetailsResponse>> getVendorDetails(@PathVariable("vendorId") long vendorId){
+        return ResponseEntity.ok(vendorService.getVendorDetails(vendorId));
     }
 
 }
