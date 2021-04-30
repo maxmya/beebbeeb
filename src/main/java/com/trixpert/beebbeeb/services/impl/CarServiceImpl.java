@@ -107,7 +107,6 @@ public class CarServiceImpl implements CarService {
 
             ModelEntity modelRecord = optionalModelEntity.get();
 
-            CarEntity savedCar = null;
 
             for (CarRegistrationRequest.ColorFormData color : carRegistrationRequest.getColors()) {
                 Optional<ParentColorEntity> parentColorOptional = parentColorRepository.findById(color.getParentColor().getId());
@@ -136,80 +135,80 @@ public class CarServiceImpl implements CarService {
                         .active(true)
                         .build();
 
-                savedCar = carRepository.save(carEntityRecord);
+                CarEntity savedCar = carRepository.save(carEntityRecord);
 
+                String[] specsAr = new String[]{
+                        "ناقل الحركة",
+                        "عدد النقالات",
+                        "لتر/١٠٠ كيلومتر",
+                        "عدد المقاعد",
+                        "مكيف هواء",
+                        "عجلة قيادة متعددة الوظائف",
+                        "الطول الكلي",
+                        "العرض الكلي",
+                        "الارتفاع الكلي",
+                        "الارتفاع عن الارض",
+                        "سعة خزان الوقود",
+                        "حجم الشنطة",
+                        "سعة الموتور",
+                        "الحصان الميكانيكي",
+                        "أقصى سرعة",
+                        "التسارع من 0 ل 100",
+                        "السيلندر",
+                        "عزم النيوتن",
+                        "الوسائد الهوائية",
+                        "نظام الفرامل المانع للانغلاق-ABS",
+                        "نظام توزيع قوة الفرامل EBD",
+                        "برنامج ثبات الكتروني ESP",
+                        "نظام إيموبيليزر للحماية ضد السطو والسرقة",
+                        "إنذار",
+                        "نظام ISO Fix لتثبيت مقاعد الأطفال",
+                        "زجاج كهربائى للأبواب الأمامية",
+                        "زجاج كهربائى للأبواب الخلفية",
+                        "مقاس الجنط",
+                        "مثبت سرعة",
+                        "محدد سرعة",
+                        "فتحة سقف",
+                        " سقف بانوراما",
+                        "مرايات كهرباء",
+                        "مرايات ضم كهربائية",
+                        "نوع الفرش",
+                        "كشافات الضباب",
+                        "مقود مرن",
+                        "الحساسات",
+                        "كاميرا خلفية",
+                        "قفل مركزى  للابواب",
+                        "سبويلر",
+                        "تشغيل / إيقاف المحرك بدون مفتاح",
+                        "فرامل يد كهربائية",
+                        "شاشة تعمل باللمس",
+                        "مقاس الشاشة بالبوصة",
+                        "مشغل اقراص مدمجة",
+                        "كمبيوتر رحلات",
+                        "مراقبة ضغط الهواء في الإطارات",
+                        "زجاج ملون",
+                        "GPS",
+                        "مدخل AUX",
+                        "مدخل USB",
+                        "بلوتوث",
+                        "مخرج كهرباء",
+                        "كماليات اخرى",
+                        "الوقود",
+                        "قاعدة العجلات",
+                        "نوع الجر"
+                };
+
+                for (String spec : specsAr) {
+                    EssentialSpecsEntity essentialSpecsEntity = new EssentialSpecsEntity();
+                    essentialSpecsEntity.setKey(spec);
+                    essentialSpecsEntity.setValue("N/A");
+                    essentialSpecsEntity.setActive(true);
+                    essentialSpecsEntity.setCar(savedCar);
+                    essentialCarSpecsRepository.save(essentialSpecsEntity);
+                }
             }
 
 
-            String[] specsAr = new String[]{
-                    "ناقل الحركة",
-                    "عدد النقالات",
-                    "لتر/١٠٠ كيلومتر",
-                    "عدد المقاعد",
-                    "مكيف هواء",
-                    "عجلة قيادة متعددة الوظائف",
-                    "الطول الكلي",
-                    "العرض الكلي",
-                    "الارتفاع الكلي",
-                    "الارتفاع عن الارض",
-                    "سعة خزان الوقود",
-                    "حجم الشنطة",
-                    "سعة الموتور",
-                    "الحصان الميكانيكي",
-                    "أقصى سرعة",
-                    "التسارع من 0 ل 100",
-                    "السيلندر",
-                    "عزم النيوتن",
-                    "الوسائد الهوائية",
-                    "نظام الفرامل المانع للانغلاق-ABS",
-                    "نظام توزيع قوة الفرامل EBD",
-                    "برنامج ثبات الكتروني ESP",
-                    "نظام إيموبيليزر للحماية ضد السطو والسرقة",
-                    "إنذار",
-                    "نظام ISO Fix لتثبيت مقاعد الأطفال",
-                    "زجاج كهربائى للأبواب الأمامية",
-                    "زجاج كهربائى للأبواب الخلفية",
-                    "مقاس الجنط",
-                    "مثبت سرعة",
-                    "محدد سرعة",
-                    "فتحة سقف",
-                    " سقف بانوراما",
-                    "مرايات كهرباء",
-                    "مرايات ضم كهربائية",
-                    "نوع الفرش",
-                    "كشافات الضباب",
-                    "مقود مرن",
-                    "الحساسات",
-                    "كاميرا خلفية",
-                    "قفل مركزى  للابواب",
-                    "سبويلر",
-                    "تشغيل / إيقاف المحرك بدون مفتاح",
-                    "فرامل يد كهربائية",
-                    "شاشة تعمل باللمس",
-                    "مقاس الشاشة بالبوصة",
-                    "مشغل اقراص مدمجة",
-                    "كمبيوتر رحلات",
-                    "مراقبة ضغط الهواء في الإطارات",
-                    "زجاج ملون",
-                    "GPS",
-                    "مدخل AUX",
-                    "مدخل USB",
-                    "بلوتوث",
-                    "مخرج كهرباء",
-                    "كماليات اخرى",
-                    "الوقود",
-                    "قاعدة العجلات",
-                    "نوع الجر"
-            };
-
-            for (String spec : specsAr) {
-                EssentialSpecsEntity essentialSpecsEntity = new EssentialSpecsEntity();
-                essentialSpecsEntity.setKey(spec);
-                essentialSpecsEntity.setValue("N/A");
-                essentialSpecsEntity.setActive(true);
-                essentialSpecsEntity.setCar(savedCar);
-                essentialCarSpecsRepository.save(essentialSpecsEntity);
-            }
             return reporterService.reportSuccess("Cars Added to Category Successfully");
         } catch (Exception e) {
             return reporterService.reportError(e);
