@@ -78,14 +78,14 @@ public class CarController {
         return ResponseEntity.ok(carService.getAllCars(false));
     }
 
-    @GetMapping("/list/active/{year}")
+    @GetMapping("/year/list/active/{year}")
     @ApiOperation("Get list of active cars for specific year")
     public ResponseEntity<ResponseWrapper<List<CarDTO>>> getActiveCarsForYear(
             @PathVariable("year") String year){
         return ResponseEntity.ok(carService.listCarsForYear(true, year));
     }
 
-    @GetMapping("/list/inactive/{year}")
+    @GetMapping("/year/list/inactive/{year}")
     @ApiOperation("Get list of inactive cars for specific year")
     public ResponseEntity<ResponseWrapper<List<CarDTO>>> getInactiveCarsForYear(
             @PathVariable("year") String year){
@@ -114,14 +114,14 @@ public class CarController {
         return ResponseEntity.ok(carService.listCarsForBrand(false, brandId));
     }
 
-    @GetMapping("/list/active/{modelId}")
+    @GetMapping("/model/list/active/{modelId}")
     @ApiOperation("Get list of active cars for specific model")
     public ResponseEntity<ResponseWrapper<List<CarDTO>>> getActiveCarsForModel(
             @PathVariable("modelId") long modelId) {
         return ResponseEntity.ok(carService.listCarsForModel(true, modelId));
     }
 
-    @GetMapping("/list/inactive/{modelId}")
+    @GetMapping("/model/list/inactive/{modelId}")
     @ApiOperation("Get list of inactive cars for specific model")
     public ResponseEntity<ResponseWrapper<List<CarDTO>>> getInactiveCarsForModel(
             @PathVariable("modelId") long modelId) {

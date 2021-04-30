@@ -255,10 +255,10 @@ public class CarServiceImpl implements CarService {
     public ResponseWrapper<List<CarDTO>> listCarsForYear(boolean active, String year){
         try {
             List<CarDTO> carList = new ArrayList<>();
-            carRepository.findAllByActive(active).forEach(carEntity -> {
-                if(carEntity.getModel().getYear().equals(year)){
+            modelRepository.findAllByActiveAndYear(active, year).forEach(modelEntity -> {
+                carRepository.findAllByActiveAndModel(active, modelEntity).forEach(carEntity -> {
                     carList.add(carMapper.convertToDTO(carEntity));
-                }
+                });
             });
             return reporterService.reportSuccess(carList);
         } catch(Exception e){
