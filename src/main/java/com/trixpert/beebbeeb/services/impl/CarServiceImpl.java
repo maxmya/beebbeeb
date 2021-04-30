@@ -198,10 +198,15 @@ public class CarServiceImpl implements CarService {
                         "نوع الجر"
                 };
 
-                for (String spec : specsAr) {
+                for (int i = 0; i < specsAr.length; i++) {
                     EssentialSpecsEntity essentialSpecsEntity = new EssentialSpecsEntity();
-                    essentialSpecsEntity.setKey(spec);
-                    essentialSpecsEntity.setValue("N/A");
+                    essentialSpecsEntity.setKey(specsAr[i]);
+                    String specsValue = carRegistrationRequest.getSpecs().get(i);
+                    if (specsValue != null) {
+                        essentialSpecsEntity.setValue(specsValue);
+                    } else {
+                        essentialSpecsEntity.setValue("N/A");
+                    }
                     essentialSpecsEntity.setActive(true);
                     essentialSpecsEntity.setCar(savedCar);
                     essentialCarSpecsRepository.save(essentialSpecsEntity);

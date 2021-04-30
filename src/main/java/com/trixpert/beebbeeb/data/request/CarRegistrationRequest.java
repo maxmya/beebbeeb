@@ -22,6 +22,7 @@ public class CarRegistrationRequest {
     private long typeId;
     private long parentColorId;
     private List<ColorFormData> colors;
+    private List<String> specs;
 
     @Data
     public static class ColorFormData {
