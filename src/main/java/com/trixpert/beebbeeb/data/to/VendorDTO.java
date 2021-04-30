@@ -1,9 +1,11 @@
 package com.trixpert.beebbeeb.data.to;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import com.trixpert.beebbeeb.data.entites.BrandEntity;
+import lombok.*;
 
-@Data
+
+@Setter
+@Getter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class VendorDTO {
@@ -16,4 +18,5 @@ public class VendorDTO {
     private String accountManagerName;
     private String accountManagerPhone;
     private boolean active;
+    private String WorkingTime;
 }
