@@ -202,7 +202,7 @@ public class CarServiceImpl implements CarService {
                     EssentialSpecsEntity essentialSpecsEntity = new EssentialSpecsEntity();
                     essentialSpecsEntity.setKey(specsAr[i]);
                     String specsValue = carRegistrationRequest.getSpecs().get(i);
-                    if (specsValue != null) {
+                    if (specsValue != null || "".equals(specsValue)) {
                         essentialSpecsEntity.setValue(specsValue);
                     } else {
                         essentialSpecsEntity.setValue("N/A");
