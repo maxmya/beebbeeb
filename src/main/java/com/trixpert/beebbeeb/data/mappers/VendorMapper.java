@@ -6,11 +6,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class VendorMapper {
+    private final UserMapper userMapper;
 
+    public VendorMapper(UserMapper userMapper) {
+        this.userMapper = userMapper;
+    }
 
     public VendorEntity convertToEntity(VendorDTO vendorDTO) {
         return VendorEntity.builder()
                 .id(vendorDTO.getId())
+                .manager(userMapper.convertToEntity(vendorDTO.getManager()))
                 .name(vendorDTO.getVendorName())
                 .mainAddress(vendorDTO.getMainAddress())
                 .accountManagerName(vendorDTO.getAccountManagerName())
@@ -24,6 +29,7 @@ public class VendorMapper {
     public VendorDTO convertToDTO(VendorEntity vendorEntity) {
         return VendorDTO.builder()
                 .id(vendorEntity.getId())
+                .manager(userMapper.convertToDTO(vendorEntity.getManager()))
                 .vendorName(vendorEntity.getName())
                 .mainAddress(vendorEntity.getMainAddress())
                 .accountManagerName(vendorEntity.getAccountManagerName())
