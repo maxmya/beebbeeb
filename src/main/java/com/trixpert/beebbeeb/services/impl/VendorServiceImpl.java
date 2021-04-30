@@ -4,6 +4,7 @@ import com.trixpert.beebbeeb.data.constants.AuditActions;
 import com.trixpert.beebbeeb.data.constants.Roles;
 import com.trixpert.beebbeeb.data.entites.*;
 import com.trixpert.beebbeeb.data.mappers.BrandMapper;
+import com.trixpert.beebbeeb.data.mappers.CarInstanceMapper;
 import com.trixpert.beebbeeb.data.mappers.UserMapper;
 import com.trixpert.beebbeeb.data.mappers.VendorMapper;
 import com.trixpert.beebbeeb.data.repositories.*;
@@ -48,6 +49,11 @@ public class VendorServiceImpl implements VendorService {
     private final AuditService auditService;
     private final CloudStorageService cloudStorageService;
 
+    private final CarInstanceRepository carInstanceRepository;
+    private final CarInstanceMapper carInstanceMapper;
+
+    private final PurchasingRequestRepository purchasingRequestRepository ;
+
 
     public VendorServiceImpl(UserRepository userRepository,
                              VendorRepository vendorRepository,
@@ -55,7 +61,7 @@ public class VendorServiceImpl implements VendorService {
                              ReporterService reporterService,
                              UserService userService,
                              BrandRepository brandRepository, HomeTelephoneRepository homeTelephoneRepository, SalesManRepository salesManRepository, BrandMapper brandMapper, UserMapper userMapper,
-                             VendorMapper vendorMapper, AuditService auditService, CloudStorageService cloudStorageService) {
+                             VendorMapper vendorMapper, AuditService auditService, CloudStorageService cloudStorageService, CarInstanceRepository carInstanceRepository, CarInstanceMapper carInstanceMapper, PurchasingRequestRepository purchasingRequestRepository) {
         this.userRepository = userRepository;
         this.vendorRepository = vendorRepository;
         this.rolesRepository = rolesRepository;
@@ -69,6 +75,9 @@ public class VendorServiceImpl implements VendorService {
         this.vendorMapper = vendorMapper;
         this.auditService = auditService;
         this.cloudStorageService = cloudStorageService;
+        this.carInstanceRepository = carInstanceRepository;
+        this.carInstanceMapper = carInstanceMapper;
+        this.purchasingRequestRepository = purchasingRequestRepository;
     }
 
     @Override
@@ -188,10 +197,10 @@ public class VendorServiceImpl implements VendorService {
                     .name(vendorRegistrationRequest.getVendorName())
                     .manager(userEntityRecord)
                     .mainAddress(vendorRegistrationRequest.getMainAddress())
-                    .generalManagerName(vendorRegistrationRequest.getGmName())
-                    .generalManagerPhone(vendorRegistrationRequest.getGmPhone())
-                    .accountManagerName(vendorRegistrationRequest.getAccManagerName())
-                    .accountManagerPhone(vendorRegistrationRequest.getAccManagerPhone())
+                    .generalManagerName(vendorRegistrationRequest.getGeneralManagerName())
+                    .generalManagerPhone(vendorRegistrationRequest.getGeneralManagerPhone())
+                    .accountManagerName(vendorRegistrationRequest.getAccountManagerName())
+                    .accountManagerPhone(vendorRegistrationRequest.getAccountManagerPhone())
                     .salesMen(salesManEntities)
                     .homeTelephones(homeTelephoneEntities)
                     .active(true)
@@ -312,6 +321,62 @@ public class VendorServiceImpl implements VendorService {
         }
     }
 
+    @Override
+    public ResponseWrapper<List<PurchasingRequestResponse>> listPurchasingRequestsForVendorByVendorId(boolean active, long vendorId){
+        try{
+            List<PurchasingRequestResponse> purchasingRequestResponseList = new ArrayList<>();
+
+
+            Optional<VendorEntity> optionalVendorEntity = vendorRepository.findById(vendorId);
+            if(!optionalVendorEntity.isPresent()){
+                throw new NotFoundException("Vendor Entity not found");
+            }
+            VendorEntity vendorEntity = optionalVendorEntity.get();
+
+            List<PurchasingRequestEntity> purchasingRequestEntities = purchasingRequestRepository.findAllByActiveAndVendor(active,vendorEntity);
+
+
+            for(PurchasingRequestEntity purchasingRequestEntity:purchasingRequestEntities){
+                PurchasingRequestResponse purchasingRequestResponse = PurchasingRequestResponse.builder()
+                        .id(purchasingRequestEntity.getId())
+                        .paymentType(purchasingRequestEntity.getPaymentType())
+                        .status(purchasingRequestEntity.getStatus())
+                        .comment(purchasingRequestEntity.getComment())
+                        .date(purchasingRequestEntity.getDate())
+                        .customerId(purchasingRequestEntity.getCustomer().getId())
+                        .customerName(purchasingRequestEntity.getCustomer().getUser().getName())
+                        .carBrand(purchasingRequestEntity.getCarInstance().getCar().getBrand().getName())
+                        .carModel(purchasingRequestEntity.getCarInstance().getCar().getModel().getName())
+                        .active(purchasingRequestEntity.isActive())
+                        .build();
+
+                purchasingRequestResponseList.add(purchasingRequestResponse);
+            }
+            return reporterService.reportSuccess(purchasingRequestResponseList);
+        } catch(Exception e){
+            return reporterService.reportError(e);
+        }
+    }
+
+
+    @Override
+    public ResponseWrapper<List<CarInstanceDTO>> listCarsForVendor(long vendorId, boolean active) {
+        try {
+            Optional<VendorEntity> vendorEntity = vendorRepository.findById(vendorId);
+            if(!vendorEntity.isPresent()){
+                throw new NotFoundException("vendor not found");
+            }
+            List<CarInstanceEntity> carInstanceEntityList = carInstanceRepository.findAllByVendorAndActive(vendorEntity.get(),active);
+            List<CarInstanceDTO> carInstanceDTOList = new ArrayList<>();
+            for(CarInstanceEntity carInstanceEntity:carInstanceEntityList){
+                carInstanceDTOList.add(carInstanceMapper.convertToDTO(carInstanceEntity));
+            }
+            return reporterService.reportSuccess(carInstanceDTOList);
+        }catch (Exception e){
+           return reporterService.reportError(e);
+        }
+    }
+
     @Transactional
     @Override
     public ResponseWrapper<Boolean> updateVendor(VendorRegistrationRequest vendorRegistrationRequest
@@ -326,27 +391,42 @@ public class VendorServiceImpl implements VendorService {
             }
 
             VendorEntity vendorRecord = optionalVendorRecord.get();
-
-            if (vendorRegistrationRequest.getVendorName() != null) {
-                vendorRecord.setName(vendorRegistrationRequest.getVendorName());
+            if(vendorRegistrationRequest.getVendorName()!=null){
+                if (!vendorRegistrationRequest.getVendorName().equals("")) {
+                    vendorRecord.setName(vendorRegistrationRequest.getVendorName());
+                }
             }
 
-            if (vendorRegistrationRequest.getMainAddress() != null) {
-                vendorRecord.setMainAddress(vendorRegistrationRequest.getMainAddress());
+            if(vendorRegistrationRequest.getMainAddress()!=null){
+                if (!vendorRegistrationRequest.getMainAddress().equals("")) {
+                    vendorRecord.setMainAddress(vendorRegistrationRequest.getMainAddress());
+                }
             }
 
-            if (vendorRegistrationRequest.getGmName() != null) {
-                userService.updateUser(userMapper.convertToDTO(vendorRecord.getManager()));
+
+            if (vendorRegistrationRequest.getGeneralManagerName()!=null) {
+                if(vendorRegistrationRequest.getGeneralManagerName().length()>0){
+                    vendorRecord.setGeneralManagerName(vendorRegistrationRequest.getGeneralManagerName());
+                }
             }
-            if (vendorRegistrationRequest.getGmPhone() != null) {
-                vendorRecord.setGeneralManagerPhone(vendorRegistrationRequest.getGmPhone());
+            if(vendorRegistrationRequest.getGeneralManagerPhone()!=null){
+                if (vendorRegistrationRequest.getGeneralManagerPhone().length()>0) {
+                    vendorRecord.setGeneralManagerPhone(vendorRegistrationRequest.getGeneralManagerPhone());
+                }
             }
-            if (vendorRegistrationRequest.getAccManagerName() != null) {
-                vendorRecord.setAccountManagerName(vendorRegistrationRequest.getAccManagerName());
+
+            if(vendorRegistrationRequest.getAccountManagerName()!=null){
+                if (vendorRegistrationRequest.getAccountManagerName().length()>0) {
+                    vendorRecord.setAccountManagerName(vendorRegistrationRequest.getAccountManagerName());
+                }
             }
-            if (vendorRegistrationRequest.getAccManagerPhone() != null) {
-                vendorRecord.setAccountManagerPhone(vendorRegistrationRequest.getAccManagerPhone());
+
+            if(vendorRegistrationRequest.getAccountManagerPhone()!=null){
+                if (vendorRegistrationRequest.getAccountManagerPhone().length()>0) {
+                    vendorRecord.setAccountManagerPhone(vendorRegistrationRequest.getAccountManagerPhone());
+                }
             }
+
             vendorRepository.save(vendorRecord);
             AuditDTO auditDTO =
                     AuditDTO.builder()
@@ -404,7 +484,7 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> registerVendorWorkingDays(long vendorId, String wokringTimsRegistrationRequest) {
+    public ResponseWrapper<Boolean> registerVendorWorkingDays(long vendorId, String workingTimesRegistrationRequest) {
 
         try {
             Optional<VendorEntity> vendorEntityOptional = vendorRepository.findById(vendorId);
@@ -412,7 +492,7 @@ public class VendorServiceImpl implements VendorService {
                 throw new NotFoundException("This vendor not exist");
             }
             VendorEntity vendorEntityRecord = vendorEntityOptional.get();
-            vendorEntityRecord.setWorkingTime(wokringTimsRegistrationRequest);
+            vendorEntityRecord.setWorkingTime(workingTimesRegistrationRequest);
             vendorRepository.save(vendorEntityRecord);
             return reporterService.reportSuccess("Vendor's Photo Added !");
 
@@ -420,4 +500,56 @@ public class VendorServiceImpl implements VendorService {
             return reporterService.reportError(e);
         }
     }
+
+//
+//    public List<CarItemResponse> getVendorCars(VendorEntity vendorEntityRecord) {
+//        try {
+//
+//            List<CarInstanceEntity> carInstanceEntityList = carInstanceRepository.findAllByVendorAndActive(vendorEntityRecord,true);
+//            List<CarItemResponse> carItemResponseList = new ArrayList<>();
+//
+//            if(carInstanceEntityList!=null && carInstanceEntityList.size()!=0){
+//                for (CarInstanceEntity carInstance : carInstanceEntityList) {
+//                    String carPhoto = "";
+//                    for (PhotoEntity photoEntity : carInstance.getCar().getPhotos()) {
+//                        if (photoEntity.isMainPhoto()) {
+//                            carPhoto = photoEntity.getPhotoUrl();
+//                            break;
+//                        }
+//                    }
+//
+//                    if ("".equals(carPhoto)) {
+//                        for (PhotoEntity photoEntity : carInstance.getCar().getModel().getPhotos()) {
+//                            if (photoEntity.isMainPhoto()) {
+//                                carPhoto = photoEntity.getPhotoUrl();
+//                                break;
+//                            }
+//                        }
+//                    }
+//
+//                    String carPrice = "0";
+//                    if (carInstance.getPrices() != null && carInstance.getPrices().size() > 1) {
+//                        carPrice = (carInstance.getPrices().get(carInstance.getPrices().size() - 1)).getAmount();
+//                    } else if (carInstance.getPrices() != null && carInstance.getPrices().size() == 1) {
+//                        carPrice = carInstance.getPrices().get(0).getAmount();
+//                    }
+//
+//                    carItemResponseList.add(
+//                            CarItemResponse.builder()
+//                                    .id(carInstance.getId())
+//                                    .image(carPhoto)
+//                                    .currency("EGP")
+//                                    .name(carInstance.getCar().getModel().getName() + " " + carInstance.getCar().getCategory().getName())
+//                                    .price(carPrice)
+//                                    .rating(4)
+//                                    .build()
+//                    );
+//                }
+//            }
+//            return carItemResponseList;
+//        }catch (Exception e){
+//            return null;
+//        }
+//
+//    }
 }
