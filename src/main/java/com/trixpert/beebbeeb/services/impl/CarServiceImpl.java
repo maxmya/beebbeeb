@@ -27,6 +27,7 @@ public class CarServiceImpl implements CarService {
 
     private final CarRepository carRepository;
     private final ModelRepository modelRepository;
+    private final BrandRepository brandRepository;
     private final CategoryRepository categoryRepository;
     private final ColorRepository colorRepository;
     private final ParentColorRepository parentColorRepository;
@@ -44,7 +45,7 @@ public class CarServiceImpl implements CarService {
 
     public CarServiceImpl(CarRepository carRepository,
                           ModelRepository modelRepository,
-                          CategoryRepository categoryRepository,
+                          BrandRepository brandRepository, CategoryRepository categoryRepository,
                           ColorRepository colorRepository,
                           ParentColorRepository parentColorRepository,
                           TypeRepository typeRepository,
@@ -58,6 +59,7 @@ public class CarServiceImpl implements CarService {
 
         this.carRepository = carRepository;
         this.modelRepository = modelRepository;
+        this.brandRepository = brandRepository;
         this.categoryRepository = categoryRepository;
         this.colorRepository = colorRepository;
         this.parentColorRepository = parentColorRepository;
@@ -245,6 +247,79 @@ public class CarServiceImpl implements CarService {
             );
             return reporterService.reportSuccess(carDTOList);
         } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<List<CarDTO>> listCarsForYear(boolean active, String year){
+        try {
+            List<CarDTO> carList = new ArrayList<>();
+            carRepository.findAllByActive(active).forEach(carEntity -> {
+                if(carEntity.getModel().getYear().equals(year)){
+                    carList.add(carMapper.convertToDTO(carEntity));
+                }
+            });
+            return reporterService.reportSuccess(carList);
+        } catch(Exception e){
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<List<CarDTO>> listCarsForBrandAndModel(boolean active, long brandId, long modelId){
+        try{
+            List<CarDTO> carList = new ArrayList<>();
+            Optional<ModelEntity> optionalModelEntityRecord = modelRepository.findById(modelId);
+            if (!optionalModelEntityRecord.isPresent()) {
+                throw new NotFoundException("Model entity not found");
+            }
+            Optional<BrandEntity> optionalBrandEntityRecord = brandRepository.findById(brandId);
+            if (!optionalBrandEntityRecord.isPresent()) {
+                throw new NotFoundException("brand entity not found");
+            }
+            carRepository.findAllByActiveAndBrandAndModel(active, optionalBrandEntityRecord.get(),
+                    optionalModelEntityRecord.get()).forEach(carEntity -> {
+                carList.add(carMapper.convertToDTO(carEntity));
+            });
+            return reporterService.reportSuccess(carList);
+        } catch(Exception e){
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<List<CarDTO>> listCarsForModel(boolean active, long modelId){
+        try {
+            List<CarDTO> carList = new ArrayList<>();
+            Optional<ModelEntity> optionalModelEntityRecord = modelRepository.findById(modelId);
+            if (!optionalModelEntityRecord.isPresent()) {
+                throw new NotFoundException("Model entity not found");
+            }
+            carRepository.findAllByActiveAndModel(active, optionalModelEntityRecord.get())
+                    .forEach(carEntity -> {
+                        carList.add(carMapper.convertToDTO(carEntity));
+                    });
+            return reporterService.reportSuccess(carList);
+        } catch(Exception e){
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<List<CarDTO>> listCarsForBrand(boolean active, long brandId){
+        try {
+            List<CarDTO> carList = new ArrayList<>();
+            Optional<BrandEntity> optionalBrandEntityRecord = brandRepository.findById(brandId);
+            if (!optionalBrandEntityRecord.isPresent()) {
+                throw new NotFoundException("brand entity not found");
+            }
+            carRepository.findAllByActiveAndBrand(active, optionalBrandEntityRecord.get())
+                    .forEach(carEntity -> {
+                        carList.add(carMapper.convertToDTO(carEntity));
+                    });
+            return reporterService.reportSuccess(carList);
+        }catch(Exception e){
             return reporterService.reportError(e);
         }
     }

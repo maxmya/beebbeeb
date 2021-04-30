@@ -22,6 +22,14 @@ public interface CarService {
 
     ResponseWrapper<List<CarDTO>> getAllCars(boolean active);
 
+    ResponseWrapper<List<CarDTO>> listCarsForYear(boolean active, String year);
+
+    ResponseWrapper<List<CarDTO>> listCarsForBrand(boolean active, long brandId);
+
+    ResponseWrapper<List<CarDTO>> listCarsForBrandAndModel(boolean active, long brandId, long modelId);
+
+    ResponseWrapper<List<CarDTO>> listCarsForModel(boolean active, long modelId);
+
     ResponseWrapper<CarDTO> getCar(long carId);
 
     ResponseWrapper<Boolean> updateCar(long carId , CarRegistrationRequest carRegistrationRequest);
