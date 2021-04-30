@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface CarService {
 
-    ResponseWrapper<Boolean> registerCar(CarRegistrationRequest carRegistrationRequest, String authHeader);
+    ResponseWrapper<Boolean> registerCars(CarRegistrationRequest carRegistrationRequest, String authHeader);
 
 
     ResponseWrapper<FileUploadResponse> uploadInterior(long carId, MultipartFile file);

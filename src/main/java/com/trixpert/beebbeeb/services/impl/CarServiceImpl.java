@@ -76,7 +76,7 @@ public class CarServiceImpl implements CarService {
 
 
     @Override
-    public ResponseWrapper<Boolean> registerCar(CarRegistrationRequest carRegistrationRequest, String authHeader) {
+    public ResponseWrapper<Boolean> registerCars(CarRegistrationRequest carRegistrationRequest, String authHeader) {
         try {
 
             String username = auditService.getUsernameForAudit(authHeader);
@@ -93,20 +93,6 @@ public class CarServiceImpl implements CarService {
                 throw new NotFoundException("Model entity not found");
             }
 
-            Optional<ParentColorEntity> parentColorOptional = parentColorRepository.findById(carRegistrationRequest.getParentColorId());
-
-            if (!parentColorOptional.isPresent()) {
-                throw new NotFoundException("Parent Color Not Found");
-            }
-
-            ColorEntity colorEntity = ColorEntity.builder()
-                    .name(carRegistrationRequest.getColorName())
-                    .code(carRegistrationRequest.getColorCode())
-                    .build();
-
-            colorEntity.setParentColor(parentColorOptional.get());
-            colorRepository.save(colorEntity);
-
             Optional<TypeEntity> typeEntityOptional = typeRepository.findById(carRegistrationRequest.getTypeId());
 
             if (!typeEntityOptional.isPresent()) {
@@ -119,46 +105,112 @@ public class CarServiceImpl implements CarService {
             categoryEntity.setType(typeEntityOptional.get());
             categoryRepository.save(categoryEntity);
 
-
             ModelEntity modelRecord = optionalModelEntity.get();
 
-            CarEntity carEntityRecord = CarEntity.builder()
-                    .additionDate(LocalDateTime.now())
-                    .model(modelRecord)
-                    .brand(modelRecord.getBrand())
-                    .creator(optionalUser.get())
-                    .category(categoryEntity)
-                    .color(colorEntity)
-                    .originalPrice(carRegistrationRequest.getOriginalPrice())
-                    .active(true)
-                    .build();
+            CarEntity savedCar = null;
 
-            CarEntity savedCar = carRepository.save(carEntityRecord);
+            for (CarRegistrationRequest.ColorFormData color : carRegistrationRequest.getColors()) {
+                Optional<ParentColorEntity> parentColorOptional = parentColorRepository.findById(color.getParentColor().getId());
 
-            String[] specs = new String[]{
-                    "Has Sun Roof",
-                    "Bla Bla Bla1",
-                    "Bla Bla Bla2",
-                    "Bla Bla Bla3",
-                    "Bla Bla Bla4",
-                    "Bla Bla Bla5",
-                    "Bla Bla Bla6",
-                    "Bla Bla Bla7",
-                    "Bla Bla Bla8",
-                    "Bla Bla Bla9",
-                    "Bla Bla Bla10",
-                    "bla bla lba11"
+                if (!parentColorOptional.isPresent()) {
+                    throw new NotFoundException("Parent Color Not Found");
+                }
+
+                ColorEntity colorEntity = ColorEntity.builder()
+                        .name(color.getColorName())
+                        .code(color.getColorCode())
+                        .build();
+
+                colorEntity.setParentColor(parentColorOptional.get());
+                colorRepository.save(colorEntity);
+
+
+                CarEntity carEntityRecord = CarEntity.builder()
+                        .additionDate(LocalDateTime.now())
+                        .model(modelRecord)
+                        .brand(modelRecord.getBrand())
+                        .creator(optionalUser.get())
+                        .category(categoryEntity)
+                        .color(colorEntity)
+                        .originalPrice(carRegistrationRequest.getOriginalPrice())
+                        .active(true)
+                        .build();
+
+                savedCar = carRepository.save(carEntityRecord);
+
+            }
+
+
+            String[] specsAr = new String[]{
+                    "ناقل الحركة",
+                    "عدد النقالات",
+                    "لتر/١٠٠ كيلومتر",
+                    "عدد المقاعد",
+                    "مكيف هواء",
+                    "عجلة قيادة متعددة الوظائف",
+                    "الطول الكلي",
+                    "العرض الكلي",
+                    "الارتفاع الكلي",
+                    "الارتفاع عن الارض",
+                    "سعة خزان الوقود",
+                    "حجم الشنطة",
+                    "سعة الموتور",
+                    "الحصان الميكانيكي",
+                    "أقصى سرعة",
+                    "التسارع من 0 ل 100",
+                    "السيلندر",
+                    "عزم النيوتن",
+                    "الوسائد الهوائية",
+                    "نظام الفرامل المانع للانغلاق-ABS",
+                    "نظام توزيع قوة الفرامل EBD",
+                    "برنامج ثبات الكتروني ESP",
+                    "نظام إيموبيليزر للحماية ضد السطو والسرقة",
+                    "إنذار",
+                    "نظام ISO Fix لتثبيت مقاعد الأطفال",
+                    "زجاج كهربائى للأبواب الأمامية",
+                    "زجاج كهربائى للأبواب الخلفية",
+                    "مقاس الجنط",
+                    "مثبت سرعة",
+                    "محدد سرعة",
+                    "فتحة سقف",
+                    " سقف بانوراما",
+                    "مرايات كهرباء",
+                    "مرايات ضم كهربائية",
+                    "نوع الفرش",
+                    "كشافات الضباب",
+                    "مقود مرن",
+                    "الحساسات",
+                    "كاميرا خلفية",
+                    "قفل مركزى  للابواب",
+                    "سبويلر",
+                    "تشغيل / إيقاف المحرك بدون مفتاح",
+                    "فرامل يد كهربائية",
+                    "شاشة تعمل باللمس",
+                    "مقاس الشاشة بالبوصة",
+                    "مشغل اقراص مدمجة",
+                    "كمبيوتر رحلات",
+                    "مراقبة ضغط الهواء في الإطارات",
+                    "زجاج ملون",
+                    "GPS",
+                    "مدخل AUX",
+                    "مدخل USB",
+                    "بلوتوث",
+                    "مخرج كهرباء",
+                    "كماليات اخرى",
+                    "الوقود",
+                    "قاعدة العجلات",
+                    "نوع الجر"
             };
-            for (String spec : specs) {
-                // TODO : set default car specs
-                EssentialSpecsEntity essentialSpecsEntity = new EssentialSpecsEntity(); // x 60 ....
+
+            for (String spec : specsAr) {
+                EssentialSpecsEntity essentialSpecsEntity = new EssentialSpecsEntity();
                 essentialSpecsEntity.setKey(spec);
                 essentialSpecsEntity.setValue("N/A");
                 essentialSpecsEntity.setActive(true);
                 essentialSpecsEntity.setCar(savedCar);
                 essentialCarSpecsRepository.save(essentialSpecsEntity);
             }
-            return reporterService.reportSuccess("A new Car has been added successfully");
+            return reporterService.reportSuccess("Cars Added to Category Successfully");
         } catch (Exception e) {
             return reporterService.reportError(e);
         }
@@ -252,7 +304,7 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public ResponseWrapper<List<CarDTO>> listCarsForYear(boolean active, String year){
+    public ResponseWrapper<List<CarDTO>> listCarsForYear(boolean active, String year) {
         try {
             List<CarDTO> carList = new ArrayList<>();
             modelRepository.findAllByActiveAndYear(active, year).forEach(modelEntity -> {
@@ -261,14 +313,14 @@ public class CarServiceImpl implements CarService {
                 });
             });
             return reporterService.reportSuccess(carList);
-        } catch(Exception e){
+        } catch (Exception e) {
             return reporterService.reportError(e);
         }
     }
 
     @Override
-    public ResponseWrapper<List<CarDTO>> listCarsForBrandAndModel(boolean active, long brandId, long modelId){
-        try{
+    public ResponseWrapper<List<CarDTO>> listCarsForBrandAndModel(boolean active, long brandId, long modelId) {
+        try {
             List<CarDTO> carList = new ArrayList<>();
             Optional<ModelEntity> optionalModelEntityRecord = modelRepository.findById(modelId);
             if (!optionalModelEntityRecord.isPresent()) {
@@ -283,13 +335,13 @@ public class CarServiceImpl implements CarService {
                 carList.add(carMapper.convertToDTO(carEntity));
             });
             return reporterService.reportSuccess(carList);
-        } catch(Exception e){
+        } catch (Exception e) {
             return reporterService.reportError(e);
         }
     }
 
     @Override
-    public ResponseWrapper<List<CarDTO>> listCarsForModel(boolean active, long modelId){
+    public ResponseWrapper<List<CarDTO>> listCarsForModel(boolean active, long modelId) {
         try {
             List<CarDTO> carList = new ArrayList<>();
             Optional<ModelEntity> optionalModelEntityRecord = modelRepository.findById(modelId);
@@ -301,13 +353,13 @@ public class CarServiceImpl implements CarService {
                         carList.add(carMapper.convertToDTO(carEntity));
                     });
             return reporterService.reportSuccess(carList);
-        } catch(Exception e){
+        } catch (Exception e) {
             return reporterService.reportError(e);
         }
     }
 
     @Override
-    public ResponseWrapper<List<CarDTO>> listCarsForBrand(boolean active, long brandId){
+    public ResponseWrapper<List<CarDTO>> listCarsForBrand(boolean active, long brandId) {
         try {
             List<CarDTO> carList = new ArrayList<>();
             Optional<BrandEntity> optionalBrandEntityRecord = brandRepository.findById(brandId);
@@ -319,7 +371,7 @@ public class CarServiceImpl implements CarService {
                         carList.add(carMapper.convertToDTO(carEntity));
                     });
             return reporterService.reportSuccess(carList);
-        }catch(Exception e){
+        } catch (Exception e) {
             return reporterService.reportError(e);
         }
     }
