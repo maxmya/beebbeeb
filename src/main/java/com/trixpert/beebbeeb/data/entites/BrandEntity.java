@@ -27,7 +27,8 @@ public class BrandEntity {
     @Column(name = "logo_url")
     private String logoUrl;
 
-    private String description;
+    @Column(name = "name_en")
+    private String englishName;
 
     private boolean active;
 
