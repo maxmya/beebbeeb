@@ -4,8 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "bank",schema = "public")
@@ -29,4 +32,15 @@ public class BankEntity {
     private String logoUrl;
 
     private boolean active;
+
+//    @Fetch(value = FetchMode.SUBSELECT)
+//    @ManyToMany(cascade = {
+//            CascadeType.PERSIST,
+//            CascadeType.MERGE
+//    }, fetch = FetchType.EAGER)
+//    @JoinTable(name = "bank_vendors",
+//            joinColumns = @JoinColumn(name = "bank_id"),
+//            inverseJoinColumns = @JoinColumn(name = "vendor_id")
+//    )
+//    private List<BankEntity> banks;
 }

@@ -209,6 +209,19 @@ public class CarInstanceServiceImpl implements CarInstanceService {
                         .date(LocalDate.now())
                         .build());
             }
+            //Sixth Check if the quantity Changed
+            if (carInstanceRequest.getQuantity()> carInstanceEntityRecord.getQuantity()){
+                for (int i = (int) carInstanceEntityRecord.getQuantity(); i < carInstanceRequest.getQuantity(); i++) {
+                    CarSKUHolderEntity carSKUHolderEntity = new CarSKUHolderEntity();
+                    carSKUHolderEntity.setCarInstance(carInstanceEntityRecord);
+                    carSKUHolderEntity.setStatus(CarStockStatus.AVAILABLE);
+                    carSKUHolderEntity = carSKUHolderRepository.save(carSKUHolderEntity);
+                    carSKUHolderEntity.setSku(skuService.generateCarSKU(carInstanceEntityRecord, String.valueOf(carSKUHolderEntity.getId())));
+                    carSKUHolderRepository.save(carSKUHolderEntity);
+                }
+                carInstanceEntityRecord.setQuantity(carInstanceRequest.getQuantity());
+
+            }
 
             carInstanceRepository.save(carInstanceEntityRecord);
 
