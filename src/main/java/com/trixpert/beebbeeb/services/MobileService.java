@@ -24,4 +24,7 @@ public interface MobileService {
     ResponseWrapper<MobileHomeResponse> getMobileHome();
 
     ResponseWrapper<CarDetailsResponse> getCarDetails(long carId);
+
+    ResponseWrapper<List<PurchasingRequestMobileResponse>> listPurchasingRequestForCustomer(boolean active,
+                                                                                            String authHeader);
 }
