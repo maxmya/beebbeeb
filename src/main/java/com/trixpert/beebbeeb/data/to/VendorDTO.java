@@ -1,6 +1,8 @@
 package com.trixpert.beebbeeb.data.to;
 import lombok.*;
 
+import java.util.List;
+
 @Setter
 @Getter
 @NoArgsConstructor

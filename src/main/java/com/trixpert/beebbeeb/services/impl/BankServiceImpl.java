@@ -2,13 +2,9 @@ package com.trixpert.beebbeeb.services.impl;
 
 import com.trixpert.beebbeeb.data.constants.AuditActions;
 import com.trixpert.beebbeeb.data.constants.Roles;
-import com.trixpert.beebbeeb.data.entites.BankEntity;
-import com.trixpert.beebbeeb.data.entites.RolesEntity;
-import com.trixpert.beebbeeb.data.entites.UserEntity;
+import com.trixpert.beebbeeb.data.entites.*;
 import com.trixpert.beebbeeb.data.mappers.BankMapper;
-import com.trixpert.beebbeeb.data.repositories.BankRepository;
-import com.trixpert.beebbeeb.data.repositories.RolesRepository;
-import com.trixpert.beebbeeb.data.repositories.UserRepository;
+import com.trixpert.beebbeeb.data.repositories.*;
 import com.trixpert.beebbeeb.data.request.BankRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.RegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
@@ -20,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,11 +28,14 @@ public class BankServiceImpl implements BankService {
     private final BankRepository bankRepository;
     private final RolesRepository rolesRepository;
     private final UserRepository userRepository;
+    private final VendorRepository vendorRepository;
+    private final CustomerRepository customerRepository;
 
     private final CloudStorageService cloudStorageService;
     private final ReporterService reporterService;
     private final UserService userService;
     private final AuditService auditService;
+
 
     private final BankMapper bankMapper;
 
@@ -48,7 +46,7 @@ public class BankServiceImpl implements BankService {
                            UserService userService,
                            RolesRepository rolesRepository,
                            UserRepository userRepository,
-                           AuditService auditService,
+                           VendorRepository vendorRepository, CustomerRepository customerRepository, AuditService auditService,
                            BankMapper bankMapper) {
 
         this.bankRepository = bankRepository;
@@ -57,6 +55,8 @@ public class BankServiceImpl implements BankService {
         this.userService = userService;
         this.rolesRepository = rolesRepository;
         this.userRepository = userRepository;
+        this.vendorRepository = vendorRepository;
+        this.customerRepository = customerRepository;
         this.auditService = auditService;
         this.bankMapper = bankMapper;
     }
@@ -203,6 +203,41 @@ public class BankServiceImpl implements BankService {
             }
             BankEntity bankEntityRecord = optionalBankEntity.get();
             return reporterService.reportSuccess(bankMapper.convertToDTO(bankEntityRecord));
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<List<BankDTO>> getBanksForVendor(long vendorId) {
+        try {
+            Optional<VendorEntity> optionalVendorEntity = vendorRepository.findById(vendorId);
+            if(!optionalVendorEntity.isPresent()){
+                throw new NotFoundException("This Vendor doesn't exist");
+            }
+            List<BankEntity> banksList = optionalVendorEntity.get().getBanks();
+            List<BankDTO> bankDTOS = new ArrayList<>();
+            for(BankEntity bank : banksList){
+                bankDTOS.add(bankMapper.convertToDTO(bank));
+            }
+            return reporterService.reportSuccess(bankDTOS);
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+    @Override
+    public ResponseWrapper<List<BankDTO>> getBanksForCustomer(long customerId) {
+        try {
+            Optional<CustomerEntity> optionalCustomerEntity = customerRepository.findById(customerId);
+            if(!optionalCustomerEntity.isPresent()){
+                throw new NotFoundException("This Customer doesn't exist");
+            }
+            List<BankEntity> banksList = optionalCustomerEntity.get().getBanks();
+            List<BankDTO> bankDTOS = new ArrayList<>();
+            for(BankEntity bank : banksList){
+                bankDTOS.add(bankMapper.convertToDTO(bank));
+            }
+            return reporterService.reportSuccess(bankDTOS);
         } catch (Exception e) {
             return reporterService.reportError(e);
         }

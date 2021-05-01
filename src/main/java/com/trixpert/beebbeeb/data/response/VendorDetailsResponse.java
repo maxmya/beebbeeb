@@ -1,5 +1,6 @@
 package com.trixpert.beebbeeb.data.response;
 
+import com.trixpert.beebbeeb.data.to.BankDTO;
 import com.trixpert.beebbeeb.data.to.BrandDTO;
 import lombok.*;
 
