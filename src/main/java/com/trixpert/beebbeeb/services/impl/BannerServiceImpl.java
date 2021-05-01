@@ -64,6 +64,7 @@ public class BannerServiceImpl implements BannerService {
             PhotoEntity savedPhoto = photoRepository.save(
                     PhotoEntity.builder()
                             .photoUrl(photoUrl)
+                            .active(true)
                             .build()
             );
 
@@ -71,7 +72,10 @@ public class BannerServiceImpl implements BannerService {
                     .name(bannerRegistrationRequest.getName())
                     .photo(savedPhoto)
                     .main(bannerRegistrationRequest.isMain())
+                    .active(true)
                     .build();
+
+            bannerRepository.save(bannerEntityRecord);
 
             AuditDTO auditDTO =
                     AuditDTO.builder()

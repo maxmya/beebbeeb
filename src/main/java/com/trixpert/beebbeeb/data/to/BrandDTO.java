@@ -1,11 +1,9 @@
 package com.trixpert.beebbeeb.data.to;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -14,6 +12,6 @@ public class BrandDTO {
     private String name;
     private String origin;
     private String logoUrl;
-    private String description;
+    private String englishName;
     private boolean active;
 }

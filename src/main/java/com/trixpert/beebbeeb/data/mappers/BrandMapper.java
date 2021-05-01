@@ -11,7 +11,7 @@ public class BrandMapper {
         return BrandEntity.builder()
                 .id(brandDTO.getId())
                 .active(brandDTO.isActive())
-                .description(brandDTO.getDescription())
+                .englishName(brandDTO.getEnglishName())
                 .logoUrl(brandDTO.getLogoUrl())
                 .name(brandDTO.getName())
                 .build();
@@ -23,7 +23,7 @@ public class BrandMapper {
                 .id(brandEntity.getId())
                 .active(brandEntity.isActive())
                 .origin(brandEntity.getOrigin())
-                .description(brandEntity.getDescription())
+                .englishName(brandEntity.getEnglishName())
                 .logoUrl(brandEntity.getLogoUrl())
                 .name(brandEntity.getName())
                 .build();

@@ -1,28 +1,24 @@
 package com.trixpert.beebbeeb.api.v1;
 
-import com.trixpert.beebbeeb.data.entites.*;
-import com.trixpert.beebbeeb.data.mappers.AddressMapper;
-import com.trixpert.beebbeeb.data.repositories.AddressRepository;
-import com.trixpert.beebbeeb.data.repositories.CarInstanceRepository;
-import com.trixpert.beebbeeb.data.repositories.CustomerRepository;
-import com.trixpert.beebbeeb.data.repositories.UserRepository;
-import com.trixpert.beebbeeb.data.response.CarItemResponse;
-import com.trixpert.beebbeeb.data.response.CustomerProfileResponse;
-import com.trixpert.beebbeeb.data.response.ResponseWrapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
+import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
+import com.trixpert.beebbeeb.data.request.LoanRegistrationRequest;
+import com.trixpert.beebbeeb.data.request.PurchasingRequestRegistrationRequest;
+import com.trixpert.beebbeeb.data.response.*;
 import com.trixpert.beebbeeb.data.to.AddressDTO;
-import com.trixpert.beebbeeb.exception.NotFoundException;
-import com.trixpert.beebbeeb.services.AuditService;
-import com.trixpert.beebbeeb.services.ReporterService;
+import com.trixpert.beebbeeb.services.*;
 import io.swagger.annotations.Api;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
+import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @Api(tags = {"All Mobile APIs"})
 @CrossOrigin(origins = {"*"}, allowedHeaders = {"*"})
@@ -30,161 +26,178 @@ import java.util.Optional;
 @RequestMapping("/api/v1/mobile")
 public class MobileController {
 
-    private final AuditService auditService;
-    private final UserRepository userRepository;
-    private final CustomerRepository customerRepository;
-    private final AddressRepository addressRepository;
-    private final CarInstanceRepository carInstanceRepository;
+    private final MobileService mobileService;
+    private final PurchasingRequestService purchasingRequestService;
+    private final LoanService loanService;
+    private final AddressService addressService;
+    private final CustomerService customerService;
+    private final CountingService countingService;
+    private final VendorService vendorService;
 
-    private final ReporterService reporterService;
+    public MobileController(MobileService mobileService,
+                            PurchasingRequestService purchasingRequestService,
+                            CustomerService customerService,
+                            LoanService loanService,
+                            AddressService addressService,
+                            CountingService countingService, VendorService vendorService) {
 
-    private final AddressMapper addressMapper;
-
-
-    public MobileController(AuditService auditService,
-                            UserRepository userRepository,
-                            CustomerRepository customerRepository,
-                            AddressRepository addressRepository,
-                            CarInstanceRepository carInstanceRepository,
-                            ReporterService reporterService,
-                            AddressMapper addressMapper) {
-
-        this.auditService = auditService;
-        this.userRepository = userRepository;
-        this.customerRepository = customerRepository;
-        this.addressRepository = addressRepository;
-        this.carInstanceRepository = carInstanceRepository;
-        this.reporterService = reporterService;
-        this.addressMapper = addressMapper;
+        this.mobileService = mobileService;
+        this.purchasingRequestService = purchasingRequestService;
+        this.loanService = loanService;
+        this.addressService = addressService;
+        this.customerService = customerService;
+        this.countingService = countingService;
+        this.vendorService = vendorService;
     }
 
+    @PostMapping(value = "/loan/request", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @ApiOperation("Add Loan Form , side1 = file , side2 = file , body = json body of LoanRegistrationRequest Details Below")
+    @ResponseBody
+    public ResponseEntity<ResponseWrapper<Boolean>> addLoan(@RequestParam(name = "side1") MultipartFile photoSide1,
+                                                            @RequestParam(name = "side2") MultipartFile photoSide2,
+                                                            @Valid @RequestParam(name = "body") String regRequest,
+                                                            HttpServletRequest request) throws IOException {
+
+        String authorizationHeader = request.getHeader("Authorization");
+        ObjectMapper objectMapper = new ObjectMapper();
+        LoanRegistrationRequest loanRegistrationRequest = objectMapper.readValue(regRequest, LoanRegistrationRequest.class);
+        return ResponseEntity.ok(loanService.registerLoan(loanRegistrationRequest, photoSide1, photoSide2, authorizationHeader));
+    }
+
+    @PostMapping("/purchasing/request")
+    @ApiOperation("Add New Purchasing Request")
+    public ResponseEntity<ResponseWrapper<Boolean>> addPurchasingRequest(
+            @RequestBody PurchasingRequestRegistrationRequest purchasingRequestRegistrationRequest,
+            HttpServletRequest request) {
+
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(purchasingRequestService.registerPurchasingRequest(purchasingRequestRegistrationRequest, authorizationHeader));
+    }
 
     @GetMapping("/me")
+    @ApiOperation("Get Customer Profile")
     public ResponseEntity<ResponseWrapper<CustomerProfileResponse>> profileResponse(HttpServletRequest request) {
-
-        String authHeader = request.getHeader("Authorization");
-        String username = auditService.getUsernameForAudit(authHeader);
-        Optional<UserEntity> userEntity = userRepository.findByPhone(username);
-        if (!userEntity.isPresent()) {
-            throw new NotFoundException("user not found");
-        }
-        Optional<CustomerEntity> customerEntity = customerRepository.findByUser(userEntity.get());
-        if (!customerEntity.isPresent()) {
-            throw new NotFoundException("customer not found");
-        }
-
-        List<AddressEntity> addressEntities = addressRepository.findByCustomer(customerEntity.get());
-        AddressEntity addressEntity = null;
-        for (AddressEntity address : addressEntities) {
-            if (address.isPrimary()) {
-                addressEntity = address;
-            }
-        }
-
-        CustomerProfileResponse response = CustomerProfileResponse
-                .builder()
-                .id(customerEntity.get().getId())
-                .address(addressMapper.convertToDTO(addressEntity))
-                .profileUrl(userEntity.get().getPicUrl())
-                .horoscope(customerEntity.get().getHoroscope())
-                .displayName(userEntity.get().getName())
-                .phone(userEntity.get().getPhone())
-                .build();
-
-        return ResponseEntity.ok(reporterService.reportSuccess(response));
+        return ResponseEntity.ok(mobileService.profileResponse(request));
     }
 
     @GetMapping("/address/list")
+    @ApiOperation("Get Customer List Of Addresses")
     public ResponseEntity<ResponseWrapper<List<AddressDTO>>> getListOfAddresses(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        String username = auditService.getUsernameForAudit(authHeader);
-        Optional<UserEntity> userEntity = userRepository.findByPhone(username);
-        if (!userEntity.isPresent()) {
-            throw new NotFoundException("user not found");
-        }
-        Optional<CustomerEntity> customerEntity = customerRepository.findByUser(userEntity.get());
-        if (!customerEntity.isPresent()) {
-            throw new NotFoundException("customer not found");
-        }
-        List<AddressEntity> addressEntities = addressRepository.findByCustomer(customerEntity.get());
-        List<AddressDTO> addresses = new ArrayList<>();
-        addressEntities.forEach(address -> {
-            addresses.add(addressMapper.convertToDTO(address));
-        });
-        return ResponseEntity.ok(reporterService.reportSuccess(addresses));
+        return ResponseEntity.ok(mobileService.getListOfAddresses(request));
+    }
+
+    @GetMapping("/purchasingRequest/status/{purchasingRequestId}")
+    public ResponseEntity<ResponseWrapper<PurchasingRequestMobileResponse>> getStatusForPurchasingRequest(
+            @PathVariable("purchasingRequestId") long purchasingRequestId) {
+        return ResponseEntity.ok(purchasingRequestService.getPurchasingRequestStatus(purchasingRequestId));
     }
 
     @PostMapping("/address/add")
+    @ApiOperation("Add Customer Address")
     public ResponseEntity<ResponseWrapper<Boolean>> saveAddress(@RequestBody AddressDTO address) {
+        return ResponseEntity.ok(mobileService.saveAddress(address));
+    }
 
-        Optional<CustomerEntity> customerEntity = customerRepository.findById(address.getCustomerId());
-        if (!customerEntity.isPresent()) {
-            throw new NotFoundException("customer not found !");
-        }
+    @PutMapping("/update/{addressId}")
+    @ApiOperation("Update an existing address with new data")
+    public ResponseEntity<ResponseWrapper<Boolean>> updateAddress(
+            @Valid @RequestBody AddressDTO address,
+            @PathVariable("addressId") long addressId, HttpServletRequest request) {
 
-        AddressEntity addressEntity = addressMapper.convertToEntity(address);
-        addressEntity.setCustomer(customerEntity.get());
-        addressRepository.save(addressEntity);
+        String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(reporterService.reportSuccess());
+        return ResponseEntity.ok(addressService.updateAddress(address,
+                addressId, authorizationHeader));
+    }
+
+    @PutMapping("/delete/{addressId}")
+    @ApiOperation("Remove address By Id")
+    public ResponseEntity<ResponseWrapper<Boolean>> deleteAddress(@PathVariable("addressId") Long addressId,
+                                                                  HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+
+        return ResponseEntity.ok(addressService.deleteAddress(addressId, authorizationHeader));
     }
 
     @GetMapping("/list/cars")
+    @ApiOperation("Get List Of Cars")
     public ResponseEntity<ResponseWrapper<List<CarItemResponse>>> listCars(
-            @RequestParam(value = "page", required = false) int page,
-            @RequestParam(value = "size", required = false) int size
-    ) {
-
-        List<CarItemResponse> carItemResponses = new ArrayList<>();
-
-        List<CarInstanceEntity> carInstanceEntityList;
-        if (page != 0 && size != 0) {
-            PageRequest paging = PageRequest.of(page, size);
-            Page<CarInstanceEntity> carInstances = carInstanceRepository.findAllByActive(true, paging);
-            carInstanceEntityList = carInstances.getContent();
-        } else {
-            carInstanceEntityList = carInstanceRepository.findAllByActive(true);
-        }
-
-        carInstanceEntityList.forEach(carInstance -> {
-            String carPhoto = "";
-            for (PhotoEntity photoEntity : carInstance.getCar().getPhotos()) {
-                if (photoEntity.isMainPhoto()) {
-                    carPhoto = photoEntity.getPhotoUrl();
-                    break;
-                }
-            }
-
-            if ("".equals(carPhoto)) {
-                for (PhotoEntity photoEntity : carInstance.getCar().getModel().getPhotos()) {
-                    if (photoEntity.isMainPhoto()) {
-                        carPhoto = photoEntity.getPhotoUrl();
-                        break;
-                    }
-                }
-            }
-
-            String carPrice = "0";
-            if (carInstance.getPrices() != null && carInstance.getPrices().size() > 1) {
-                carPrice = (carInstance.getPrices().get(carInstance.getPrices().size() - 1)).getAmount();
-            } else if (carInstance.getPrices() != null && carInstance.getPrices().size() == 1) {
-                carPrice = carInstance.getPrices().get(0).getAmount();
-            }
-
-            carItemResponses.add(
-                    CarItemResponse.builder()
-                            .id(carInstance.getId())
-                            .image(carPhoto)
-                            .currency("EGP")
-                            .name(carInstance.getCar().getModel().getName() + " " + carInstance.getCar().getCategory().getName())
-                            .price(carPrice)
-                            .rating(4)
-                            .build()
-            );
-        });
-
-        return ResponseEntity.ok(reporterService.reportSuccess(carItemResponses));
+            @RequestParam(value = "page", required = false) String page,
+            @RequestParam(value = "size", required = false) String size,
+            @RequestParam(value = "query", required = false) String query) {
+        return ResponseEntity.ok(mobileService.listCars(page, size, query));
     }
 
+
+    @PostMapping("/register/customer")
+    @ApiOperation("Register New Customer")
+    public ResponseEntity<ResponseWrapper<OtpResponse>> registerUser(@RequestBody CustomerMobileRegistrationRequest customerRegisterRequest) {
+        return ResponseEntity.ok(mobileService.registerUser(customerRegisterRequest));
+    }
+
+    @PostMapping("/register/verify/{phone}")
+    @ApiOperation("Verify Customer Registration")
+    public ResponseEntity<ResponseWrapper<Boolean>> verifyUser(@PathVariable("phone") String phone) {
+        return ResponseEntity.ok(mobileService.verifyUser(phone));
+    }
+
+
+    @GetMapping("/home")
+    @ApiOperation("Get Home Screen Data")
+    public ResponseEntity<ResponseWrapper<MobileHomeResponse>> getMobileHome() {
+        return ResponseEntity.ok(mobileService.getMobileHome());
+    }
+
+    @GetMapping("/car/details/{carId}")
+    @ApiOperation("Get Car Details")
+    public ResponseEntity<ResponseWrapper<CarDetailsResponse>> getCarDetails(@PathVariable("carId") long carId) {
+        return ResponseEntity.ok(mobileService.getCarDetails(carId));
+    }
+
+    @PutMapping("/me/update/{customerId}")
+    @ApiOperation("Update an existing customer")
+    public ResponseEntity<ResponseWrapper<Boolean>> updateCustomer(
+            @Valid @RequestBody CustomerRegistrationRequest customerRegistrationRequest,
+            @PathVariable("customerId") long customerId, HttpServletRequest request) {
+
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(customerService.updateCustomer(customerRegistrationRequest,
+                customerId, authorizationHeader));
+    }
+
+    @GetMapping("/counts")
+    public ResponseEntity<ResponseWrapper<FilterCountingResponse>> countList(
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "model", required = false) String model,
+            @RequestParam(value = "brand", required = false) String brand,
+            @RequestParam(value = "color", required = false) String color
+    ) {
+        return ResponseEntity.ok(countingService.countPure(type, model, brand, color));
+    }
+
+    @GetMapping("/cars/filter")
+    public ResponseEntity<ResponseWrapper<FilterCountingResponse>> getFilterResult(
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "model", required = false) String model,
+            @RequestParam(value = "brand", required = false) String brand,
+            @RequestParam(value = "color", required = false) String color,
+            @RequestParam(value = "vendor", required = false) String vendor,
+            @RequestParam(value = "priceFrom", required = false) String from,
+            @RequestParam(value = "priceTo", required = false) String to
+    ) {
+        return ResponseEntity.ok(countingService.countPure(type, model, brand, color));
+    }
+
+    @GetMapping("/customer/profile/score/{customerId}")
+    @ApiOperation("Get Customer Profile Score")
+    public ResponseEntity<ResponseWrapper<ProfileScoreResponse>> getProfileScore(@PathVariable("customerId") long customerId) {
+        return ResponseEntity.ok(customerService.getProfileScore(customerId));
+    }
+
+    @GetMapping("/vendor/details/{vendorId}")
+    @ApiOperation("Get Vendor Details")
+    public ResponseEntity<ResponseWrapper<VendorDetailsResponse>> getVendorDetails(@PathVariable("vendorId") long vendorId){
+        return ResponseEntity.ok(vendorService.getVendorDetails(vendorId));
+    }
 
 }

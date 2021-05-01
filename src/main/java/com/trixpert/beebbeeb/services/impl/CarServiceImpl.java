@@ -27,12 +27,14 @@ public class CarServiceImpl implements CarService {
 
     private final CarRepository carRepository;
     private final ModelRepository modelRepository;
+    private final BrandRepository brandRepository;
     private final CategoryRepository categoryRepository;
     private final ColorRepository colorRepository;
     private final ParentColorRepository parentColorRepository;
     private final TypeRepository typeRepository;
     private final UserRepository userRepository;
     private final PhotoRepository photoRepository;
+    private final EssentialCarSpecsRepository essentialCarSpecsRepository;
 
     private final CarMapper carMapper;
     private final PhotoMapper photoMapper;
@@ -43,13 +45,13 @@ public class CarServiceImpl implements CarService {
 
     public CarServiceImpl(CarRepository carRepository,
                           ModelRepository modelRepository,
-                          CategoryRepository categoryRepository,
+                          BrandRepository brandRepository, CategoryRepository categoryRepository,
                           ColorRepository colorRepository,
                           ParentColorRepository parentColorRepository,
                           TypeRepository typeRepository,
                           UserRepository userRepository,
                           PhotoRepository photoRepository,
-                          CarMapper carMapper,
+                          EssentialCarSpecsRepository essentialCarSpecsRepository, CarMapper carMapper,
                           PhotoMapper photoMapper,
                           CloudStorageService cloudStorageService,
                           ReporterService reporterService,
@@ -57,12 +59,14 @@ public class CarServiceImpl implements CarService {
 
         this.carRepository = carRepository;
         this.modelRepository = modelRepository;
+        this.brandRepository = brandRepository;
         this.categoryRepository = categoryRepository;
         this.colorRepository = colorRepository;
         this.parentColorRepository = parentColorRepository;
         this.typeRepository = typeRepository;
         this.userRepository = userRepository;
         this.photoRepository = photoRepository;
+        this.essentialCarSpecsRepository = essentialCarSpecsRepository;
         this.carMapper = carMapper;
         this.photoMapper = photoMapper;
         this.cloudStorageService = cloudStorageService;
@@ -72,7 +76,7 @@ public class CarServiceImpl implements CarService {
 
 
     @Override
-    public ResponseWrapper<Boolean> registerCar(CarRegistrationRequest carRegistrationRequest, String authHeader) {
+    public ResponseWrapper<Boolean> registerCars(CarRegistrationRequest carRegistrationRequest, String authHeader) {
         try {
 
             String username = auditService.getUsernameForAudit(authHeader);
@@ -89,20 +93,6 @@ public class CarServiceImpl implements CarService {
                 throw new NotFoundException("Model entity not found");
             }
 
-            Optional<ParentColorEntity> parentColorOptional = parentColorRepository.findById(carRegistrationRequest.getParentColorId());
-
-            if (!parentColorOptional.isPresent()) {
-                throw new NotFoundException("Parent Color Not Found");
-            }
-
-            ColorEntity colorEntity = ColorEntity.builder()
-
-                    .name(carRegistrationRequest.getColorName())
-                    .code(carRegistrationRequest.getColorCode())
-                    .build();
-            colorEntity.setParentColor(parentColorOptional.get());
-            colorRepository.save(colorEntity);
-
             Optional<TypeEntity> typeEntityOptional = typeRepository.findById(carRegistrationRequest.getTypeId());
 
             if (!typeEntityOptional.isPresent()) {
@@ -115,21 +105,116 @@ public class CarServiceImpl implements CarService {
             categoryEntity.setType(typeEntityOptional.get());
             categoryRepository.save(categoryEntity);
 
-
             ModelEntity modelRecord = optionalModelEntity.get();
 
-            CarEntity carEntityRecord = CarEntity.builder()
-                    .additionDate(LocalDateTime.now())
-                    .model(modelRecord)
-                    .brand(modelRecord.getBrand())
-                    .creator(optionalUser.get())
-                    .category(categoryEntity)
-                    .color(colorEntity)
-                    .active(true)
-                    .build();
 
-            carRepository.save(carEntityRecord);
-            return reporterService.reportSuccess("A new Car has been added successfully");
+            for (CarRegistrationRequest.ColorFormData color : carRegistrationRequest.getColors()) {
+                Optional<ParentColorEntity> parentColorOptional = parentColorRepository.findById(color.getParentColor().getId());
+
+                if (!parentColorOptional.isPresent()) {
+                    throw new NotFoundException("Parent Color Not Found");
+                }
+
+                ColorEntity colorEntity = ColorEntity.builder()
+                        .name(color.getColorName())
+                        .code(color.getColorCode())
+                        .build();
+
+                colorEntity.setParentColor(parentColorOptional.get());
+                colorRepository.save(colorEntity);
+
+
+                CarEntity carEntityRecord = CarEntity.builder()
+                        .additionDate(LocalDateTime.now())
+                        .model(modelRecord)
+                        .brand(modelRecord.getBrand())
+                        .creator(optionalUser.get())
+                        .category(categoryEntity)
+                        .color(colorEntity)
+                        .originalPrice(carRegistrationRequest.getOriginalPrice())
+                        .active(true)
+                        .build();
+
+                CarEntity savedCar = carRepository.save(carEntityRecord);
+
+                String[] specsAr = new String[]{
+                        "ناقل الحركة",
+                        "عدد النقالات",
+                        "لتر/١٠٠ كيلومتر",
+                        "عدد المقاعد",
+                        "مكيف هواء",
+                        "عجلة قيادة متعددة الوظائف",
+                        "الطول الكلي",
+                        "العرض الكلي",
+                        "الارتفاع الكلي",
+                        "الارتفاع عن الارض",
+                        "سعة خزان الوقود",
+                        "حجم الشنطة",
+                        "سعة الموتور",
+                        "الحصان الميكانيكي",
+                        "أقصى سرعة",
+                        "التسارع من 0 ل 100",
+                        "السيلندر",
+                        "عزم النيوتن",
+                        "الوسائد الهوائية",
+                        "نظام الفرامل المانع للانغلاق-ABS",
+                        "نظام توزيع قوة الفرامل EBD",
+                        "برنامج ثبات الكتروني ESP",
+                        "نظام إيموبيليزر للحماية ضد السطو والسرقة",
+                        "إنذار",
+                        "نظام ISO Fix لتثبيت مقاعد الأطفال",
+                        "زجاج كهربائى للأبواب الأمامية",
+                        "زجاج كهربائى للأبواب الخلفية",
+                        "مقاس الجنط",
+                        "مثبت سرعة",
+                        "محدد سرعة",
+                        "فتحة سقف",
+                        " سقف بانوراما",
+                        "مرايات كهرباء",
+                        "مرايات ضم كهربائية",
+                        "نوع الفرش",
+                        "كشافات الضباب",
+                        "مقود مرن",
+                        "الحساسات",
+                        "كاميرا خلفية",
+                        "قفل مركزى  للابواب",
+                        "سبويلر",
+                        "تشغيل / إيقاف المحرك بدون مفتاح",
+                        "فرامل يد كهربائية",
+                        "شاشة تعمل باللمس",
+                        "مقاس الشاشة بالبوصة",
+                        "مشغل اقراص مدمجة",
+                        "كمبيوتر رحلات",
+                        "مراقبة ضغط الهواء في الإطارات",
+                        "زجاج ملون",
+                        "GPS",
+                        "مدخل AUX",
+                        "مدخل USB",
+                        "بلوتوث",
+                        "مخرج كهرباء",
+                        "كماليات اخرى",
+                        "الوقود",
+                        "قاعدة العجلات",
+                        "نوع الجر"
+                };
+
+                for (int i = 0; i < specsAr.length; i++) {
+                    EssentialSpecsEntity essentialSpecsEntity = new EssentialSpecsEntity();
+                    essentialSpecsEntity.setKey(specsAr[i]);
+                    String specsValue = carRegistrationRequest.getSpecs().get(i);
+                    if (specsValue != null && !"".equals(specsValue)) {
+                        essentialSpecsEntity.setValue(specsValue);
+                    } else {
+                        essentialSpecsEntity.setValue("N/A");
+                    }
+                    essentialSpecsEntity.setActive(true);
+                    essentialSpecsEntity.setCar(savedCar);
+                    essentialCarSpecsRepository.save(essentialSpecsEntity);
+                }
+            }
+
+
+            return reporterService.reportSuccess("Cars Added to Category Successfully");
         } catch (Exception e) {
             return reporterService.reportError(e);
         }
@@ -223,6 +308,79 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
+    public ResponseWrapper<List<CarDTO>> listCarsForYear(boolean active, String year) {
+        try {
+            List<CarDTO> carList = new ArrayList<>();
+            modelRepository.findAllByActiveAndYear(active, year).forEach(modelEntity -> {
+                carRepository.findAllByActiveAndModel(active, modelEntity).forEach(carEntity -> {
+                    carList.add(carMapper.convertToDTO(carEntity));
+                });
+            });
+            return reporterService.reportSuccess(carList);
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<List<CarDTO>> listCarsForBrandAndModel(boolean active, long brandId, long modelId) {
+        try {
+            List<CarDTO> carList = new ArrayList<>();
+            Optional<ModelEntity> optionalModelEntityRecord = modelRepository.findById(modelId);
+            if (!optionalModelEntityRecord.isPresent()) {
+                throw new NotFoundException("Model entity not found");
+            }
+            Optional<BrandEntity> optionalBrandEntityRecord = brandRepository.findById(brandId);
+            if (!optionalBrandEntityRecord.isPresent()) {
+                throw new NotFoundException("brand entity not found");
+            }
+            carRepository.findAllByActiveAndBrandAndModel(active, optionalBrandEntityRecord.get(),
+                    optionalModelEntityRecord.get()).forEach(carEntity -> {
+                carList.add(carMapper.convertToDTO(carEntity));
+            });
+            return reporterService.reportSuccess(carList);
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<List<CarDTO>> listCarsForModel(boolean active, long modelId) {
+        try {
+            List<CarDTO> carList = new ArrayList<>();
+            Optional<ModelEntity> optionalModelEntityRecord = modelRepository.findById(modelId);
+            if (!optionalModelEntityRecord.isPresent()) {
+                throw new NotFoundException("Model entity not found");
+            }
+            carRepository.findAllByActiveAndModel(active, optionalModelEntityRecord.get())
+                    .forEach(carEntity -> {
+                        carList.add(carMapper.convertToDTO(carEntity));
+                    });
+            return reporterService.reportSuccess(carList);
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<List<CarDTO>> listCarsForBrand(boolean active, long brandId) {
+        try {
+            List<CarDTO> carList = new ArrayList<>();
+            Optional<BrandEntity> optionalBrandEntityRecord = brandRepository.findById(brandId);
+            if (!optionalBrandEntityRecord.isPresent()) {
+                throw new NotFoundException("brand entity not found");
+            }
+            carRepository.findAllByActiveAndBrand(active, optionalBrandEntityRecord.get())
+                    .forEach(carEntity -> {
+                        carList.add(carMapper.convertToDTO(carEntity));
+                    });
+            return reporterService.reportSuccess(carList);
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
     public ResponseWrapper<CarDTO> getCar(long carId) {
         try {
             Optional<CarEntity> optionalCarEntity = carRepository.findById(carId);
@@ -236,5 +394,89 @@ public class CarServiceImpl implements CarService {
             return reporterService.reportError(e);
         }
 
+    }
+
+    @Override
+    public ResponseWrapper<Boolean> updateCar(long carId, CarRegistrationRequest carRegistrationRequest) {
+        try {
+            Optional<CarEntity> carEntityOptional = carRepository.findById(carId);
+            if (!carEntityOptional.isPresent()) {
+                throw new NotFoundException("Car with ID : ".concat(Long.toString(carId)).concat(" Not Exist !"));
+            }
+            CarEntity carEntityRecord = carEntityOptional.get();
+
+            if (carRegistrationRequest.getCategoryName() != carEntityRecord.getCategory().getName()) {
+                Optional<CategoryEntity> categoryEntityOptional = categoryRepository.findById(carEntityRecord.getCategory().getId());
+                if (!categoryEntityOptional.isPresent()) {
+                    throw new NotFoundException("Category with ID : ".concat(Long.toString(carEntityRecord.getCategory().getId())).concat(" Not Exist !"));
+                }
+                CategoryEntity categoryEntity = categoryEntityOptional.get();
+                categoryEntity.setName(carRegistrationRequest.getCategoryName());
+                categoryRepository.save(categoryEntity);
+            }
+
+            if (!carRegistrationRequest.getColorName().equals(carEntityRecord.getColor().getName())) {
+                Optional<ColorEntity> colorEntityOptional = colorRepository.findById(carEntityRecord.getColor().getId());
+                if (!colorEntityOptional.isPresent()) {
+                    throw new NotFoundException("Color with ID : ".concat(Long.toString(carEntityRecord.getColor().getId())).concat(" Not Exist !"));
+                }
+                ColorEntity colorEntityRecord = colorEntityOptional.get();
+                colorEntityRecord.setName(carRegistrationRequest.getColorName());
+                colorRepository.save(colorEntityRecord);
+            }
+            if (carRegistrationRequest.getParentColorId() != carEntityRecord.getColor().getParentColor().getId()) {
+
+                Optional<ColorEntity> colorEntityOptional = colorRepository.findById(carEntityRecord.getColor().getId());
+                if (!colorEntityOptional.isPresent()) {
+                    throw new NotFoundException("Parent Color with ID : ".concat(Long.toString(carRegistrationRequest.getParentColorId())).concat(" Not Exist !"));
+                }
+                ColorEntity colorEntityRecord = colorEntityOptional.get();
+                Optional<ParentColorEntity> parentColorEntityOptional = parentColorRepository.findById(carRegistrationRequest.getParentColorId());
+                if (!parentColorEntityOptional.isPresent()) {
+                    throw new NotFoundException("Color with ID : ".concat(Long.toString(carEntityRecord.getColor().getId())).concat(" Not Exist !"));
+                }
+                colorEntityRecord.setParentColor(parentColorEntityOptional.get());
+                colorRepository.save(colorEntityRecord);
+            }
+
+            if (!carRegistrationRequest.getColorCode().equals(carEntityRecord.getColor().getCode())) {
+                Optional<ColorEntity> colorEntityOptional = colorRepository.findById(carEntityRecord.getColor().getId());
+                if (!colorEntityOptional.isPresent()) {
+                    throw new NotFoundException("Color with ID : ".concat(Long.toString(carEntityRecord.getColor().getId())).concat(" Not Exist !"));
+                }
+                ColorEntity colorEntityRecord = colorEntityOptional.get();
+                colorEntityRecord.setCode(carRegistrationRequest.getColorCode());
+                colorRepository.save(colorEntityRecord);
+            }
+            if (carRegistrationRequest.getModelId() != carEntityRecord.getModel().getId()) {
+                Optional<ModelEntity> modelEntityOptional = modelRepository.findById(carRegistrationRequest.getModelId());
+                if (!modelEntityOptional.isPresent()) {
+                    throw new NotFoundException("Model with ID : ".concat(Long.toString(carRegistrationRequest.getModelId())).concat(" Not Exist !"));
+                }
+                ModelEntity modelEntity = modelEntityOptional.get();
+                carEntityRecord.setModel(modelEntity);
+
+            }
+            if (carRegistrationRequest.getTypeId() != carEntityRecord.getCategory().getType().getId()) {
+                Optional<TypeEntity> typeEntityOptional = typeRepository.findById(carRegistrationRequest.getTypeId());
+                if (!typeEntityOptional.isPresent()) {
+                    throw new NotFoundException("Type with ID : ".concat(Long.toString(carRegistrationRequest.getTypeId())).concat(" Not Exist !"));
+                }
+                TypeEntity typeEntity = typeEntityOptional.get();
+
+                Optional<CategoryEntity> categoryEntityOptional = categoryRepository.findById(carEntityRecord.getCategory().getId());
+                if (!categoryEntityOptional.isPresent()) {
+                    throw new NotFoundException("Category with ID : ".concat(Long.toString(carEntityRecord.getCategory().getId())).concat(" Not Exist !"));
+                }
+                CategoryEntity categoryEntity = categoryEntityOptional.get();
+                categoryEntity.setType(typeEntity);
+                categoryRepository.save(categoryEntity);
+                carEntityRecord.setCategory(categoryEntity);
+            }
+            carRepository.save(carEntityRecord);
+            return reporterService.reportSuccess("Car With ID : ".concat(Long.toString(carId)).concat(" has been updated Successfully !"));
+        } catch (Exception e) {
+            return reporterService.reportError(e);
+        }
     }
 }

@@ -26,7 +26,7 @@ public class AdminController {
         this.adminService = adminService;
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PostMapping("/register")
     @ApiOperation("register a new admin")
     public ResponseEntity<ResponseWrapper<Boolean>> registerAdmin(
@@ -34,14 +34,14 @@ public class AdminController {
         return ResponseEntity.ok(adminService.registerAdmin(adminRegistrationRequest));
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @GetMapping("/list")
     @ApiOperation("list all admins")
     public ResponseEntity<ResponseWrapper<List<UserDTO>>> listAllAdmins() {
         return ResponseEntity.ok(adminService.listAdmins());
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PutMapping("/delete/{adminId}")
     @ApiOperation("delete admin")
     public ResponseEntity<ResponseWrapper<Boolean>> deleteAdmin(@PathVariable("adminId") Long adminId) {

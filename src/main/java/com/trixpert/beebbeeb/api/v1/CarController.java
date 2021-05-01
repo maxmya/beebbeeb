@@ -8,6 +8,7 @@ import com.trixpert.beebbeeb.services.CarService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,7 +35,7 @@ public class CarController {
             HttpServletRequest request
     ) {
         String authorizationHeader = request.getHeader("Authorization");
-        return ResponseEntity.ok(carService.registerCar(carRegistrationRequest, authorizationHeader));
+        return ResponseEntity.ok(carService.registerCars(carRegistrationRequest, authorizationHeader));
     }
 
     @PostMapping("/interior/{carId}")
@@ -55,7 +56,7 @@ public class CarController {
         return ResponseEntity.ok(carService.uploadExterior(modelId, image));
     }
 
-
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PutMapping("/delete/{carId}")
     @ApiOperation("Delete a car")
     public ResponseEntity<ResponseWrapper<Boolean>> deleteCar(@PathVariable("carId") long carId) {
@@ -74,10 +75,71 @@ public class CarController {
         return ResponseEntity.ok(carService.getAllCars(false));
     }
 
+    @GetMapping("/year/list/active/{year}")
+    @ApiOperation("Get list of active cars for specific year")
+    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getActiveCarsForYear(
+            @PathVariable("year") String year) {
+        return ResponseEntity.ok(carService.listCarsForYear(true, year));
+    }
+
+    @GetMapping("/year/list/inactive/{year}")
+    @ApiOperation("Get list of inactive cars for specific year")
+    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getInactiveCarsForYear(
+            @PathVariable("year") String year) {
+        return ResponseEntity.ok(carService.listCarsForYear(false, year));
+    }
+
+    @GetMapping("/list/active/{brandId}/{modelId}")
+    @ApiOperation("Get list of active cars for specific brand and model")
+    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getActiveCarsForBrandAndModel(
+            @PathVariable("brandId") long brandId,
+            @PathVariable("modelId") long modelId) {
+        return ResponseEntity.ok(carService.listCarsForBrandAndModel(true, brandId, modelId));
+    }
+
+    @GetMapping("/list/active/{brandId}")
+    @ApiOperation("Get list of active cars for specific brand")
+    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getActiveCarsForBrand(
+            @PathVariable("brandId") long brandId) {
+        return ResponseEntity.ok(carService.listCarsForBrand(true, brandId));
+    }
+
+    @GetMapping("/list/inactive/{brandId}")
+    @ApiOperation("Get list of inactive cars for specific brand")
+    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getInactiveCarsForBrand(
+            @PathVariable("brandId") long brandId) {
+        return ResponseEntity.ok(carService.listCarsForBrand(false, brandId));
+    }
+
+    @GetMapping("/model/list/active/{modelId}")
+    @ApiOperation("Get list of active cars for specific model")
+    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getActiveCarsForModel(
+            @PathVariable("modelId") long modelId) {
+        return ResponseEntity.ok(carService.listCarsForModel(true, modelId));
+    }
+
+    @GetMapping("/model/list/inactive/{modelId}")
+    @ApiOperation("Get list of inactive cars for specific model")
+    public ResponseEntity<ResponseWrapper<List<CarDTO>>> getInactiveCarsForModel(
+            @PathVariable("modelId") long modelId) {
+        return ResponseEntity.ok(carService.listCarsForModel(true, modelId));
+    }
+
     @GetMapping("/get/{carId}")
     @ApiOperation("Get car by id ")
     public ResponseEntity<ResponseWrapper<CarDTO>> getCar(@PathVariable("carId") long carId) {
         return ResponseEntity.ok(carService.getCar(carId));
     }
+
+
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
+    @PutMapping("update/{carId}")
+    @ApiOperation("Update Car ")
+    public ResponseEntity<ResponseWrapper<Boolean>> updateCarInstance(@PathVariable("carId") long carId,
+                                                                      @Valid @RequestBody CarRegistrationRequest carRegistrationRequest) {
+
+        return ResponseEntity.ok(carService.updateCar(carId, carRegistrationRequest));
+    }
+
 }
 

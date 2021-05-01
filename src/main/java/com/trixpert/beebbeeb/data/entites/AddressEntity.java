@@ -47,7 +47,7 @@ public class AddressEntity {
     @Column(name = "apartment_number")
     private String apartmentNumber;
 
-    private boolean primary;
+    private boolean main;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")

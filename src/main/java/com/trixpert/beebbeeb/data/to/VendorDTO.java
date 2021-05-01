@@ -1,9 +1,9 @@
 package com.trixpert.beebbeeb.data.to;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Setter
+@Getter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class VendorDTO {

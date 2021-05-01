@@ -19,7 +19,7 @@ public class ParentColorMapper {
         return ParentColorDTO.builder()
                 .id(parentcolorentity.getId())
                 .name(parentcolorentity.getName())
-                .numberofChildColors(parentcolorentity.getChildColors().size())
+                .numberOfChildColors(parentcolorentity.getChildColors().size())
                 .active(parentcolorentity.isActive())
                 .build();
 

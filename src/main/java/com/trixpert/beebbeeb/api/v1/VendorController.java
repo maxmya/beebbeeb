@@ -1,7 +1,10 @@
 package com.trixpert.beebbeeb.api.v1;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.trixpert.beebbeeb.data.request.BannerRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
+import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.VendorDTO;
 import com.trixpert.beebbeeb.services.VendorService;
@@ -31,33 +34,66 @@ public class VendorController {
         this.vendorService = vendorService;
     }
 
-    @CrossOrigin(origins = {"*"})
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping(value = "/register", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
+    @PostMapping(value = "/register",  consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
     @ApiOperation("Register Vendor With Email & Password")
     public ResponseEntity<ResponseWrapper<Boolean>> registerVendor(
-            @Valid @RequestBody VendorRegistrationRequest vendorRegistrationRequest,
-            HttpServletRequest request) {
+            @RequestParam(name = "body") String vendorRegistrationRequest,
+            @RequestParam(name = "generalManagerIdDocumentFace") MultipartFile generalManagerIdDocumentFace,
+            @RequestParam(name = "generalManagerIdDocumentBack") MultipartFile generalManagerIdDocumentBack,
+            @RequestParam(name = "accountManagerIdDocumentFace") MultipartFile accountManagerIdDocumentFace,
+            @RequestParam(name = "accountManagerIdDocumentBack") MultipartFile accountManagerIdDocumentBack,
+            @RequestParam(name = "taxRecordDocument") MultipartFile taxRecordDocument,
+            @RequestParam(name = "commercialRegisterDocument") MultipartFile commercialRegisterDocument,
+            @RequestParam(name = "contractDocument") MultipartFile contractDocument,
+            HttpServletRequest request) throws JsonProcessingException {
+
         String authorizationHeader = request.getHeader("Authorization");
-        return ResponseEntity.ok(vendorService.registerVendor(vendorRegistrationRequest, authorizationHeader));
+        ObjectMapper objectMapper = new ObjectMapper();
+        VendorRegistrationRequest vendorRegistrationRequest1 = objectMapper.readValue(vendorRegistrationRequest, VendorRegistrationRequest.class);
+
+        return ResponseEntity.ok(vendorService.registerVendor(vendorRegistrationRequest1,
+                generalManagerIdDocumentFace,
+                generalManagerIdDocumentBack,
+                accountManagerIdDocumentFace,
+                accountManagerIdDocumentBack,
+                taxRecordDocument,
+                commercialRegisterDocument,
+                contractDocument,
+                authorizationHeader));
     }
 
-
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @GetMapping("/list/active")
     @ApiOperation("Get All Active Vendors")
     public ResponseEntity<ResponseWrapper<List<VendorDTO>>> getAllActiveVendors() {
         return ResponseEntity.ok(vendorService.getAllVendors(true));
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @GetMapping("/list/inactive")
     @ApiOperation("Get All Inactive Vendors")
     public ResponseEntity<ResponseWrapper<List<VendorDTO>>> getAllInactiveVendors() {
         return ResponseEntity.ok(vendorService.getAllVendors(false));
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_VENDOR')")
+    @GetMapping("/purchasing/list/active")
+    @ApiOperation("Get All active orders for specific vendor")
+    public ResponseEntity<ResponseWrapper<List<PurchasingRequestResponse>>> getAllActivePurchasingRequestForVendors(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(vendorService.listPurchasingRequestsForVendor(true, authorizationHeader));
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_VENDOR')")
+    @GetMapping("/purchasing/list/inactive")
+    @ApiOperation("Get All inactive orders for specific vendor")
+    public ResponseEntity<ResponseWrapper<List<PurchasingRequestResponse>>> getAllInactivePurchasingRequestForVendors(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(vendorService.listPurchasingRequestsForVendor(false, authorizationHeader));
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PutMapping("/update/{vendorId}")
     @ApiOperation("Updating an existing vendor with new data")
     public ResponseEntity<ResponseWrapper<Boolean>> updateVendor(
@@ -71,7 +107,7 @@ public class VendorController {
                 , vendorId, authorizationHeader));
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PutMapping("/{vendorId}")
     @ApiOperation("Deleting a vendor with vendor Id")
     public ResponseEntity<ResponseWrapper<Boolean>> deleteVendor(
@@ -84,10 +120,37 @@ public class VendorController {
 
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @GetMapping("/get/{vendorId}")
     @ApiOperation("Get vendor by Id")
     public ResponseEntity<ResponseWrapper<VendorDTO>> getVendor(
             @PathVariable("vendorId") long vendorId) {
         return ResponseEntity.ok(vendorService.getVendor(vendorId));
     }
+
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
+    @PutMapping(value = "/update/photo/{vendorId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,
+            MediaType.APPLICATION_JSON_VALUE})
+    @ApiOperation("ADD Photo for vendor")
+    @ResponseBody
+    public ResponseEntity<ResponseWrapper<Boolean>> addVendorPhoto(
+            @PathVariable("vendorId") long vendorId,
+            @RequestParam(name = "file") MultipartFile logoFile,
+            HttpServletRequest request) throws IOException {
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(vendorService.addVendorPhoto(vendorId,logoFile));
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
+    @PutMapping(value = "/update/working/days/{vendorId}")
+    @ApiOperation("Register Vendor With Email & Password")
+    public ResponseEntity<ResponseWrapper<Boolean>> registerVendorWorkingDays(
+            @PathVariable("vendorId") long vendorId,
+            @Valid @RequestBody String workingTimesRegistrationRequest,
+            HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(vendorService.registerVendorWorkingDays(vendorId,workingTimesRegistrationRequest));
+    }
+
+
 }

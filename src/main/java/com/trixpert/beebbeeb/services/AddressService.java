@@ -9,16 +9,13 @@ import java.util.List;
 
 public interface AddressService {
 
-    ResponseWrapper<Boolean> addAddress(AddressRegistrationRequest addressRegistrationRequest
-            , String authHeader);
+    ResponseWrapper<Boolean> addAddress(AddressRegistrationRequest addressRegistrationRequest, String authHeader);
 
     ResponseWrapper<List<AddressDTO>> listAllAddresses(boolean active);
 
+    ResponseWrapper<Boolean> updateAddress(AddressDTO address, long addressId, String authHeader);
 
-    ResponseWrapper<Boolean> updateAddress(AddressRegistrationRequest addressRegistrationRequest,
-                                                     long addressId, String authHeader);
-
-    ResponseWrapper<Boolean> deleteAddress(long addressId , String authHeader);
+    ResponseWrapper<Boolean> deleteAddress(long addressId, String authHeader);
 
     ResponseWrapper<AddressDTO> getAddress(long addressId);
 

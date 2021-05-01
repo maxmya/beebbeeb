@@ -1,101 +1,56 @@
 package com.trixpert.beebbeeb.services.impl;
 
 import com.trixpert.beebbeeb.data.constants.AuditActions;
-import com.trixpert.beebbeeb.data.constants.Roles;
+import com.trixpert.beebbeeb.data.entites.AddressEntity;
 import com.trixpert.beebbeeb.data.entites.CustomerEntity;
-import com.trixpert.beebbeeb.data.entites.RolesEntity;
-import com.trixpert.beebbeeb.data.entites.UserEntity;
-import com.trixpert.beebbeeb.data.mappers.CustomerMapper;
-import com.trixpert.beebbeeb.data.mappers.UserMapper;
+import com.trixpert.beebbeeb.data.mappers.AddressMapper;
 import com.trixpert.beebbeeb.data.repositories.CustomerRepository;
-import com.trixpert.beebbeeb.data.repositories.RolesRepository;
-import com.trixpert.beebbeeb.data.repositories.UserRepository;
-import com.trixpert.beebbeeb.data.repositories.UserRolesRepository;
-import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
-import com.trixpert.beebbeeb.data.request.RegistrationRequest;
 import com.trixpert.beebbeeb.data.response.CustomerResponse;
+import com.trixpert.beebbeeb.data.response.LinkableImage;
+import com.trixpert.beebbeeb.data.response.ProfileScoreResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
+import com.trixpert.beebbeeb.data.to.AddressDTO;
 import com.trixpert.beebbeeb.data.to.AuditDTO;
-import com.trixpert.beebbeeb.data.to.CustomerDTO;
 import com.trixpert.beebbeeb.data.to.UserDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
-import com.trixpert.beebbeeb.services.*;
+import com.trixpert.beebbeeb.services.AuditService;
+import com.trixpert.beebbeeb.services.CustomerService;
+import com.trixpert.beebbeeb.services.ReporterService;
+import com.trixpert.beebbeeb.services.UserService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
     private final UserService userService;
-    private final UserRepository userRepository;
-    private final RolesRepository rolesRepository;
-    private final UserRolesRepository userRolesRepository;
     private final CustomerRepository customerRepository;
-    private final CustomerMapper customerMapper;
 
     private final ReporterService reporterService;
-
     private final AuditService auditService;
 
-    private final UserMapper userMapper;
-    private final CloudStorageService cloudStorageService;
+    private final AddressMapper addressMapper;
 
 
-    public CustomerServiceImpl(UserService userService, UserRepository userRepository,
-                               RolesRepository rolesRepository, UserRolesRepository userRolesRepository,
-                               CustomerRepository customerRepository, CustomerMapper customerMapper, ReporterService reporterService, AuditService auditService,
-                               UserMapper userMapper, CloudStorageService cloudStorageService) {
+    public CustomerServiceImpl(UserService userService,
+                               CustomerRepository customerRepository,
+                               ReporterService reporterService,
+                               AuditService auditService, AddressMapper addressMapper) {
+
         this.userService = userService;
-        this.userRepository = userRepository;
-        this.rolesRepository = rolesRepository;
-        this.userRolesRepository = userRolesRepository;
         this.customerRepository = customerRepository;
-        this.customerMapper = customerMapper;
         this.reporterService = reporterService;
         this.auditService = auditService;
-        this.userMapper = userMapper;
-        this.cloudStorageService = cloudStorageService;
+        this.addressMapper = addressMapper;
     }
 
-    @Override
-    public ResponseWrapper<Boolean> registerCustomer(CustomerMobileRegistrationRequest customerRegisterRequest,
-                                                     MultipartFile photoFile) {
-        try {
-
-            Optional<RolesEntity> customerRole = rolesRepository.findByName(Roles.ROLE_CUSTOMER);
-
-            if (!customerRole.isPresent()) {
-                throw new NotFoundException("Role customer Not Found");
-            }
-
-//            String photoUrlRecord ="";
-//            photoUrlRecord = cloudStorageService.uploadFile(photoFile);
-
-            RegistrationRequest registrationRequest = new RegistrationRequest();
-            registrationRequest.setName(customerRegisterRequest.getName());
-            registrationRequest.setPhone(customerRegisterRequest.getPhone());
-            registrationRequest.setPassword(customerRegisterRequest.getPassword());
-
-            UserEntity savedUser = userService.registerUser(customerRegisterRequest.getPhone(),
-                    customerRole.get(), registrationRequest, "", true).getData();
-
-            CustomerEntity customerEntityRecord = CustomerEntity.builder()
-                    .horoscope(customerRegisterRequest.getHoroscope())
-                    .user(savedUser).build();
-
-            customerRepository.save(customerEntityRecord);
-            return reporterService.reportSuccess("A new customer  has been added ");
-        } catch (Exception e) {
-            return reporterService.reportError(e);
-        }
-    }
 
     @Transactional
     @Override
@@ -215,12 +170,21 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public ResponseWrapper<CustomerResponse> getCustomer(long customerId) {
         try {
+            List<AddressDTO> addressList = new ArrayList<>();
             Optional<CustomerEntity> optionalCustomerEntity = customerRepository.findById(customerId);
 
             if (!optionalCustomerEntity.isPresent()) {
                 throw new NotFoundException("customer Not Found");
             }
             CustomerEntity customerEntityRecord = optionalCustomerEntity.get();
+            LinkableImage mainPhotoEntity = LinkableImage.builder()
+                    .id(0)
+                    .url(customerEntityRecord.getUser().getPicUrl())
+                    .build();
+            customerEntityRecord.getAddresses().forEach(addressEntity ->
+                    addressList.add(addressMapper.convertToDTO(addressEntity))
+            );
+
             CustomerResponse customerResponse = CustomerResponse.builder()
                     .id(customerEntityRecord.getId())
                     .name(customerEntityRecord.getUser().getName())
@@ -231,11 +195,104 @@ public class CustomerServiceImpl implements CustomerService {
                     .jobTitle(customerEntityRecord.getJobTitle())
                     .jobAddress(customerEntityRecord.getJobAddress())
                     .income(customerEntityRecord.getIncome())
+                    .customerPhoto(mainPhotoEntity)
+                    .addresses(addressList)
                     .build();
             return reporterService.reportSuccess(customerResponse);
         } catch (Exception e) {
             return reporterService.reportError(e);
         }
 
+    }
+
+    @Override
+    public ResponseWrapper<ProfileScoreResponse> getProfileScore(long customerId) {
+        try {
+
+            Optional<CustomerEntity> customerEntityOptional = customerRepository.findById(customerId);
+            if(!customerEntityOptional.isPresent()){
+                throw new NotFoundException("customer Not Found");
+            }
+            CustomerEntity customerEntity = customerEntityOptional.get();
+            int score = 0 ;
+            if(customerEntity.getPreferredBank()!=null){
+                score++;
+            }
+            if (customerEntity.getJobTitle()!=null){
+                score++;
+            }
+            if (customerEntity.getJobAddress()!=null){
+                score++;
+            }
+            if (customerEntity.getIncome()%1==0){
+                score++;
+            }
+
+            if (customerEntity.getHoroscope()!=null){
+                score++;
+            }
+            if (customerEntity.getAddresses().size()!=0){
+                for (AddressEntity addressEntity : customerEntity.getAddresses()) {
+                    if (addressEntity.isMain()) {
+                        if (addressEntity.getTitle() != null) {
+                            score++;
+                        }
+                        if (addressEntity.getFullAddress() != null) {
+                            score++;
+                        }
+                        if (addressEntity.getGovernorate() != null) {
+                            score++;
+                        }
+                        if (addressEntity.getCity() != null) {
+                            score++;
+                        }
+                        if (addressEntity.getStreet() != null) {
+                            score++;
+                        }
+                        if (addressEntity.getLandmark()!=null){
+                            score++;
+                        }
+                        if (addressEntity.getType()!=null){
+                            score++;
+                        }
+                        if (addressEntity.getBuilding()!= null){
+                            score++;
+                        }
+                        if (addressEntity.getFloor()!=null){
+                            score++;
+                        }
+                        if (addressEntity.getApartmentNumber()!=null){
+                            score++;
+                        }
+                        break;
+                    }
+                }
+
+            }
+
+            if(customerEntity.getUser().getName()!=null){
+                score++;
+            }
+            if(customerEntity.getUser().getEmail()!=null){
+                score++;
+            }
+            if (customerEntity.getUser().getPhone()!=null){
+                score++;
+            }
+            if (customerEntity.getUser().getPicUrl()!=null){
+                score++;
+            }
+
+
+
+            ProfileScoreResponse profileScore = ProfileScoreResponse.builder()
+                    .customerId(customerId)
+                    .score(score)
+                    .totalScore(20)
+                    .build();
+            return reporterService.reportSuccess(profileScore);
+        }catch (Exception e){
+            return reporterService.reportError(e);
+        }
     }
 }

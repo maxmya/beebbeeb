@@ -1,25 +1,37 @@
 package com.trixpert.beebbeeb.data.request;
 
+import com.trixpert.beebbeeb.data.entites.HomeTelephoneEntity;
+import com.trixpert.beebbeeb.data.entites.SalesManEntity;
+import com.trixpert.beebbeeb.data.to.BranchDTO;
+import com.trixpert.beebbeeb.data.to.BrandDTO;
+import com.trixpert.beebbeeb.data.to.HomeTelephoneDTO;
+import com.trixpert.beebbeeb.data.to.SalesManDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class VendorRegistrationRequest extends RegistrationRequest{
-    @NotNull(message = "Vendor name can't be null")
-    @Size(min = 2, max = 50 , message = "vendor name is between 2 and 50 char")
     private String vendorName;
-
-    @NotNull(message = "vendor address can't be null")
     private String mainAddress;
-
     private String gmName;
     private String gmPhone;
     private String accManagerName;
     private String accManagerPhone;
+    private String bankAccountNumber;
+    private int salesPerMonth;
+    private List<String> homeTelephones;
+    private List<SalesManDTO> salesMen;
+    private boolean importer;
+    private boolean homeDelivery;
+    private List<BrandDTO> brandsAgent;
+    private List<BrandDTO> brandsDistributor;
+    private String taxRecordNumber;
+    private String commercialRegisterNumber;
+
+
 }

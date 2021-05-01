@@ -12,13 +12,11 @@ import java.util.List;
 @Service
 public interface TypeService {
 
-    ResponseWrapper<Boolean> addType (TypeRegistrationRequest typeRegistrationRequest
-     ,  MultipartFile logoFile , String authHeader) throws IOException;
+    ResponseWrapper<Boolean> addType(TypeRegistrationRequest typeRegistrationRequest, MultipartFile logoFile, String authHeader) throws IOException;
 
     ResponseWrapper<Boolean> deleteType(long typeId, String authHeader);
 
-    ResponseWrapper<Boolean> updateType(TypeRegistrationRequest typeRegistrationRequest,
-            long typeId, MultipartFile logoFile  , String authHeader) throws IOException;
+    ResponseWrapper<Boolean> updateType(TypeRegistrationRequest typeRegistrationRequest, long typeId, MultipartFile logoFile, String authHeader) throws IOException;
 
     ResponseWrapper<List<TypeDTO>> listAllTypes(boolean active);
 

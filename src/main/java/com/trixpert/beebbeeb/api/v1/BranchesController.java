@@ -29,38 +29,40 @@ public class BranchesController {
     }
 
 
-    @CrossOrigin(origins = {"*"})
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PostMapping("/{vendorID}/register")
     @ApiOperation("Add Branches List For Specific Vendor")
     public ResponseEntity<ResponseWrapper<Boolean>> registerBranchForVendor(
             @Valid @RequestBody BranchRegistrationRequest branchRegistrationRequest,
-            @PathVariable("vendorID") Long vendorID ,
+            @PathVariable("vendorID") Long vendorID,
             HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader("Authorization");
 
         return ResponseEntity.ok(branchService.registerBranchForVendor(
-                branchRegistrationRequest, vendorID , authorizationHeader));
+                branchRegistrationRequest, vendorID, authorizationHeader));
     }
 
 
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @GetMapping("/{vendorId}/list/active")
     @ApiOperation("Get List Of All Active Branches For Specific Vendor")
     public ResponseEntity<ResponseWrapper<List<BranchDTO>>> getActiveBranchesForVendor(
-            @PathVariable("vendorId") Long vendorId ) {
+            @PathVariable("vendorId") Long vendorId) {
 
         return ResponseEntity.ok(branchService.getAllBranchesForVendor(vendorId, true));
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @GetMapping("/{vendorId}/list/inactive")
     @ApiOperation("Get List Of All Inactive Branches For Specific Vendor")
     public ResponseEntity<ResponseWrapper<List<BranchDTO>>> getInactiveBranchesForVendor(
-            @PathVariable("vendorId") Long vendorId ) {
+            @PathVariable("vendorId") Long vendorId) {
 
         return ResponseEntity.ok(branchService.getAllBranchesForVendor(vendorId, false));
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PutMapping("/update/{branchId}")
     @ApiOperation("Updating an existing branch for specific vendor")
     public ResponseEntity<ResponseWrapper<Boolean>> updateBranchForVendor(
@@ -70,33 +72,35 @@ public class BranchesController {
         String authorizationHeader = request.getHeader("Authorization");
 
         return ResponseEntity.ok(branchService.updateBranchForVendor(branchRegistrationRequest,
-                branchId , authorizationHeader));
+                branchId, authorizationHeader));
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PutMapping("/delete/{branchID}")
     @ApiOperation("Deleting an existing branch for a specific vendor")
     public ResponseEntity<ResponseWrapper<Boolean>> deleteBranchForVendor(
             @PathVariable Long branchID, HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(branchService.deleteBranchForVendor(branchID , authorizationHeader));
+        return ResponseEntity.ok(branchService.deleteBranchForVendor(branchID, authorizationHeader));
     }
 
-
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @GetMapping("/cars/list/{branchId}")
     @ApiOperation("Getting list of cars for specific branch")
     public ResponseEntity<ResponseWrapper<List<CarDTO>>> listCarsForBranch(
-            @PathVariable("branchId") long branchId){
+            @PathVariable("branchId") long branchId) {
         return ResponseEntity.ok(branchService.listCarsForBranch(branchId));
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @GetMapping("/{vendorId}/get/{branchId}")
     @ApiOperation("Get Branch For Specific Vendor")
     public ResponseEntity<ResponseWrapper<BranchDTO>> getBranchForVendor(
-            @PathVariable("vendorId") long vendorId ,
-            @PathVariable("branchId") long branchId ) {
+            @PathVariable("vendorId") long vendorId,
+            @PathVariable("branchId") long branchId) {
 
-        return ResponseEntity.ok(branchService.getBranchForVendor(vendorId , branchId));
+        return ResponseEntity.ok(branchService.getBranchForVendor(vendorId, branchId));
     }
 
 

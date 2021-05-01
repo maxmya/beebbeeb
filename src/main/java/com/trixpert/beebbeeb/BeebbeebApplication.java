@@ -18,5 +18,4 @@ public class BeebbeebApplication extends SpringBootServletInitializer {
         SpringApplication.run(BeebbeebApplication.class, args);
     }
 
-
 }

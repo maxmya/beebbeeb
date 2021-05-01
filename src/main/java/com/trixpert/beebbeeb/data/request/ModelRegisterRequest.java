@@ -1,6 +1,5 @@
 package com.trixpert.beebbeeb.data.request;
 
-import com.trixpert.beebbeeb.data.to.BrandDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +15,7 @@ public class ModelRegisterRequest {
     private long brandId;
     @NotNull(message = "model name can't be null")
     private String name;
+    private String englishName;
     @NotNull(message = "model year can't be null")
     private String year;
 }

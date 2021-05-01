@@ -20,7 +20,7 @@ public class CloudStorageServiceImpl implements CloudStorageService {
 
     @Override
     public String uploadFile(MultipartFile file) throws IOException {
-        Map result = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+        Map result = cloudinary.uploader().uploadLarge(file.getBytes(), ObjectUtils.emptyMap());
         return (String) result.get("url");
     }
 

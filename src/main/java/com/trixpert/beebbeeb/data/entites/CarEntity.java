@@ -5,7 +5,6 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -47,6 +46,8 @@ public class CarEntity {
 
     private boolean active;
 
+    @Column(name = "original_price")
+    private String originalPrice;
 
     @OneToMany(mappedBy = "car")
     private List<CarInstanceEntity> instances;
