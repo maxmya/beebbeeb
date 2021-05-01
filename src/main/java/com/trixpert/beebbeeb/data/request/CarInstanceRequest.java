@@ -12,6 +12,7 @@ public class CarInstanceRequest {
     private long branchId;
     private long carId;
     private long quantity;
+    private boolean bestSeller;
     private String vendorPrice;
 }
 
