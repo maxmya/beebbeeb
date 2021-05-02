@@ -127,14 +127,14 @@ public class PurchasingRequestController {
         return ResponseEntity.ok(purchasingRequestService.listPurchasingRequestsForVendor(false, vendorId));
     }
 
-    @GetMapping("/list/active/{customerId}")
+    @GetMapping("customer/list/active/{customerId}")
     @ApiOperation("Get all active Purchasing Requests List for Vendor ")
     public ResponseEntity<ResponseWrapper<List<PurchasingRequestDTO>>>
     getAllActivePurchasingRequestsForCustomer(@PathVariable("customerId") long customerId) {
         return ResponseEntity.ok(purchasingRequestService.listPurchasingRequestsForCustomer(true, customerId));
     }
 
-    @GetMapping("/list/inactive/{customerId}")
+    @GetMapping("customer/list/inactive/{customerId}")
     @ApiOperation("Get all inactive Purchasing Requests List for Customer ")
     public ResponseEntity<ResponseWrapper<List<PurchasingRequestDTO>>>
     getAllInActivePurchasingRequestsForCustomer(@PathVariable("customerId") long customerId) {
