@@ -1,8 +1,13 @@
 package com.trixpert.beebbeeb.data.response;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class BranchResponse {
     private String name;
     private String address;

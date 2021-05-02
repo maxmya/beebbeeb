@@ -27,4 +27,6 @@ public interface MobileService {
 
     ResponseWrapper<List<PurchasingRequestMobileResponse>> listPurchasingRequestForCustomer(boolean active,
                                                                                             String authHeader);
+
+    ResponseWrapper<BranchResponse> getBranchDetails(long branchId);
 }
