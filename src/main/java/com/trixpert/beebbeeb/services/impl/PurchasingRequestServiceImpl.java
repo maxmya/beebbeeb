@@ -367,8 +367,7 @@ public class PurchasingRequestServiceImpl implements PurchasingRequestService {
             CustomerEntity customerEntityRecord = optionalCustomerEntity.get();
 
             List<PurchasingRequestDTO> purchasingRequestDTOList = new ArrayList<>();
-            purchasingRequestRepository.findAllByActiveAndCustomer(active, customerEntityRecord)
-                    .forEach(purchasingRequestEntity ->
+            customerEntityRecord.getPurchasingRequests().forEach(purchasingRequestEntity ->
                             purchasingRequestDTOList.add(purchasingRequestMapper.
                                     convertToDTO(purchasingRequestEntity)));
             return reporterService.reportSuccess(purchasingRequestDTOList);
