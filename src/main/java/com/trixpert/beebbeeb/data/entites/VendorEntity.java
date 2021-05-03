@@ -134,4 +134,8 @@ public class VendorEntity {
     )
     private List<BankEntity> banks;
 
+    @OneToMany(mappedBy = "vendor")
+    private List<ReviewEntity> reviews;
+
+
 }
