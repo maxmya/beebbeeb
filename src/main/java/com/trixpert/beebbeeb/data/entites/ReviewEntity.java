@@ -1,16 +1,14 @@
 package com.trixpert.beebbeeb.data.entites;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Date;
 
 @Entity
 @Table(name = "review",schema = "public")
-@Data
+@Setter
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,21 +18,28 @@ public class ReviewEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "user_id",referencedColumnName = "id")
     private UserEntity reviewer;
 
-    private int rate;
-
-    private String comment;
-
-    private Date timestamp;
+    @Column(name = "rate")
+    private Double rate;
 
     @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "comment_id",referencedColumnName = "id")
+    private CommentEntity comment;
+
+    @Column(name="date")
+    private Date timestamp;
+
+    @ManyToOne
     @JoinColumn(name = "vendor_id",referencedColumnName = "id")
     private VendorEntity vendor;
 
-    //todo : model
+    @ManyToOne
+    @JoinColumn(name = "car_instance_id", referencedColumnName = "id")
+    private CarInstanceEntity carInstance;
+
 
 
 }
