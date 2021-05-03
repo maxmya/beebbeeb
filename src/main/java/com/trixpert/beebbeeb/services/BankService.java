@@ -25,4 +25,9 @@ public interface BankService {
 
     ResponseWrapper<BankDTO> getBank(long bankId);
 
+    ResponseWrapper<List<BankDTO>> getBanksForVendor(long vendorId);
+
+    ResponseWrapper<List<BankDTO>> getBanksForCustomer(long customerId);
+
+
 }

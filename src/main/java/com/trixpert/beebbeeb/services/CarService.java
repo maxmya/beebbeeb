@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface CarService {
 
-    ResponseWrapper<Boolean> registerCar(CarRegistrationRequest carRegistrationRequest, String authHeader);
+    ResponseWrapper<Boolean> registerCars(CarRegistrationRequest carRegistrationRequest, String authHeader);
 
 
     ResponseWrapper<FileUploadResponse> uploadInterior(long carId, MultipartFile file);
@@ -21,6 +21,14 @@ public interface CarService {
     ResponseWrapper<Boolean> deleteCar(long carId);
 
     ResponseWrapper<List<CarDTO>> getAllCars(boolean active);
+
+    ResponseWrapper<List<CarDTO>> listCarsForYear(boolean active, String year);
+
+    ResponseWrapper<List<CarDTO>> listCarsForBrand(boolean active, long brandId);
+
+    ResponseWrapper<List<CarDTO>> listCarsForBrandAndModel(boolean active, long brandId, long modelId);
+
+    ResponseWrapper<List<CarDTO>> listCarsForModel(boolean active, long modelId);
 
     ResponseWrapper<CarDTO> getCar(long carId);
 

@@ -102,6 +102,7 @@ public class ModelServiceImpl implements ModelService {
 
             ModelEntity modelEntityRecord = ModelEntity.builder()
                     .name(modelRegisterRequest.getName())
+                    .englishName(modelRegisterRequest.getEnglishName())
                     .year(modelRegisterRequest.getYear())
                     .active(true)
                     .photos(Collections.singletonList(mainImagePhotoEntity))
@@ -187,7 +188,7 @@ public class ModelServiceImpl implements ModelService {
     public ResponseWrapper<Boolean> updateModel(long modelId,
                                                 MultipartFile img,
                                                 ModelRegisterRequest modelRegisterRequest,
-                                                String authHeader)  {
+                                                String authHeader) {
 
         String username = auditService.getUsernameForAudit(authHeader);
 
@@ -200,6 +201,9 @@ public class ModelServiceImpl implements ModelService {
             if (modelRegisterRequest.getName() != null && !modelRegisterRequest.getName().equals(modelEntityRecord.getName())) {
                 modelEntityRecord.setName(modelRegisterRequest.getName());
             }
+            if (modelRegisterRequest.getEnglishName() != null && !modelRegisterRequest.getEnglishName().equals(modelEntityRecord.getEnglishName())) {
+                modelEntityRecord.setEnglishName(modelRegisterRequest.getEnglishName());
+            }
             if (modelRegisterRequest.getYear() != null && !modelRegisterRequest.getYear().equals(modelEntityRecord.getYear())) {
                 modelEntityRecord.setYear(modelRegisterRequest.getYear());
             }
@@ -207,12 +211,12 @@ public class ModelServiceImpl implements ModelService {
                     modelRegisterRequest.getBrandId() != modelEntityRecord.getBrand().getId()) {
                 Optional<BrandEntity> optionalBrandEntityRecord = brandRepository
                         .findById(modelRegisterRequest.getBrandId());
-                if(!optionalBrandEntityRecord.isPresent()){
+                if (!optionalBrandEntityRecord.isPresent()) {
                     throw new NotFoundException("Brand entity not found !");
                 }
                 modelEntityRecord.setBrand(optionalBrandEntityRecord.get());
             }
-            if(img != null){
+            if (img != null) {
                 String modelImgUrl = cloudStorageService.uploadFile(img);
                 PhotoEntity mainImagePhotoEntity = photoRepository
                         .save(PhotoEntity.builder()

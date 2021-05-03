@@ -1,18 +1,12 @@
 package com.trixpert.beebbeeb.data.mappers;
 
-import com.trixpert.beebbeeb.data.entites.CarInstanceEntity;
 import com.trixpert.beebbeeb.data.entites.VendorEntity;
-import com.trixpert.beebbeeb.data.repositories.CarInstanceRepository;
-import com.trixpert.beebbeeb.data.to.CarInstanceDTO;
 import com.trixpert.beebbeeb.data.to.VendorDTO;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class VendorMapper {
-
     private final UserMapper userMapper;
 
     public VendorMapper(UserMapper userMapper) {

@@ -9,8 +9,7 @@ import com.trixpert.beebbeeb.data.mappers.UserMapper;
 import com.trixpert.beebbeeb.data.mappers.VendorMapper;
 import com.trixpert.beebbeeb.data.repositories.*;
 import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
-import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
-import com.trixpert.beebbeeb.data.response.ResponseWrapper;
+import com.trixpert.beebbeeb.data.response.*;
 import com.trixpert.beebbeeb.data.to.*;
 import com.trixpert.beebbeeb.exception.NotFoundException;
 import com.trixpert.beebbeeb.services.*;
@@ -60,8 +59,12 @@ public class VendorServiceImpl implements VendorService {
                              RolesRepository rolesRepository,
                              ReporterService reporterService,
                              UserService userService,
-                             BrandRepository brandRepository, HomeTelephoneRepository homeTelephoneRepository, SalesManRepository salesManRepository, BrandMapper brandMapper, UserMapper userMapper,
-                             VendorMapper vendorMapper, AuditService auditService, CloudStorageService cloudStorageService, CarInstanceRepository carInstanceRepository, CarInstanceMapper carInstanceMapper, PurchasingRequestRepository purchasingRequestRepository) {
+                             BrandRepository brandRepository, HomeTelephoneRepository homeTelephoneRepository,
+                             SalesManRepository salesManRepository, BrandMapper brandMapper, UserMapper userMapper,
+                             VendorMapper vendorMapper, AuditService auditService, CloudStorageService cloudStorageService,
+                             CarInstanceRepository carInstanceRepository, CarInstanceMapper carInstanceMapper,
+                             PurchasingRequestRepository purchasingRequestRepository) {
+
         this.userRepository = userRepository;
         this.vendorRepository = vendorRepository;
         this.rolesRepository = rolesRepository;
@@ -115,7 +118,7 @@ public class VendorServiceImpl implements VendorService {
                     false
             ).getData();
 
-            /**********Uploading Files**********/
+
             String generalManagerIdDocumentFaceUrl = cloudStorageService.uploadFile(generalManagerIdDocumentFace);
             String generalManagerIdDocumentBackUrl = cloudStorageService.uploadFile(generalManagerIdDocumentBack);
             String accountManagerIdDocumentFaceUrl = cloudStorageService.uploadFile(accountManagerIdDocumentFace);
@@ -124,8 +127,7 @@ public class VendorServiceImpl implements VendorService {
             String commercialRegisterDocumentUrl = cloudStorageService.uploadFile(commercialRegisterDocument);
             String contractDocumentUrl = cloudStorageService.uploadFile(contractDocument);
 
-            /*********List of brands for agent*******/
-
+            /* List of brands for agent */
             List<BrandEntity> brandsAgent = new ArrayList<>();
             if(vendorRegistrationRequest.getBrandsAgent()!=null){
                 for(BrandDTO brandDTO : vendorRegistrationRequest.getBrandsAgent()){
@@ -138,7 +140,7 @@ public class VendorServiceImpl implements VendorService {
             }
 
 
-            /*********List of brands for Distributor*******/
+            /* List of brands for Distributor */
             List<BrandEntity> brandsDistributor = new ArrayList<>();
             if(vendorRegistrationRequest.getBrandsDistributor()!=null){
                 for(BrandDTO brandDTO : vendorRegistrationRequest.getBrandsDistributor()){
@@ -151,7 +153,7 @@ public class VendorServiceImpl implements VendorService {
             }
 
 
-            /******Building HomePhone Entities****/
+            /* Building HomePhone Entities */
             List<HomeTelephoneEntity> homeTelephoneEntities  = new ArrayList<>();
             if(vendorRegistrationRequest.getTaxRecordNumber()!=null){
                 for(String homeTelephone : vendorRegistrationRequest.getHomeTelephones()){
@@ -164,7 +166,7 @@ public class VendorServiceImpl implements VendorService {
             }
 
 
-            /******Building SalesMan Entities****/
+            /* Building SalesMan Entities */
             List<SalesManEntity> salesManEntities  = new ArrayList<>();
             if(vendorRegistrationRequest.getSalesMen()!=null){
                 for(SalesManDTO salesManDTO : vendorRegistrationRequest.getSalesMen()){
@@ -234,7 +236,7 @@ public class VendorServiceImpl implements VendorService {
             //Creating ArrayList for store all vendors on it
             List<VendorDTO> allVendors = new ArrayList<>();
             //Looping On All Vendors on database one by one
-            vendorRepository.findAllByActive(active).forEach(vendor -> {
+            for (VendorEntity vendor : vendorRepository.findAllByActive(active)) {
                 UserDTO userDTO = userMapper.convertToDTO(vendor.getManager());
                 // For Every Vendor Create new Object from vendorDTO and Send needed data
                 // From vendorEntity to vendorDTO by passing this data on constructor
@@ -242,7 +244,7 @@ public class VendorServiceImpl implements VendorService {
                 vendorDTO.setManager(userDTO);
                 //Append new vendorDTO Object in the list of all vendors
                 allVendors.add(vendorDTO);
-            });
+            }
 
             return reporterService.reportSuccess(allVendors);
         } catch (Exception e) {
@@ -501,55 +503,95 @@ public class VendorServiceImpl implements VendorService {
         }
     }
 
-//
-//    public List<CarItemResponse> getVendorCars(VendorEntity vendorEntityRecord) {
-//        try {
-//
-//            List<CarInstanceEntity> carInstanceEntityList = carInstanceRepository.findAllByVendorAndActive(vendorEntityRecord,true);
-//            List<CarItemResponse> carItemResponseList = new ArrayList<>();
-//
-//            if(carInstanceEntityList!=null && carInstanceEntityList.size()!=0){
-//                for (CarInstanceEntity carInstance : carInstanceEntityList) {
-//                    String carPhoto = "";
-//                    for (PhotoEntity photoEntity : carInstance.getCar().getPhotos()) {
-//                        if (photoEntity.isMainPhoto()) {
-//                            carPhoto = photoEntity.getPhotoUrl();
-//                            break;
-//                        }
-//                    }
-//
-//                    if ("".equals(carPhoto)) {
-//                        for (PhotoEntity photoEntity : carInstance.getCar().getModel().getPhotos()) {
-//                            if (photoEntity.isMainPhoto()) {
-//                                carPhoto = photoEntity.getPhotoUrl();
-//                                break;
-//                            }
-//                        }
-//                    }
-//
-//                    String carPrice = "0";
-//                    if (carInstance.getPrices() != null && carInstance.getPrices().size() > 1) {
-//                        carPrice = (carInstance.getPrices().get(carInstance.getPrices().size() - 1)).getAmount();
-//                    } else if (carInstance.getPrices() != null && carInstance.getPrices().size() == 1) {
-//                        carPrice = carInstance.getPrices().get(0).getAmount();
-//                    }
-//
-//                    carItemResponseList.add(
-//                            CarItemResponse.builder()
-//                                    .id(carInstance.getId())
-//                                    .image(carPhoto)
-//                                    .currency("EGP")
-//                                    .name(carInstance.getCar().getModel().getName() + " " + carInstance.getCar().getCategory().getName())
-//                                    .price(carPrice)
-//                                    .rating(4)
-//                                    .build()
-//                    );
-//                }
-//            }
-//            return carItemResponseList;
-//        }catch (Exception e){
-//            return null;
-//        }
-//
-//    }
+    @Override
+    public ResponseWrapper<VendorDetailsResponse> getVendorDetails(long vendorId) {
+        try {
+            Optional<VendorEntity> optionalVendorEntity = vendorRepository.findById(vendorId);
+            if(!optionalVendorEntity.isPresent()){
+                throw new NotFoundException("This Vendor with id "+Long.toString(vendorId)+" Is not Exist !");
+            }
+
+            VendorEntity vendorEntityRecord = optionalVendorEntity.get();
+            LinkableImage linkableImage = LinkableImage.builder()
+                    .url(vendorEntityRecord.getManager().getPicUrl())
+                    .build();
+            List<CarInstanceEntity> carInstanceEntityList = carInstanceRepository.findAllByVendorAndActive(vendorEntityRecord,true);
+            List<CarItemResponse> carItemResponseList = new ArrayList<>();
+            if(carItemResponseList.size()>3){
+                carInstanceEntityList = carInstanceEntityList.subList(carInstanceEntityList.size()-3, carInstanceEntityList.size());
+            }
+            if(carInstanceEntityList!=null && carInstanceEntityList.size()!=0){
+                for (CarInstanceEntity carInstance : carInstanceEntityList) {
+
+                    String carPhoto = "";
+                    for (PhotoEntity photoEntity : carInstance.getCar().getPhotos()) {
+                        if (photoEntity.isMainPhoto()) {
+                            carPhoto = photoEntity.getPhotoUrl();
+                            break;
+                        }
+                    }
+
+                    if ("".equals(carPhoto)) {
+                        for (PhotoEntity photoEntity : carInstance.getCar().getModel().getPhotos()) {
+                            if (photoEntity.isMainPhoto()) {
+                                carPhoto = photoEntity.getPhotoUrl();
+                                break;
+                            }
+                        }
+                    }
+
+                    String carPrice = "0";
+                    if (carInstance.getPrices() != null && carInstance.getPrices().size() > 1) {
+                        carPrice = (carInstance.getPrices().get(carInstance.getPrices().size() - 1)).getAmount();
+                    } else if (carInstance.getPrices() != null && carInstance.getPrices().size() == 1) {
+                        carPrice = carInstance.getPrices().get(0).getAmount();
+                    }
+
+                    carItemResponseList.add(
+                            CarItemResponse.builder()
+                                    .id(carInstance.getId())
+                                    .image(carPhoto)
+                                    .currency("EGP")
+                                    .name(carInstance.getCar().getModel().getName() + " " + carInstance.getCar().getCategory().getName())
+                                    .price(carPrice)
+                                    .rating(4)
+                                    .build()
+                    );
+                }
+            }
+
+            List<BrandDTO> brandsAgentList = new ArrayList<>();
+            if(vendorEntityRecord.getBrandsAgent()!=null || vendorEntityRecord.getBrandsAgent().size()!=0){
+                for(BrandEntity brandEntity : vendorEntityRecord.getBrandsAgent()){
+                    brandsAgentList.add(brandMapper.convertToDTO(brandEntity));
+                }
+            }
+
+
+            List<BrandDTO> brandsDistributorList = new ArrayList<>();
+            if(vendorEntityRecord.getBrandsAgent()!=null || vendorEntityRecord.getBrandsAgent().size()!=0){
+                for(BrandEntity brandEntity : vendorEntityRecord.getBrandsAgent()){
+                    brandsDistributorList.add(brandMapper.convertToDTO(brandEntity));
+                }
+            }
+
+            VendorDetailsResponse vendorDetailsResponse =VendorDetailsResponse.builder()
+                    .name(vendorEntityRecord.getName())
+                    .address(vendorEntityRecord.getMainAddress())
+                    .importer(vendorEntityRecord.getImporter())
+                    .homeDelivery(vendorEntityRecord.getHomeDelivery())
+                    .logo(linkableImage)
+                    .workingHours(vendorEntityRecord.getWorkingTime())
+                    .latestCars(carItemResponseList)
+                    .brandsAgent(brandsAgentList)
+                    .brandsDistributor(brandsDistributorList)
+                    .build();
+
+            return reporterService.reportSuccess(vendorDetailsResponse);
+        }catch (Exception e){
+            return reporterService.reportError(e);
+        }
+
+    }
+
 }

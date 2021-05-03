@@ -13,9 +13,9 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class BrandRegisterRequest {
     @NotNull(message = "brand name can't be null")
-    @Size(min = 2, max = 50 , message = "brand name is between 2 and 50 char")
+    @Size(min = 2, max = 50, message = "brand name is between 2 and 50 char")
     private String name;
     private String origin;
-    private String description;
+    private String englishName;
 
 }

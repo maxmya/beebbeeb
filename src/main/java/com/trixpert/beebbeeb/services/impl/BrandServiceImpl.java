@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -61,7 +60,7 @@ public class BrandServiceImpl implements BrandService {
                     .name(brandRegisterRequest.getName())
                     .origin(brandRegisterRequest.getOrigin())
                     .logoUrl(logoUrlRecord)
-                    .description(brandRegisterRequest.getDescription())
+                    .englishName(brandRegisterRequest.getEnglishName())
                     .active(true)
                     .build();
             brandRepository.save(brandEntityRecord);
@@ -130,9 +129,9 @@ public class BrandServiceImpl implements BrandService {
                     .equals(brandEntityRecord.getName())) {
                 brandEntityRecord.setName(brandRegisterRequest.getName());
             }
-            if (brandRegisterRequest.getDescription() != null &&
-                    !brandRegisterRequest.getDescription().equals(brandEntityRecord.getDescription())) {
-                brandEntityRecord.setDescription(brandRegisterRequest.getDescription());
+            if (brandRegisterRequest.getEnglishName() != null &&
+                    !brandRegisterRequest.getEnglishName().equals(brandEntityRecord.getEnglishName())) {
+                brandEntityRecord.setEnglishName(brandRegisterRequest.getEnglishName());
             }
             if (brandRegisterRequest.getOrigin() != null &&
                     !brandRegisterRequest.getOrigin().equals(brandEntityRecord.getOrigin())) {
@@ -142,7 +141,7 @@ public class BrandServiceImpl implements BrandService {
                 String logoUrlRecord = cloudStorageService.uploadFile(logoFile);
                 brandEntityRecord.setLogoUrl(logoUrlRecord);
             }
-            if(logoFile==null){
+            if (logoFile == null) {
                 brandEntityRecord.setLogoUrl(brandEntityRecord.getLogoUrl());
             }
             brandRepository.save(brandEntityRecord);

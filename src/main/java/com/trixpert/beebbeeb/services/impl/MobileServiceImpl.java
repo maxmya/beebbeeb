@@ -32,6 +32,8 @@ public class MobileServiceImpl implements MobileService {
     private final BannerRepository bannerRepository;
     private final EssentialCarSpecsRepository essentialCarSpecsRepository;
     private final ExtraCarSpecsRepository extraCarSpecsRepository;
+    private final PurchasingRequestRepository purchasingRequestRepository;
+    private final BranchRepository branchRepository;
 
     private final TypeService typeService;
     private final BrandService brandService;
@@ -55,7 +57,7 @@ public class MobileServiceImpl implements MobileService {
                              BannerRepository bannerRepository,
                              EssentialCarSpecsRepository essentialCarSpecsRepository,
                              ExtraCarSpecsRepository extraCarSpecsRepository,
-                             TypeService typeService,
+                             PurchasingRequestRepository purchasingRequestRepository, BranchRepository branchRepository, TypeService typeService,
                              BrandService brandService,
                              UserService userService,
                              SMSService smsService,
@@ -72,6 +74,8 @@ public class MobileServiceImpl implements MobileService {
         this.bannerRepository = bannerRepository;
         this.essentialCarSpecsRepository = essentialCarSpecsRepository;
         this.extraCarSpecsRepository = extraCarSpecsRepository;
+        this.purchasingRequestRepository = purchasingRequestRepository;
+        this.branchRepository = branchRepository;
         this.typeService = typeService;
         this.brandService = brandService;
         this.userService = userService;
@@ -495,5 +499,75 @@ public class MobileServiceImpl implements MobileService {
         }
     }
 
+    @Override
+    public ResponseWrapper<List<PurchasingRequestMobileResponse>> listPurchasingRequestForCustomer(
+            boolean active, String authHeader){
+        try{
+            LinkableImage mainPhotoEntity = LinkableImage.builder()
+                    .id(0)
+                    .url("")
+                    .build();
+
+            List<PurchasingRequestMobileResponse> purchasingRequestsList = new ArrayList<>();
+            String username = auditService.getUsernameForAudit(authHeader);
+
+            Optional<UserEntity> optionalUserEntityRecord = userRepository.findByName(username);
+            if (!optionalUserEntityRecord.isPresent()) {
+                throw new NotFoundException("User Entity not found");
+            }
+            UserEntity userEntityRecord = optionalUserEntityRecord.get();
+
+            Optional<CustomerEntity> optionalCustomerEntityRecord = customerRepository.findByUser(userEntityRecord);
+            if(!optionalCustomerEntityRecord.isPresent()){
+                throw new NotFoundException("This user doesn't represent a customer");
+            }
+
+            purchasingRequestRepository.findAllByActiveAndCustomer(active, optionalCustomerEntityRecord.get())
+                    .forEach(purchasingRequestEntity -> {
+                        for (PhotoEntity photoEntity : purchasingRequestEntity.getCarInstance().getCar().getModel().getPhotos()) {
+                            if (photoEntity.isMainPhoto()) {
+                                mainPhotoEntity.setId(photoEntity.getId());
+                                mainPhotoEntity.setUrl(photoEntity.getPhotoUrl());
+                            }
+                        }
+                        int priceIndex = purchasingRequestEntity.getCarInstance().getPrices().size();
+                        PurchasingRequestMobileResponse purchasingRequest = PurchasingRequestMobileResponse.builder()
+                                .id(purchasingRequestEntity.getId())
+                                .status(purchasingRequestEntity.getStatus())
+                                .vendorName(purchasingRequestEntity.getVendor().getName())
+                                .customerName(purchasingRequestEntity.getCustomer().getUser().getName())
+                                .carBrand(purchasingRequestEntity.getCarInstance().getCar().getBrand().getName())
+                                .carModel(purchasingRequestEntity.getCarInstance().getCar().getModel().getName())
+                                .modelMainPhoto(mainPhotoEntity)
+                                .price(purchasingRequestEntity.getCarInstance().getPrices().get(priceIndex - 1).getAmount())
+                                .build();
+                        purchasingRequestsList.add(purchasingRequest);
+                    });
+            return reporterService.reportSuccess(purchasingRequestsList);
+        } catch(Exception e){
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<BranchResponse> getBranchDetails(long branchId) {
+        try{
+
+            Optional<BranchEntity> optionalBranchRecord = branchRepository.findById(branchId);
+            if (!optionalBranchRecord.isPresent()) {
+                throw new NotFoundException(" Branch Entity not found");
+            }
+            BranchEntity branchEntityRecord = optionalBranchRecord.get();
+
+            BranchResponse branchResponse = BranchResponse.builder()
+                    .address(branchEntityRecord.getAddress())
+                    .name(branchEntityRecord.getName())
+                    .build();
+            return reporterService.reportSuccess(branchResponse);
+        }catch (Exception e ){
+            return reporterService.reportError(e);
+        }
+
+    }
 
 }

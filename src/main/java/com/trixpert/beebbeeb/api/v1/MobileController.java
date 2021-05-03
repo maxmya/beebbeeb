@@ -32,13 +32,14 @@ public class MobileController {
     private final AddressService addressService;
     private final CustomerService customerService;
     private final CountingService countingService;
+    private final VendorService vendorService;
 
     public MobileController(MobileService mobileService,
                             PurchasingRequestService purchasingRequestService,
                             CustomerService customerService,
                             LoanService loanService,
                             AddressService addressService,
-                            CountingService countingService) {
+                            CountingService countingService, VendorService vendorService) {
 
         this.mobileService = mobileService;
         this.purchasingRequestService = purchasingRequestService;
@@ -46,6 +47,7 @@ public class MobileController {
         this.addressService = addressService;
         this.customerService = customerService;
         this.countingService = countingService;
+        this.vendorService = vendorService;
     }
 
     @PostMapping(value = "/loan/request", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -192,4 +194,33 @@ public class MobileController {
         return ResponseEntity.ok(customerService.getProfileScore(customerId));
     }
 
+    @GetMapping("/vendor/details/{vendorId}")
+    @ApiOperation("Get Vendor Details")
+    public ResponseEntity<ResponseWrapper<VendorDetailsResponse>> getVendorDetails(@PathVariable("vendorId") long vendorId){
+        return ResponseEntity.ok(vendorService.getVendorDetails(vendorId));
+    }
+
+    @GetMapping("/customer/purchasing/list/active")
+    @ApiOperation("Get all active customer's purchasing requests")
+    public ResponseEntity<ResponseWrapper<List<PurchasingRequestMobileResponse>>> listActivePurchasingRequestForCustomer(
+            HttpServletRequest request
+    ){
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(mobileService.listPurchasingRequestForCustomer(true, authorizationHeader));
+    }
+
+    @GetMapping("/customer/purchasing/list/inactive")
+    @ApiOperation("Get all inactive customer's purchasing requests")
+    public ResponseEntity<ResponseWrapper<List<PurchasingRequestMobileResponse>>> listInactivePurchasingRequestForCustomer(
+            HttpServletRequest request
+    ){
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(mobileService.listPurchasingRequestForCustomer(false, authorizationHeader));
+    }
+
+    @GetMapping("/branches/{branchId}")
+    @ApiOperation("Get Branch Details")
+    public ResponseEntity<ResponseWrapper<BranchResponse>> getBranchDetails(@PathVariable("branchId")long branchId){
+        return ResponseEntity.ok(mobileService.getBranchDetails(branchId));
+    }
 }

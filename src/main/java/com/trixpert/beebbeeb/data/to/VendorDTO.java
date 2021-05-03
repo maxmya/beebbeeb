@@ -1,7 +1,6 @@
 package com.trixpert.beebbeeb.data.to;
-import com.trixpert.beebbeeb.data.entites.BrandEntity;
-import lombok.*;
 
+import lombok.*;
 
 @Setter
 @Getter
