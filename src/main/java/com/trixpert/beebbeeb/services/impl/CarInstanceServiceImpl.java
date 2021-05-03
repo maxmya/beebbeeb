@@ -271,7 +271,7 @@ public class CarInstanceServiceImpl implements CarInstanceService {
     }
 
     @Override
-    public ResponseWrapper<ReviewResponse> getUserReviewForCarInstance(long carInstanceId, String authHeader) {
+    public ResponseWrapper<List<ReviewResponse>> getUserReviewsForCarInstance(long carInstanceId, String authHeader) {
         try {
             Optional<CarInstanceEntity> carInstanceEntityOptional = carInstanceRepository.findById(carInstanceId);
             if(!carInstanceEntityOptional.isPresent()){
@@ -286,14 +286,17 @@ public class CarInstanceServiceImpl implements CarInstanceService {
             }
             UserEntity userEntityRecord = optionalUserEntityRecord.get();
 
-            ReviewEntity reviewEntity = reviewRepository.findByCarInstanceAndReviewer(carInstanceEntity,userEntityRecord);
-            ReviewResponse reviewResponse = ReviewResponse.builder()
-                    .rate(reviewEntity.getRate())
-                    .comment(reviewEntity.getComment().getBody())
-                    .reviewDate(reviewEntity.getTimestamp())
-                    .commentDate(reviewEntity.getComment().getTimeStamp()).build();
+            List<ReviewEntity> reviewEntityList = reviewRepository.findAllByCarInstanceAndReviewer(carInstanceEntity,userEntityRecord);
+            List<ReviewResponse> reviewResponses = new ArrayList<>();
+            for (ReviewEntity reviewEntity : reviewEntityList ){
+                reviewResponses.add(ReviewResponse.builder()
+                        .rate(reviewEntity.getRate())
+                        .comment(reviewEntity.getComment().getBody())
+                        .reviewDate(reviewEntity.getTimestamp())
+                        .commentDate(reviewEntity.getComment().getTimeStamp()).build());
+            }
 
-            return reporterService.reportSuccess(reviewResponse);
+            return reporterService.reportSuccess(reviewResponses);
         }catch (Exception e){
             return reporterService.reportError(e);
         }
