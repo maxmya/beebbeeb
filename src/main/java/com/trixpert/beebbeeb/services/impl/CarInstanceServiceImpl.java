@@ -5,9 +5,12 @@ import com.trixpert.beebbeeb.data.entites.*;
 import com.trixpert.beebbeeb.data.mappers.CarInstanceMapper;
 import com.trixpert.beebbeeb.data.repositories.*;
 import com.trixpert.beebbeeb.data.request.CarInstanceRequest;
+import com.trixpert.beebbeeb.data.request.ReviewRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
+import com.trixpert.beebbeeb.data.response.ReviewResponse;
 import com.trixpert.beebbeeb.data.to.CarInstanceDTO;
 import com.trixpert.beebbeeb.exception.NotFoundException;
+import com.trixpert.beebbeeb.services.AuditService;
 import com.trixpert.beebbeeb.services.CarInstanceService;
 import com.trixpert.beebbeeb.services.ReporterService;
 import com.trixpert.beebbeeb.services.SKUService;
@@ -18,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +38,9 @@ public class CarInstanceServiceImpl implements CarInstanceService {
     private final CarSKUHolderRepository carSKUHolderRepository;
     private final SKUService skuService;
     private final CloudStorageServiceImpl cloudStorageService;
+    private final ReviewRepository reviewRepository;
+    private final UserRepository userRepository;
+    private final AuditService auditService;
 
     public CarInstanceServiceImpl(PriceRepository priceRepository,
                                   CarInstanceRepository carInstanceRepository,
@@ -43,7 +50,7 @@ public class CarInstanceServiceImpl implements CarInstanceService {
                                   CarRepository carRepository,
                                   ReporterService reporterService,
                                   CarSKUHolderRepository carSKUHolderRepository,
-                                  SKUService skuService, CloudStorageServiceImpl cloudStorageService) {
+                                  SKUService skuService, CloudStorageServiceImpl cloudStorageService, ReviewRepository reviewRepository, UserRepository userRepository, AuditService auditService) {
 
         this.priceRepository = priceRepository;
         this.carInstanceRepository = carInstanceRepository;
@@ -55,6 +62,9 @@ public class CarInstanceServiceImpl implements CarInstanceService {
         this.carSKUHolderRepository = carSKUHolderRepository;
         this.skuService = skuService;
         this.cloudStorageService = cloudStorageService;
+        this.reviewRepository = reviewRepository;
+        this.userRepository = userRepository;
+        this.auditService = auditService;
     }
 
 
@@ -234,6 +244,59 @@ public class CarInstanceServiceImpl implements CarInstanceService {
             return reporterService.reportError(e);
         }
 
+    }
+
+    @Override
+    public ResponseWrapper<Boolean> addReviewForCarInstance(long carInstanceId, ReviewRegistrationRequest reviewRegistrationRequest) {
+        try {
+            Optional<CarInstanceEntity> carInstanceEntityOptional = carInstanceRepository.findById(carInstanceId);
+            if(!carInstanceEntityOptional.isPresent()){
+                throw new NotFoundException("Car Not Found!");
+            }
+            CarInstanceEntity carInstanceEntity = carInstanceEntityOptional.get();
+            reviewRepository.save(
+                    ReviewEntity.builder()
+                            .carInstance(carInstanceEntity)
+                            .rate(reviewRegistrationRequest.getRate())
+                            .comment(CommentEntity.builder()
+                                    .body(reviewRegistrationRequest.getComment())
+                                    .timeStamp(new Date())
+                                    .build())
+                            .build());
+
+            return reporterService.reportSuccess("Review Added ");
+        }catch (Exception e){
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<ReviewResponse> getUserReviewForCarInstance(long carInstanceId, String authHeader) {
+        try {
+            Optional<CarInstanceEntity> carInstanceEntityOptional = carInstanceRepository.findById(carInstanceId);
+            if(!carInstanceEntityOptional.isPresent()){
+                throw new NotFoundException("Car Not Found!");
+            }
+            CarInstanceEntity carInstanceEntity = carInstanceEntityOptional.get();
+            String username = auditService.getUsernameForAudit(authHeader);
+
+            Optional<UserEntity> optionalUserEntityRecord = userRepository.findByEmail(username);
+            if(!optionalUserEntityRecord.isPresent()){
+                throw new NotFoundException("User Entity not found");
+            }
+            UserEntity userEntityRecord = optionalUserEntityRecord.get();
+
+            ReviewEntity reviewEntity = reviewRepository.findByCarInstanceAndReviewer(carInstanceEntity,userEntityRecord);
+            ReviewResponse reviewResponse = ReviewResponse.builder()
+                    .rate(reviewEntity.getRate())
+                    .comment(reviewEntity.getComment().getBody())
+                    .reviewDate(reviewEntity.getTimestamp())
+                    .commentDate(reviewEntity.getComment().getTimeStamp()).build();
+
+            return reporterService.reportSuccess(reviewResponse);
+        }catch (Exception e){
+            return reporterService.reportError(e);
+        }
     }
 
 
