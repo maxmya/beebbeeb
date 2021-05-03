@@ -1,9 +1,11 @@
 package com.trixpert.beebbeeb.services;
 
+import com.trixpert.beebbeeb.data.request.ReviewRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 
+import com.trixpert.beebbeeb.data.response.ReviewResponse;
 import com.trixpert.beebbeeb.data.response.VendorDetailsResponse;
 
 import com.trixpert.beebbeeb.data.to.CarInstanceDTO;
@@ -45,5 +47,9 @@ public interface VendorService {
     ResponseWrapper<Boolean> registerVendorWorkingDays(long vendorId ,String workingTimesRegistrationRequest);
 
     ResponseWrapper<VendorDetailsResponse> getVendorDetails(long vendorId);
+
+    ResponseWrapper<Boolean> addReviewForVendor(long vendorId, ReviewRegistrationRequest reviewRegistrationRequest);
+
+    ResponseWrapper<ReviewResponse> getUserReviewForVendor(long vendorId, String authHeadrt);
 
 }
