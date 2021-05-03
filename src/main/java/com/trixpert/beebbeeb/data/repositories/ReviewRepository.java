@@ -12,6 +12,6 @@ import java.util.List;
 @Repository
 public interface ReviewRepository extends JpaRepository<ReviewEntity,Long> {
 
-    ReviewEntity findByCarInstanceAndReviewer(CarInstanceEntity carInstanceEntity, UserEntity reviewer);
-    ReviewEntity findByVendorAndReviewer(VendorEntity vendorEntity, UserEntity reviewer);
+    List<ReviewEntity> findAllByCarInstanceAndReviewer(CarInstanceEntity carInstanceEntity, UserEntity reviewer);
+    List<ReviewEntity> findAllByVendorAndReviewer(VendorEntity vendorEntity, UserEntity reviewer);
 }
