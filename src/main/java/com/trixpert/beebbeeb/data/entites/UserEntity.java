@@ -58,4 +58,8 @@ public class UserEntity {
     )
     private List<RolesEntity> roles;
 
+    @OneToMany(mappedBy = "user")
+    private List<ReviewEntity> reviews;
+
+
 }
