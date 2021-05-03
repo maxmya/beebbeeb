@@ -8,6 +8,7 @@ import com.trixpert.beebbeeb.data.mappers.CarInstanceMapper;
 import com.trixpert.beebbeeb.data.mappers.UserMapper;
 import com.trixpert.beebbeeb.data.mappers.VendorMapper;
 import com.trixpert.beebbeeb.data.repositories.*;
+import com.trixpert.beebbeeb.data.request.ReviewRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.*;
 import com.trixpert.beebbeeb.data.to.*;
@@ -22,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,6 +55,8 @@ public class VendorServiceImpl implements VendorService {
 
     private final PurchasingRequestRepository purchasingRequestRepository ;
 
+    private final ReviewRepository reviewRepository;
+
 
     public VendorServiceImpl(UserRepository userRepository,
                              VendorRepository vendorRepository,
@@ -63,7 +67,7 @@ public class VendorServiceImpl implements VendorService {
                              SalesManRepository salesManRepository, BrandMapper brandMapper, UserMapper userMapper,
                              VendorMapper vendorMapper, AuditService auditService, CloudStorageService cloudStorageService,
                              CarInstanceRepository carInstanceRepository, CarInstanceMapper carInstanceMapper,
-                             PurchasingRequestRepository purchasingRequestRepository) {
+                             PurchasingRequestRepository purchasingRequestRepository, ReviewRepository reviewRepository) {
 
         this.userRepository = userRepository;
         this.vendorRepository = vendorRepository;
@@ -81,6 +85,7 @@ public class VendorServiceImpl implements VendorService {
         this.carInstanceRepository = carInstanceRepository;
         this.carInstanceMapper = carInstanceMapper;
         this.purchasingRequestRepository = purchasingRequestRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     @Override
@@ -592,6 +597,60 @@ public class VendorServiceImpl implements VendorService {
             return reporterService.reportError(e);
         }
 
+    }
+
+    @Override
+    public ResponseWrapper<Boolean> addReviewForVendor(long vendorId, ReviewRegistrationRequest reviewRegistrationRequest) {
+        try {
+            Optional<VendorEntity> vendorEntityOptional = vendorRepository.findById(vendorId);
+            if(!vendorEntityOptional.isPresent()){
+                throw new NotFoundException("Vendor Not Found!");
+            }
+            VendorEntity vendorEntity = vendorEntityOptional.get();
+                    reviewRepository.save(
+                            ReviewEntity.builder()
+                            .vendor(vendorEntity)
+                            .rate(reviewRegistrationRequest.getRate())
+                            .comment(CommentEntity.builder()
+                                    .body(reviewRegistrationRequest.getComment())
+                                    .timeStamp(new Date())
+                                    .build())
+                            .build());
+
+            return reporterService.reportSuccess("Review Added ");
+
+        }catch (Exception e){
+            return reporterService.reportError(e);
+        }
+    }
+
+    @Override
+    public ResponseWrapper<ReviewResponse> getUserReviewForVendor(long vendorId, String authHeader) {
+        try {
+            Optional<VendorEntity> vendorEntityOptional = vendorRepository.findById(vendorId);
+            if(!vendorEntityOptional.isPresent()){
+                throw new NotFoundException("Vendor Not Found!");
+            }
+            VendorEntity vendorEntity = vendorEntityOptional.get();
+            String username = auditService.getUsernameForAudit(authHeader);
+
+            Optional<UserEntity> optionalUserEntityRecord = userRepository.findByEmail(username);
+            if(!optionalUserEntityRecord.isPresent()){
+                throw new NotFoundException("User Entity not found");
+            }
+            UserEntity userEntityRecord = optionalUserEntityRecord.get();
+
+            ReviewEntity reviewEntity = reviewRepository.findByVendorAndReviewer(vendorEntity,userEntityRecord);
+            ReviewResponse reviewResponse = ReviewResponse.builder()
+                    .rate(reviewEntity.getRate())
+                    .comment(reviewEntity.getComment().getBody())
+                    .reviewDate(reviewEntity.getTimestamp())
+                    .commentDate(reviewEntity.getComment().getTimeStamp()).build();
+
+            return reporterService.reportSuccess(reviewResponse);
+        }catch (Exception e){
+            return reporterService.reportError(e);
+        }
     }
 
 }
