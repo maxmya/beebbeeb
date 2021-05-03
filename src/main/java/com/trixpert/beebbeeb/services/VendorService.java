@@ -50,6 +50,6 @@ public interface VendorService {
 
     ResponseWrapper<Boolean> addReviewForVendor(long vendorId, ReviewRegistrationRequest reviewRegistrationRequest);
 
-    ResponseWrapper<ReviewResponse> getUserReviewForVendor(long vendorId, String authHeadrt);
+    ResponseWrapper<List<ReviewResponse>> getUserReviewsForVendor(long vendorId, String authHeadrt);
 
 }
