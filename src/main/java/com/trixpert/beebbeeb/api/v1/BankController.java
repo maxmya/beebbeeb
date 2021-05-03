@@ -3,6 +3,7 @@ package com.trixpert.beebbeeb.api.v1;
 import com.trixpert.beebbeeb.data.request.BankRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
 import com.trixpert.beebbeeb.data.to.BankDTO;
+import com.trixpert.beebbeeb.data.to.VendorDTO;
 import com.trixpert.beebbeeb.services.BankService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -79,9 +80,24 @@ public class BankController {
     @GetMapping("/get/{bankId}")
     @ApiOperation("Get bank by Id")
     public ResponseEntity<ResponseWrapper<BankDTO>> getBank(
-            @PathVariable("bankId") Long bankId){
+            @PathVariable("bankId") long bankId){
     return ResponseEntity.ok(bankService.getBank(bankId));
 
     }
 
+    @GetMapping("/get/{vendorId}")
+    @ApiOperation("Get Vendors for Bank")
+    public ResponseEntity<ResponseWrapper<List<BankDTO>>> getBanksForVendor(
+            @PathVariable("vendorId") long vendorId){
+        return ResponseEntity.ok(bankService.getBanksForVendor(vendorId));
+    }
+    @GetMapping("/get/{customerId}")
+    @ApiOperation("Get Vendors for Bank")
+    public ResponseEntity<ResponseWrapper<List<BankDTO>>> getBanksForCustomer(
+            @PathVariable("customerId") long customerId){
+        return ResponseEntity.ok(bankService.getBanksForCustomer(customerId));
+    }
 }
+
+
+

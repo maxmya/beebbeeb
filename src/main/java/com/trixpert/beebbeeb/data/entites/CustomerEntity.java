@@ -1,6 +1,8 @@
 package com.trixpert.beebbeeb.data.entites;
 
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.List;
@@ -42,6 +44,17 @@ public class CustomerEntity {
 
     @OneToMany(mappedBy ="customer")
     private List<PurchasingRequestEntity> purchasingRequests;
+
+    @Fetch(value = FetchMode.SUBSELECT)
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    }, fetch = FetchType.EAGER)
+    @JoinTable(name = "customer_banks",
+            joinColumns = @JoinColumn(name = "customer_id"),
+            inverseJoinColumns = @JoinColumn(name = "bank_id")
+    )
+    private List<BankEntity> banks;
 
 
 }
