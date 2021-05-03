@@ -1,7 +1,9 @@
 package com.trixpert.beebbeeb.services;
 
 import com.trixpert.beebbeeb.data.request.CarInstanceRequest;
+import com.trixpert.beebbeeb.data.request.ReviewRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
+import com.trixpert.beebbeeb.data.response.ReviewResponse;
 import com.trixpert.beebbeeb.data.to.CarInstanceDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,4 +23,8 @@ public interface CarInstanceService {
     ResponseWrapper<Boolean> updateCarInstance(long carInstanceId , CarInstanceRequest carInstanceRequest);
 
     ResponseWrapper<Boolean> addBrochure(MultipartFile brochureFile , long carInstanceId) throws IOException;
+
+    ResponseWrapper<Boolean> addReviewForCarInstance(long carInstanceId, ReviewRegistrationRequest reviewRegistrationRequest);
+
+    ResponseWrapper<ReviewResponse> getUserReviewForCarInstance (long carInstanceId, String authHeader);
 }
