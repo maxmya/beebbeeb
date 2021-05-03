@@ -237,17 +237,17 @@ public class MobileController {
     }
 
     @GetMapping("/review/carInstance/{carInatnceId}")
-    @ApiOperation("Get User Review For Car By User Token")
-    public ResponseEntity<ResponseWrapper<ReviewResponse>> getUserReviewForCarInstance(@PathVariable("carInatnceId") long carInstanceId, HttpServletRequest request) {
+    @ApiOperation("Get User Reviews For Car By User Token")
+    public ResponseEntity<ResponseWrapper<List<ReviewResponse>>> getUserReviewForCarInstance(@PathVariable("carInatnceId") long carInstanceId, HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
-        return ResponseEntity.ok(carInstanceService.getUserReviewForCarInstance(carInstanceId,authorizationHeader));
+        return ResponseEntity.ok(carInstanceService.getUserReviewsForCarInstance(carInstanceId,authorizationHeader));
     }
 
     @GetMapping("/review/vendor/{vendorId}")
-    @ApiOperation("Get User Review For Vendor By User Token")
-    public ResponseEntity<ResponseWrapper<ReviewResponse>> getUserReviewForVendor(@PathVariable("vendorId") long vendorId, HttpServletRequest request) {
+    @ApiOperation("Get User Reviews For Vendor By User Token")
+    public ResponseEntity<ResponseWrapper<List<ReviewResponse>>> getUserReviewForVendor(@PathVariable("vendorId") long vendorId, HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
-        return ResponseEntity.ok(vendorService.getUserReviewForVendor(vendorId,authorizationHeader));
+        return ResponseEntity.ok(vendorService.getUserReviewsForVendor(vendorId,authorizationHeader));
     }
 
 
