@@ -218,4 +218,9 @@ public class MobileController {
         return ResponseEntity.ok(mobileService.listPurchasingRequestForCustomer(false, authorizationHeader));
     }
 
+    @GetMapping("/branches/{branchId}")
+    @ApiOperation("Get Branch Details")
+    public ResponseEntity<ResponseWrapper<BranchResponse>> getBranchDetails(@PathVariable("branchId")long branchId){
+        return ResponseEntity.ok(mobileService.getBranchDetails(branchId));
+    }
 }

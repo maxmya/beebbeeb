@@ -33,6 +33,7 @@ public class MobileServiceImpl implements MobileService {
     private final EssentialCarSpecsRepository essentialCarSpecsRepository;
     private final ExtraCarSpecsRepository extraCarSpecsRepository;
     private final PurchasingRequestRepository purchasingRequestRepository;
+    private final BranchRepository branchRepository;
 
     private final TypeService typeService;
     private final BrandService brandService;
@@ -56,7 +57,7 @@ public class MobileServiceImpl implements MobileService {
                              BannerRepository bannerRepository,
                              EssentialCarSpecsRepository essentialCarSpecsRepository,
                              ExtraCarSpecsRepository extraCarSpecsRepository,
-                             PurchasingRequestRepository purchasingRequestRepository, TypeService typeService,
+                             PurchasingRequestRepository purchasingRequestRepository, BranchRepository branchRepository, TypeService typeService,
                              BrandService brandService,
                              UserService userService,
                              SMSService smsService,
@@ -74,6 +75,7 @@ public class MobileServiceImpl implements MobileService {
         this.essentialCarSpecsRepository = essentialCarSpecsRepository;
         this.extraCarSpecsRepository = extraCarSpecsRepository;
         this.purchasingRequestRepository = purchasingRequestRepository;
+        this.branchRepository = branchRepository;
         this.typeService = typeService;
         this.brandService = brandService;
         this.userService = userService;
@@ -545,6 +547,27 @@ public class MobileServiceImpl implements MobileService {
         } catch(Exception e){
             return reporterService.reportError(e);
         }
+    }
+
+    @Override
+    public ResponseWrapper<BranchResponse> getBranchDetails(long branchId) {
+        try{
+
+            Optional<BranchEntity> optionalBranchRecord = branchRepository.findById(branchId);
+            if (!optionalBranchRecord.isPresent()) {
+                throw new NotFoundException(" Branch Entity not found");
+            }
+            BranchEntity branchEntityRecord = optionalBranchRecord.get();
+
+            BranchResponse branchResponse = BranchResponse.builder()
+                    .address(branchEntityRecord.getAddress())
+                    .name(branchEntityRecord.getName())
+                    .build();
+            return reporterService.reportSuccess(branchResponse);
+        }catch (Exception e ){
+            return reporterService.reportError(e);
+        }
+
     }
 
 }
