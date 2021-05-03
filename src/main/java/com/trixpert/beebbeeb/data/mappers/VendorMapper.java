@@ -4,6 +4,7 @@ import com.trixpert.beebbeeb.data.entites.VendorEntity;
 import com.trixpert.beebbeeb.data.to.VendorDTO;
 import org.springframework.stereotype.Component;
 
+
 @Component
 public class VendorMapper {
     private final UserMapper userMapper;
@@ -23,10 +24,12 @@ public class VendorMapper {
                 .generalManagerName(vendorDTO.getGeneralManagerName())
                 .generalManagerPhone(vendorDTO.getGeneralManagerPhone())
                 .active(vendorDTO.isActive())
+                .workingTime(vendorDTO.getWorkingTime())
                 .build();
     }
 
     public VendorDTO convertToDTO(VendorEntity vendorEntity) {
+
         return VendorDTO.builder()
                 .id(vendorEntity.getId())
                 .manager(userMapper.convertToDTO(vendorEntity.getManager()))
@@ -37,6 +40,7 @@ public class VendorMapper {
                 .generalManagerName(vendorEntity.getGeneralManagerName())
                 .generalManagerPhone(vendorEntity.getGeneralManagerPhone())
                 .active(vendorEntity.isActive())
+                .WorkingTime(vendorEntity.getWorkingTime())
                 .build();
     }
 

@@ -6,6 +6,7 @@ import com.trixpert.beebbeeb.data.request.BannerRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
+import com.trixpert.beebbeeb.data.to.CarInstanceDTO;
 import com.trixpert.beebbeeb.data.to.VendorDTO;
 import com.trixpert.beebbeeb.services.VendorService;
 import io.swagger.annotations.Api;
@@ -85,6 +86,13 @@ public class VendorController {
         return ResponseEntity.ok(vendorService.listPurchasingRequestsForVendor(true, authorizationHeader));
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
+    @GetMapping("/purchasing/list/{vendorId}/active")
+    @ApiOperation("Get All active orders for specific vendor By vendor Id")
+    public ResponseEntity<ResponseWrapper<List<PurchasingRequestResponse>>> getAllActivePurchasingRequestForVendorById(@PathVariable("vendorId") long vendorId) {
+        return ResponseEntity.ok(vendorService.listPurchasingRequestsForVendorByVendorId(true, vendorId));
+    }
+
     @PreAuthorize("hasAnyRole('ROLE_VENDOR')")
     @GetMapping("/purchasing/list/inactive")
     @ApiOperation("Get All inactive orders for specific vendor")
@@ -127,6 +135,15 @@ public class VendorController {
             @PathVariable("vendorId") long vendorId) {
         return ResponseEntity.ok(vendorService.getVendor(vendorId));
     }
+
+    @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
+    @GetMapping("/get/{vendorId}/cars")
+    @ApiOperation("Get All Vendor Cars")
+    public ResponseEntity<ResponseWrapper<List<CarInstanceDTO>>> getVendorCars(
+            @PathVariable("vendorId") long vendorId) {
+        return ResponseEntity.ok(vendorService.listCarsForVendor(vendorId,true));
+    }
+
 
     @PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_ADMIN')")
     @PutMapping(value = "/update/photo/{vendorId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,

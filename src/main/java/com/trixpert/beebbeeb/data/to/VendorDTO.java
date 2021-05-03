@@ -1,7 +1,6 @@
 package com.trixpert.beebbeeb.data.to;
-import lombok.*;
 
-import java.util.List;
+import lombok.*;
 
 @Setter
 @Getter
@@ -18,4 +17,5 @@ public class VendorDTO {
     private String accountManagerName;
     private String accountManagerPhone;
     private boolean active;
+    private String WorkingTime;
 }

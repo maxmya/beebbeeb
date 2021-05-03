@@ -38,3 +38,73 @@
 2021-03-20 00:51:55.706  WARN [l-1 housekeeper] : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=19m8s720ms).
 2021-03-20 00:53:20.409  WARN [l-1 housekeeper] : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m24s706ms).
 2021-03-20 01:04:30.690  WARN [l-1 housekeeper] : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=10m40s301ms).
+2021-05-03 20:32:22.845  INFO [           main] : Starting BeebbeebApplication using Java 15.0.2 on DESKTOP-IV79E69 with PID 4704 (C:\Work\Trixpert\Dashbord 5-2021\Backend5-2021\beebbeeb\target\classes started by ihabt in C:\Work\Trixpert\Dashbord 5-2021\Backend5-2021\beebbeeb)
+2021-05-03 20:32:22.862  INFO [           main] : No active profile set, falling back to default profiles: default
+2021-05-03 20:32:29.577  INFO [           main] : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2021-05-03 20:32:30.219  INFO [           main] : Finished Spring Data repository scanning in 619 ms. Found 38 JPA repository interfaces.
+2021-05-03 20:32:31.136  INFO [           main] : Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@6070775e' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-05-03 20:32:31.146  INFO [           main] : Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-05-03 20:32:32.038  INFO [           main] : Tomcat initialized with port(s): 8181 (http)
+2021-05-03 20:32:32.056  INFO [           main] : Initializing ProtocolHandler ["http-nio-8181"]
+2021-05-03 20:32:32.057  INFO [           main] : Starting service [Tomcat]
+2021-05-03 20:32:32.058  INFO [           main] : Starting Servlet engine: [Apache Tomcat/9.0.43]
+2021-05-03 20:32:32.476  INFO [           main] : Initializing Spring embedded WebApplicationContext
+2021-05-03 20:32:32.477  INFO [           main] : Root WebApplicationContext: initialization completed in 9529 ms
+2021-05-03 20:32:33.057  INFO [           main] : HikariPool-1 - Starting...
+2021-05-03 20:32:34.643  INFO [           main] : HikariPool-1 - Start completed.
+2021-05-03 20:32:34.824  INFO [           main] : HHH000204: Processing PersistenceUnitInfo [name: default]
+2021-05-03 20:32:34.932  INFO [           main] : HHH000412: Hibernate ORM core version 5.4.28.Final
+2021-05-03 20:32:35.143  INFO [           main] : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2021-05-03 20:32:35.514  INFO [           main] : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQL10Dialect
+2021-05-03 20:32:39.859  INFO [           main] : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2021-05-03 20:32:39.870  INFO [           main] : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2021-05-03 20:32:41.469  WARN [           main] : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2021-05-03 20:32:44.167  INFO [           main] : Will secure Ant [pattern='/swagger-resources/**'] with []
+2021-05-03 20:32:44.168  INFO [           main] : Will secure Ant [pattern='/swagger-ui.html'] with []
+2021-05-03 20:32:44.168  INFO [           main] : Will secure Ant [pattern='/v2/api-docs'] with []
+2021-05-03 20:32:44.168  INFO [           main] : Will secure Ant [pattern='/webjars/**'] with []
+2021-05-03 20:32:44.168  INFO [           main] : Will secure Ant [pattern='/'] with []
+2021-05-03 20:32:44.247  INFO [           main] : Adding welcome page template: index
+2021-05-03 20:32:44.480  INFO [           main] : Will secure any request with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@50e7f88b, org.springframework.security.web.context.SecurityContextPersistenceFilter@4698ae6, org.springframework.security.web.header.HeaderWriterFilter@12a719ed, org.springframework.web.filter.CorsFilter@7a461744, org.springframework.security.web.authentication.logout.LogoutFilter@65595be7, com.trixpert.beebbeeb.security.jwt.JwtAuthTokenFilter@1142843c, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2d839402, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@5fdfa35d, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@6b1cc2fb, org.springframework.security.web.session.SessionManagementFilter@28fa0ff8, org.springframework.security.web.access.ExceptionTranslationFilter@36f93ea3, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@74f6237]
+2021-05-03 20:32:44.577  INFO [           main] : Initializing ExecutorService 'applicationTaskExecutor'
+2021-05-03 20:32:45.319  INFO [           main] : Default credentials provider for service account beebbeeb-backend@clear-spirit-305111.iam.gserviceaccount.com
+2021-05-03 20:32:45.319  INFO [           main] : Scopes in use by default credentials: [https://www.googleapis.com/auth/pubsub, https://www.googleapis.com/auth/spanner.admin, https://www.googleapis.com/auth/spanner.data, https://www.googleapis.com/auth/datastore, https://www.googleapis.com/auth/sqlservice.admin, https://www.googleapis.com/auth/devstorage.read_only, https://www.googleapis.com/auth/devstorage.read_write, https://www.googleapis.com/auth/cloudruntimeconfig, https://www.googleapis.com/auth/trace.append, https://www.googleapis.com/auth/cloud-platform, https://www.googleapis.com/auth/cloud-vision, https://www.googleapis.com/auth/bigquery, https://www.googleapis.com/auth/monitoring.write]
+2021-05-03 20:32:45.434  INFO [           main] : The default project ID is null
+2021-05-03 20:32:46.494  INFO [           main] : Starting ProtocolHandler ["http-nio-8181"]
+2021-05-03 20:32:46.516  INFO [           main] : Tomcat started on port(s): 8181 (http) with context path ''
+2021-05-03 20:32:49.900  INFO [           main] : Started BeebbeebApplication in 27.975 seconds (JVM running for 31.521)
+2021-05-03 21:00:02.916  INFO [           main] : Starting BeebbeebApplication using Java 15.0.2 on DESKTOP-IV79E69 with PID 2420 (C:\Work\Trixpert\Dashbord 5-2021\Backend5-2021\beebbeeb\target\classes started by ihabt in C:\Work\Trixpert\Dashbord 5-2021\Backend5-2021\beebbeeb)
+2021-05-03 21:00:02.936  INFO [           main] : No active profile set, falling back to default profiles: default
+2021-05-03 21:00:06.956  INFO [           main] : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2021-05-03 21:00:07.560  INFO [           main] : Finished Spring Data repository scanning in 596 ms. Found 38 JPA repository interfaces.
+2021-05-03 21:00:08.487  INFO [           main] : Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@4026461d' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-05-03 21:00:08.497  INFO [           main] : Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-05-03 21:00:08.873  INFO [           main] : Tomcat initialized with port(s): 8181 (http)
+2021-05-03 21:00:08.893  INFO [           main] : Initializing ProtocolHandler ["http-nio-8181"]
+2021-05-03 21:00:08.895  INFO [           main] : Starting service [Tomcat]
+2021-05-03 21:00:08.897  INFO [           main] : Starting Servlet engine: [Apache Tomcat/9.0.43]
+2021-05-03 21:00:09.327  INFO [           main] : Initializing Spring embedded WebApplicationContext
+2021-05-03 21:00:09.327  INFO [           main] : Root WebApplicationContext: initialization completed in 6162 ms
+2021-05-03 21:00:09.792  INFO [           main] : HikariPool-1 - Starting...
+2021-05-03 21:00:11.381  INFO [           main] : HikariPool-1 - Start completed.
+2021-05-03 21:00:11.748  INFO [           main] : HHH000204: Processing PersistenceUnitInfo [name: default]
+2021-05-03 21:00:11.957  INFO [           main] : HHH000412: Hibernate ORM core version 5.4.28.Final
+2021-05-03 21:00:12.181  INFO [           main] : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2021-05-03 21:00:12.460  INFO [           main] : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQL10Dialect
+2021-05-03 21:00:15.635  INFO [           main] : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2021-05-03 21:00:15.649  INFO [           main] : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2021-05-03 21:00:16.672  WARN [           main] : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2021-05-03 21:00:19.513  INFO [           main] : Will secure Ant [pattern='/swagger-resources/**'] with []
+2021-05-03 21:00:19.514  INFO [           main] : Will secure Ant [pattern='/swagger-ui.html'] with []
+2021-05-03 21:00:19.514  INFO [           main] : Will secure Ant [pattern='/v2/api-docs'] with []
+2021-05-03 21:00:19.515  INFO [           main] : Will secure Ant [pattern='/webjars/**'] with []
+2021-05-03 21:00:19.515  INFO [           main] : Will secure Ant [pattern='/'] with []
+2021-05-03 21:00:19.554  INFO [           main] : Adding welcome page template: index
+2021-05-03 21:00:19.880  INFO [           main] : Will secure any request with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@32441ed4, org.springframework.security.web.context.SecurityContextPersistenceFilter@1b1434ce, org.springframework.security.web.header.HeaderWriterFilter@2c2c1790, org.springframework.web.filter.CorsFilter@3fc2197d, org.springframework.security.web.authentication.logout.LogoutFilter@73c25e8, com.trixpert.beebbeeb.security.jwt.JwtAuthTokenFilter@726882da, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@74c58f64, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@1b0709e7, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@5a429813, org.springframework.security.web.session.SessionManagementFilter@3aaeb65b, org.springframework.security.web.access.ExceptionTranslationFilter@726e780a, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@78f2cab9]
+2021-05-03 21:00:19.988  INFO [           main] : Initializing ExecutorService 'applicationTaskExecutor'
+2021-05-03 21:00:20.626  INFO [           main] : Default credentials provider for service account beebbeeb-backend@clear-spirit-305111.iam.gserviceaccount.com
+2021-05-03 21:00:20.626  INFO [           main] : Scopes in use by default credentials: [https://www.googleapis.com/auth/pubsub, https://www.googleapis.com/auth/spanner.admin, https://www.googleapis.com/auth/spanner.data, https://www.googleapis.com/auth/datastore, https://www.googleapis.com/auth/sqlservice.admin, https://www.googleapis.com/auth/devstorage.read_only, https://www.googleapis.com/auth/devstorage.read_write, https://www.googleapis.com/auth/cloudruntimeconfig, https://www.googleapis.com/auth/trace.append, https://www.googleapis.com/auth/cloud-platform, https://www.googleapis.com/auth/cloud-vision, https://www.googleapis.com/auth/bigquery, https://www.googleapis.com/auth/monitoring.write]
+2021-05-03 21:00:20.789  INFO [           main] : The default project ID is null
+2021-05-03 21:00:21.731  INFO [           main] : Starting ProtocolHandler ["http-nio-8181"]
+2021-05-03 21:00:21.744  INFO [           main] : Tomcat started on port(s): 8181 (http) with context path ''
+2021-05-03 21:00:26.151  INFO [           main] : Started BeebbeebApplication in 24.358 seconds (JVM running for 27.639)

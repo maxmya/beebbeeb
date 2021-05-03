@@ -4,6 +4,7 @@ import com.trixpert.beebbeeb.data.constants.AuditActions;
 import com.trixpert.beebbeeb.data.constants.Roles;
 import com.trixpert.beebbeeb.data.entites.*;
 import com.trixpert.beebbeeb.data.mappers.BrandMapper;
+import com.trixpert.beebbeeb.data.mappers.CarInstanceMapper;
 import com.trixpert.beebbeeb.data.mappers.UserMapper;
 import com.trixpert.beebbeeb.data.mappers.VendorMapper;
 import com.trixpert.beebbeeb.data.repositories.*;
@@ -35,7 +36,6 @@ public class VendorServiceImpl implements VendorService {
 
     private final ReporterService reporterService;
     private final UserService userService;
-    private final CarInstanceRepository carInstanceRepository;
 
     private final BrandRepository brandRepository;
     private final HomeTelephoneRepository homeTelephoneRepository;
@@ -48,20 +48,28 @@ public class VendorServiceImpl implements VendorService {
     private final AuditService auditService;
     private final CloudStorageService cloudStorageService;
 
+    private final CarInstanceRepository carInstanceRepository;
+    private final CarInstanceMapper carInstanceMapper;
+
+    private final PurchasingRequestRepository purchasingRequestRepository ;
+
 
     public VendorServiceImpl(UserRepository userRepository,
                              VendorRepository vendorRepository,
                              RolesRepository rolesRepository,
                              ReporterService reporterService,
                              UserService userService,
-                             CarInstanceRepository carInstanceRepository, BrandRepository brandRepository, HomeTelephoneRepository homeTelephoneRepository, SalesManRepository salesManRepository, BrandMapper brandMapper, UserMapper userMapper,
-                             VendorMapper vendorMapper, AuditService auditService, CloudStorageService cloudStorageService) {
+                             BrandRepository brandRepository, HomeTelephoneRepository homeTelephoneRepository,
+                             SalesManRepository salesManRepository, BrandMapper brandMapper, UserMapper userMapper,
+                             VendorMapper vendorMapper, AuditService auditService, CloudStorageService cloudStorageService,
+                             CarInstanceRepository carInstanceRepository, CarInstanceMapper carInstanceMapper,
+                             PurchasingRequestRepository purchasingRequestRepository) {
+
         this.userRepository = userRepository;
         this.vendorRepository = vendorRepository;
         this.rolesRepository = rolesRepository;
         this.reporterService = reporterService;
         this.userService = userService;
-        this.carInstanceRepository = carInstanceRepository;
         this.brandRepository = brandRepository;
         this.homeTelephoneRepository = homeTelephoneRepository;
         this.salesManRepository = salesManRepository;
@@ -70,6 +78,9 @@ public class VendorServiceImpl implements VendorService {
         this.vendorMapper = vendorMapper;
         this.auditService = auditService;
         this.cloudStorageService = cloudStorageService;
+        this.carInstanceRepository = carInstanceRepository;
+        this.carInstanceMapper = carInstanceMapper;
+        this.purchasingRequestRepository = purchasingRequestRepository;
     }
 
     @Override
@@ -107,7 +118,7 @@ public class VendorServiceImpl implements VendorService {
                     false
             ).getData();
 
-            /**********Uploading Files**********/
+
             String generalManagerIdDocumentFaceUrl = cloudStorageService.uploadFile(generalManagerIdDocumentFace);
             String generalManagerIdDocumentBackUrl = cloudStorageService.uploadFile(generalManagerIdDocumentBack);
             String accountManagerIdDocumentFaceUrl = cloudStorageService.uploadFile(accountManagerIdDocumentFace);
@@ -116,8 +127,7 @@ public class VendorServiceImpl implements VendorService {
             String commercialRegisterDocumentUrl = cloudStorageService.uploadFile(commercialRegisterDocument);
             String contractDocumentUrl = cloudStorageService.uploadFile(contractDocument);
 
-            /*********List of brands for agent*******/
-
+            /* List of brands for agent */
             List<BrandEntity> brandsAgent = new ArrayList<>();
             if(vendorRegistrationRequest.getBrandsAgent()!=null){
                 for(BrandDTO brandDTO : vendorRegistrationRequest.getBrandsAgent()){
@@ -130,7 +140,7 @@ public class VendorServiceImpl implements VendorService {
             }
 
 
-            /*********List of brands for Distributor*******/
+            /* List of brands for Distributor */
             List<BrandEntity> brandsDistributor = new ArrayList<>();
             if(vendorRegistrationRequest.getBrandsDistributor()!=null){
                 for(BrandDTO brandDTO : vendorRegistrationRequest.getBrandsDistributor()){
@@ -143,7 +153,7 @@ public class VendorServiceImpl implements VendorService {
             }
 
 
-            /******Building HomePhone Entities****/
+            /* Building HomePhone Entities */
             List<HomeTelephoneEntity> homeTelephoneEntities  = new ArrayList<>();
             if(vendorRegistrationRequest.getTaxRecordNumber()!=null){
                 for(String homeTelephone : vendorRegistrationRequest.getHomeTelephones()){
@@ -156,7 +166,7 @@ public class VendorServiceImpl implements VendorService {
             }
 
 
-            /******Building SalesMan Entities****/
+            /* Building SalesMan Entities */
             List<SalesManEntity> salesManEntities  = new ArrayList<>();
             if(vendorRegistrationRequest.getSalesMen()!=null){
                 for(SalesManDTO salesManDTO : vendorRegistrationRequest.getSalesMen()){
@@ -189,10 +199,10 @@ public class VendorServiceImpl implements VendorService {
                     .name(vendorRegistrationRequest.getVendorName())
                     .manager(userEntityRecord)
                     .mainAddress(vendorRegistrationRequest.getMainAddress())
-                    .generalManagerName(vendorRegistrationRequest.getGmName())
-                    .generalManagerPhone(vendorRegistrationRequest.getGmPhone())
-                    .accountManagerName(vendorRegistrationRequest.getAccManagerName())
-                    .accountManagerPhone(vendorRegistrationRequest.getAccManagerPhone())
+                    .generalManagerName(vendorRegistrationRequest.getGeneralManagerName())
+                    .generalManagerPhone(vendorRegistrationRequest.getGeneralManagerPhone())
+                    .accountManagerName(vendorRegistrationRequest.getAccountManagerName())
+                    .accountManagerPhone(vendorRegistrationRequest.getAccountManagerPhone())
                     .salesMen(salesManEntities)
                     .homeTelephones(homeTelephoneEntities)
                     .active(true)
@@ -226,7 +236,7 @@ public class VendorServiceImpl implements VendorService {
             //Creating ArrayList for store all vendors on it
             List<VendorDTO> allVendors = new ArrayList<>();
             //Looping On All Vendors on database one by one
-            vendorRepository.findAllByActive(active).forEach(vendor -> {
+            for (VendorEntity vendor : vendorRepository.findAllByActive(active)) {
                 UserDTO userDTO = userMapper.convertToDTO(vendor.getManager());
                 // For Every Vendor Create new Object from vendorDTO and Send needed data
                 // From vendorEntity to vendorDTO by passing this data on constructor
@@ -234,7 +244,7 @@ public class VendorServiceImpl implements VendorService {
                 vendorDTO.setManager(userDTO);
                 //Append new vendorDTO Object in the list of all vendors
                 allVendors.add(vendorDTO);
-            });
+            }
 
             return reporterService.reportSuccess(allVendors);
         } catch (Exception e) {
@@ -313,6 +323,62 @@ public class VendorServiceImpl implements VendorService {
         }
     }
 
+    @Override
+    public ResponseWrapper<List<PurchasingRequestResponse>> listPurchasingRequestsForVendorByVendorId(boolean active, long vendorId){
+        try{
+            List<PurchasingRequestResponse> purchasingRequestResponseList = new ArrayList<>();
+
+
+            Optional<VendorEntity> optionalVendorEntity = vendorRepository.findById(vendorId);
+            if(!optionalVendorEntity.isPresent()){
+                throw new NotFoundException("Vendor Entity not found");
+            }
+            VendorEntity vendorEntity = optionalVendorEntity.get();
+
+            List<PurchasingRequestEntity> purchasingRequestEntities = purchasingRequestRepository.findAllByActiveAndVendor(active,vendorEntity);
+
+
+            for(PurchasingRequestEntity purchasingRequestEntity:purchasingRequestEntities){
+                PurchasingRequestResponse purchasingRequestResponse = PurchasingRequestResponse.builder()
+                        .id(purchasingRequestEntity.getId())
+                        .paymentType(purchasingRequestEntity.getPaymentType())
+                        .status(purchasingRequestEntity.getStatus())
+                        .comment(purchasingRequestEntity.getComment())
+                        .date(purchasingRequestEntity.getDate())
+                        .customerId(purchasingRequestEntity.getCustomer().getId())
+                        .customerName(purchasingRequestEntity.getCustomer().getUser().getName())
+                        .carBrand(purchasingRequestEntity.getCarInstance().getCar().getBrand().getName())
+                        .carModel(purchasingRequestEntity.getCarInstance().getCar().getModel().getName())
+                        .active(purchasingRequestEntity.isActive())
+                        .build();
+
+                purchasingRequestResponseList.add(purchasingRequestResponse);
+            }
+            return reporterService.reportSuccess(purchasingRequestResponseList);
+        } catch(Exception e){
+            return reporterService.reportError(e);
+        }
+    }
+
+
+    @Override
+    public ResponseWrapper<List<CarInstanceDTO>> listCarsForVendor(long vendorId, boolean active) {
+        try {
+            Optional<VendorEntity> vendorEntity = vendorRepository.findById(vendorId);
+            if(!vendorEntity.isPresent()){
+                throw new NotFoundException("vendor not found");
+            }
+            List<CarInstanceEntity> carInstanceEntityList = carInstanceRepository.findAllByVendorAndActive(vendorEntity.get(),active);
+            List<CarInstanceDTO> carInstanceDTOList = new ArrayList<>();
+            for(CarInstanceEntity carInstanceEntity:carInstanceEntityList){
+                carInstanceDTOList.add(carInstanceMapper.convertToDTO(carInstanceEntity));
+            }
+            return reporterService.reportSuccess(carInstanceDTOList);
+        }catch (Exception e){
+           return reporterService.reportError(e);
+        }
+    }
+
     @Transactional
     @Override
     public ResponseWrapper<Boolean> updateVendor(VendorRegistrationRequest vendorRegistrationRequest
@@ -327,27 +393,42 @@ public class VendorServiceImpl implements VendorService {
             }
 
             VendorEntity vendorRecord = optionalVendorRecord.get();
-
-            if (vendorRegistrationRequest.getVendorName() != null) {
-                vendorRecord.setName(vendorRegistrationRequest.getVendorName());
+            if(vendorRegistrationRequest.getVendorName()!=null){
+                if (!vendorRegistrationRequest.getVendorName().equals("")) {
+                    vendorRecord.setName(vendorRegistrationRequest.getVendorName());
+                }
             }
 
-            if (vendorRegistrationRequest.getMainAddress() != null) {
-                vendorRecord.setMainAddress(vendorRegistrationRequest.getMainAddress());
+            if(vendorRegistrationRequest.getMainAddress()!=null){
+                if (!vendorRegistrationRequest.getMainAddress().equals("")) {
+                    vendorRecord.setMainAddress(vendorRegistrationRequest.getMainAddress());
+                }
             }
 
-            if (vendorRegistrationRequest.getGmName() != null) {
-                userService.updateUser(userMapper.convertToDTO(vendorRecord.getManager()));
+
+            if (vendorRegistrationRequest.getGeneralManagerName()!=null) {
+                if(vendorRegistrationRequest.getGeneralManagerName().length()>0){
+                    vendorRecord.setGeneralManagerName(vendorRegistrationRequest.getGeneralManagerName());
+                }
             }
-            if (vendorRegistrationRequest.getGmPhone() != null) {
-                vendorRecord.setGeneralManagerPhone(vendorRegistrationRequest.getGmPhone());
+            if(vendorRegistrationRequest.getGeneralManagerPhone()!=null){
+                if (vendorRegistrationRequest.getGeneralManagerPhone().length()>0) {
+                    vendorRecord.setGeneralManagerPhone(vendorRegistrationRequest.getGeneralManagerPhone());
+                }
             }
-            if (vendorRegistrationRequest.getAccManagerName() != null) {
-                vendorRecord.setAccountManagerName(vendorRegistrationRequest.getAccManagerName());
+
+            if(vendorRegistrationRequest.getAccountManagerName()!=null){
+                if (vendorRegistrationRequest.getAccountManagerName().length()>0) {
+                    vendorRecord.setAccountManagerName(vendorRegistrationRequest.getAccountManagerName());
+                }
             }
-            if (vendorRegistrationRequest.getAccManagerPhone() != null) {
-                vendorRecord.setAccountManagerPhone(vendorRegistrationRequest.getAccManagerPhone());
+
+            if(vendorRegistrationRequest.getAccountManagerPhone()!=null){
+                if (vendorRegistrationRequest.getAccountManagerPhone().length()>0) {
+                    vendorRecord.setAccountManagerPhone(vendorRegistrationRequest.getAccountManagerPhone());
+                }
             }
+
             vendorRepository.save(vendorRecord);
             AuditDTO auditDTO =
                     AuditDTO.builder()
@@ -405,7 +486,7 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
-    public ResponseWrapper<Boolean> registerVendorWorkingDays(long vendorId, String wokringTimsRegistrationRequest) {
+    public ResponseWrapper<Boolean> registerVendorWorkingDays(long vendorId, String workingTimesRegistrationRequest) {
 
         try {
             Optional<VendorEntity> vendorEntityOptional = vendorRepository.findById(vendorId);
@@ -413,7 +494,7 @@ public class VendorServiceImpl implements VendorService {
                 throw new NotFoundException("This vendor not exist");
             }
             VendorEntity vendorEntityRecord = vendorEntityOptional.get();
-            vendorEntityRecord.setWorkingTime(wokringTimsRegistrationRequest);
+            vendorEntityRecord.setWorkingTime(workingTimesRegistrationRequest);
             vendorRepository.save(vendorEntityRecord);
             return reporterService.reportSuccess("Vendor's Photo Added !");
 
@@ -512,4 +593,5 @@ public class VendorServiceImpl implements VendorService {
         }
 
     }
+
 }
