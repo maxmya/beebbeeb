@@ -26,5 +26,5 @@ public interface CarInstanceService {
 
     ResponseWrapper<Boolean> addReviewForCarInstance(long carInstanceId, ReviewRegistrationRequest reviewRegistrationRequest);
 
-    ResponseWrapper<ReviewResponse> getUserReviewForCarInstance (long carInstanceId, String authHeader);
+    ResponseWrapper<List<ReviewResponse>> getUserReviewsForCarInstance (long carInstanceId, String authHeader);
 }
