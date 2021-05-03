@@ -625,7 +625,7 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
-    public ResponseWrapper<ReviewResponse> getUserReviewForVendor(long vendorId, String authHeader) {
+    public ResponseWrapper<List<ReviewResponse>> getUserReviewsForVendor(long vendorId, String authHeader) {
         try {
             Optional<VendorEntity> vendorEntityOptional = vendorRepository.findById(vendorId);
             if(!vendorEntityOptional.isPresent()){
@@ -640,14 +640,16 @@ public class VendorServiceImpl implements VendorService {
             }
             UserEntity userEntityRecord = optionalUserEntityRecord.get();
 
-            ReviewEntity reviewEntity = reviewRepository.findByVendorAndReviewer(vendorEntity,userEntityRecord);
-            ReviewResponse reviewResponse = ReviewResponse.builder()
-                    .rate(reviewEntity.getRate())
-                    .comment(reviewEntity.getComment().getBody())
-                    .reviewDate(reviewEntity.getTimestamp())
-                    .commentDate(reviewEntity.getComment().getTimeStamp()).build();
-
-            return reporterService.reportSuccess(reviewResponse);
+            List<ReviewEntity> reviewEntityList = reviewRepository.findAllByVendorAndReviewer(vendorEntity,userEntityRecord);
+            List<ReviewResponse> reviewResponses = new ArrayList<>();
+            for(ReviewEntity reviewEntity : reviewEntityList){
+                reviewResponses.add(ReviewResponse.builder()
+                        .rate(reviewEntity.getRate())
+                        .comment(reviewEntity.getComment().getBody())
+                        .reviewDate(reviewEntity.getTimestamp())
+                        .commentDate(reviewEntity.getComment().getTimeStamp()).build());
+            }
+            return reporterService.reportSuccess(reviewResponses);
         }catch (Exception e){
             return reporterService.reportError(e);
         }
