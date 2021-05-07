@@ -123,4 +123,19 @@ public class VendorEntity {
     @Column(name = "sales_per_month")
     private Integer salesPerMonth;
 
+    @Fetch(value = FetchMode.SUBSELECT)
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    }, fetch = FetchType.EAGER)
+    @JoinTable(name = "vendor_banks",
+            joinColumns = @JoinColumn(name = "vendor_id"),
+            inverseJoinColumns = @JoinColumn(name = "bank_id")
+    )
+    private List<BankEntity> banks;
+
+    @OneToMany(mappedBy = "vendor")
+    private List<ReviewEntity> reviews;
+
+
 }

@@ -1,8 +1,15 @@
 package com.trixpert.beebbeeb.data.mappers;
 
 import com.trixpert.beebbeeb.data.entites.BankEntity;
+import com.trixpert.beebbeeb.data.entites.CustomerEntity;
+import com.trixpert.beebbeeb.data.entites.VendorEntity;
 import com.trixpert.beebbeeb.data.to.BankDTO;
+import com.trixpert.beebbeeb.data.to.CustomerDTO;
+import com.trixpert.beebbeeb.data.to.VendorDTO;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class BankMapper {
@@ -14,6 +21,7 @@ public class BankMapper {
     }
 
     public BankEntity convertToEntity(BankDTO bankDTO){
+
         return BankEntity.builder()
                 .id(bankDTO.getId())
                 .name(bankDTO.getName())

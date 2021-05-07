@@ -1,6 +1,7 @@
 package com.trixpert.beebbeeb.data.repositories;
 
 import com.trixpert.beebbeeb.data.entites.BankEntity;
+import com.trixpert.beebbeeb.data.entites.VendorEntity;
 import com.trixpert.beebbeeb.data.to.BankDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -1,16 +1,17 @@
 package com.trixpert.beebbeeb.services;
 
+import com.trixpert.beebbeeb.data.request.ReviewRegistrationRequest;
 import com.trixpert.beebbeeb.data.request.VendorRegistrationRequest;
-import com.trixpert.beebbeeb.data.request.WokringTimsRegistrationRequest;
 import com.trixpert.beebbeeb.data.response.PurchasingRequestResponse;
 import com.trixpert.beebbeeb.data.response.ResponseWrapper;
+
+import com.trixpert.beebbeeb.data.response.ReviewResponse;
 import com.trixpert.beebbeeb.data.response.VendorDetailsResponse;
-import com.trixpert.beebbeeb.data.response.VendorResponse;
+
+import com.trixpert.beebbeeb.data.to.CarInstanceDTO;
 import com.trixpert.beebbeeb.data.to.VendorDTO;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 public interface VendorService {
@@ -30,6 +31,10 @@ public interface VendorService {
 
     ResponseWrapper<List<PurchasingRequestResponse>> listPurchasingRequestsForVendor(boolean active, String authHeader);
 
+    ResponseWrapper<List<PurchasingRequestResponse>> listPurchasingRequestsForVendorByVendorId(boolean active, long vendorId);
+
+    ResponseWrapper<List<CarInstanceDTO>> listCarsForVendor(long vendorId, boolean active);
+
     ResponseWrapper<Boolean> deleteVendor(long vendorId , String authHeader);
 
     ResponseWrapper<Boolean> updateVendor(VendorRegistrationRequest vendorRegistrationRequest
@@ -39,8 +44,12 @@ public interface VendorService {
 
     ResponseWrapper<Boolean> addVendorPhoto(long vendorId ,MultipartFile vendorPhoto);
 
-    ResponseWrapper<Boolean> registerVendorWorkingDays(long vendorId ,String wokringTimsRegistrationRequest);
+    ResponseWrapper<Boolean> registerVendorWorkingDays(long vendorId ,String workingTimesRegistrationRequest);
 
     ResponseWrapper<VendorDetailsResponse> getVendorDetails(long vendorId);
+
+    ResponseWrapper<Boolean> addReviewForVendor(long vendorId, ReviewRegistrationRequest reviewRegistrationRequest);
+
+    ResponseWrapper<List<ReviewResponse>> getUserReviewsForVendor(long vendorId, String authHeadrt);
 
 }

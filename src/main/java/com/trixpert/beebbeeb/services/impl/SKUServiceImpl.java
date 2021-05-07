@@ -13,7 +13,7 @@ public class SKUServiceImpl implements SKUService {
         String vendorCode = carInstanceEntity.getVendor().getName()
                 .toUpperCase().substring(0, 3);
 
-        String modelCode = carInstanceEntity.getCar().getModel().getName()
+        String modelCode = carInstanceEntity.getCar().getModel().getEnglishName()
                 .toUpperCase().substring(0, 3);
 
         String categoryCode = carInstanceEntity.getCar().getCategory().getName()

@@ -1,10 +1,7 @@
 package com.trixpert.beebbeeb.api.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.trixpert.beebbeeb.data.request.CustomerMobileRegistrationRequest;
-import com.trixpert.beebbeeb.data.request.CustomerRegistrationRequest;
-import com.trixpert.beebbeeb.data.request.LoanRegistrationRequest;
-import com.trixpert.beebbeeb.data.request.PurchasingRequestRegistrationRequest;
+import com.trixpert.beebbeeb.data.request.*;
 import com.trixpert.beebbeeb.data.response.*;
 import com.trixpert.beebbeeb.data.to.AddressDTO;
 import com.trixpert.beebbeeb.services.*;
@@ -33,13 +30,14 @@ public class MobileController {
     private final CustomerService customerService;
     private final CountingService countingService;
     private final VendorService vendorService;
+    private final CarInstanceService carInstanceService;
 
     public MobileController(MobileService mobileService,
                             PurchasingRequestService purchasingRequestService,
                             CustomerService customerService,
                             LoanService loanService,
                             AddressService addressService,
-                            CountingService countingService, VendorService vendorService) {
+                            CountingService countingService, VendorService vendorService, CarInstanceService carInstanceService) {
 
         this.mobileService = mobileService;
         this.purchasingRequestService = purchasingRequestService;
@@ -48,6 +46,7 @@ public class MobileController {
         this.customerService = customerService;
         this.countingService = countingService;
         this.vendorService = vendorService;
+        this.carInstanceService = carInstanceService;
     }
 
     @PostMapping(value = "/loan/request", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -199,5 +198,57 @@ public class MobileController {
     public ResponseEntity<ResponseWrapper<VendorDetailsResponse>> getVendorDetails(@PathVariable("vendorId") long vendorId){
         return ResponseEntity.ok(vendorService.getVendorDetails(vendorId));
     }
+
+    @GetMapping("/customer/purchasing/list/active")
+    @ApiOperation("Get all active customer's purchasing requests")
+    public ResponseEntity<ResponseWrapper<List<PurchasingRequestMobileResponse>>> listActivePurchasingRequestForCustomer(
+            HttpServletRequest request
+    ){
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(mobileService.listPurchasingRequestForCustomer(true, authorizationHeader));
+    }
+
+    @GetMapping("/customer/purchasing/list/inactive")
+    @ApiOperation("Get all inactive customer's purchasing requests")
+    public ResponseEntity<ResponseWrapper<List<PurchasingRequestMobileResponse>>> listInactivePurchasingRequestForCustomer(
+            HttpServletRequest request
+    ){
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(mobileService.listPurchasingRequestForCustomer(false, authorizationHeader));
+    }
+
+    @GetMapping("/branches/{branchId}")
+    @ApiOperation("Get Branch Details")
+    public ResponseEntity<ResponseWrapper<BranchResponse>> getBranchDetails(@PathVariable("branchId")long branchId){
+        return ResponseEntity.ok(mobileService.getBranchDetails(branchId));
+    }
+
+    @PostMapping("/review/vendor/{vendorId}")
+    @ApiOperation("Customer Add Review For Vendor ")
+    public ResponseEntity<ResponseWrapper<Boolean>> addReviewForVendor(@PathVariable("vendorId") long vendorId, ReviewRegistrationRequest reviewRegistrationRequest) {
+        return ResponseEntity.ok(vendorService.addReviewForVendor(vendorId,reviewRegistrationRequest));
+    }
+
+
+    @PostMapping("/review/carInstance/{carInatnceId}")
+    @ApiOperation("Customer Add Review For Car")
+    public ResponseEntity<ResponseWrapper<Boolean>> addReviewForCarInstance(@PathVariable("carInatnceId") long carInstanceId, ReviewRegistrationRequest reviewRegistrationRequest) {
+        return ResponseEntity.ok(carInstanceService.addReviewForCarInstance(carInstanceId,reviewRegistrationRequest));
+    }
+
+    @GetMapping("/review/carInstance/{carInatnceId}")
+    @ApiOperation("Get User Reviews For Car By User Token")
+    public ResponseEntity<ResponseWrapper<List<ReviewResponse>>> getUserReviewForCarInstance(@PathVariable("carInatnceId") long carInstanceId, HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(carInstanceService.getUserReviewsForCarInstance(carInstanceId,authorizationHeader));
+    }
+
+    @GetMapping("/review/vendor/{vendorId}")
+    @ApiOperation("Get User Reviews For Vendor By User Token")
+    public ResponseEntity<ResponseWrapper<List<ReviewResponse>>> getUserReviewForVendor(@PathVariable("vendorId") long vendorId, HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok(vendorService.getUserReviewsForVendor(vendorId,authorizationHeader));
+    }
+
 
 }

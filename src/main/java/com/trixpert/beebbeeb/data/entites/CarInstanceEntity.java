@@ -51,5 +51,7 @@ public class CarInstanceEntity {
     @Column(name = "brochure_url")
     private String brochureUrl;
 
+    @OneToMany(mappedBy = "car_instance")
+    private List<ReviewEntity> reviews;
 
 }
